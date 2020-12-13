@@ -1,0 +1,29 @@
+@prefix wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix gn: <http://www.geonames.org/ontology#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix darpa: <http://ss.l/dp#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+darpa:confTag rdfs:subPropertyOf darpa:propTag .
+
+darpa:intTag rdfs:subPropertyOf darpa:propTag .
+
+darpa:isReadBy rdfs:subPropertyOf darpa:connects .
+
+darpa:forks rdfs:subPropertyOf darpa:connects .
+
+darpa:writes rdfs:subPropertyOf darpa:connects .
+
+darpa:isExecutedBy rdfs:subPropertyOf darpa:connects .
+
+darpa:subjTag rdfs:subPropertyOf darpa:propTag .
+
+darpa:sends rdfs:subPropertyOf darpa:connects .
+
+darpa:isReceivedBy rdfs:subPropertyOf darpa:connects .
+
+darpa:isIllegallyExecutedBy rdfs:subPropertyOf darpa:alertAccess .
+
+darpa:leaksDataTo rdfs:subPropertyOf darpa:alertAccess .

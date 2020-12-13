@@ -1,0 +1,54 @@
+input-dir: experiment/input/
+
+output-dir: experiment/output/
+
+tdb-dir: experiment/tdb
+
+ontology: experiment/ontology/darpa-ontology.ttl
+
+triple-store: graphdb
+
+live-store: no
+
+backup-file: yes
+
+confidential-dir:
+ - /etc/passwd
+ - /var/log
+ - /etc/shadow
+
+#recognized host = trusted-host
+recognized-host:
+ - localhost
+
+
+field-filter:
+ - EVENT_EXIT
+ - EVENT_MPROTECT
+ - EVENT_LOGIN
+ #- EVENT_EXECUTE
+ - EVENT_ACCEPT
+ - EVENT_SENDMSG
+ #- EVENT_SENDTO
+ - EVENT_MODIFY_FILE_ATTRIBUTES
+ - EVENT_RENAME
+ #- EVENT_RECVFROM
+ - EVENT_MODIFY_PROCESS
+ - EVENT_CHANGE_PRINCIPAL
+ - EVENT_LINK
+ - EVENT_UNLINK
+ - EVENT_CLOSE
+ - EVENT_SIGNAL
+ - EVENT_OPEN
+ #- EVENT_READ
+ #- EVENT_WRITE
+ - EVENT_MMAP
+ - EVENT_CREATE_OBJECT
+ - EVENT_LSEEK
+ - EVENT_FCNTL
+ - EVENT_RECVMSG
+ - EVENT_BIND
+ - EVENT_OTHER
+ - EVENT_CONNECT
+ - EVENT_TRUNCATE
+ - EVENT_ADD_OBJECT_ATTRIBUTE
