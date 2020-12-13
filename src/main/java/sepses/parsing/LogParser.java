@@ -401,7 +401,7 @@ public class LogParser {
 	}
 	
 	private static String cleanCmd(String line) {
-		line = line.replaceAll("[\\n\\t\\/]", "");
+		line = line.replaceAll("[\\n\\t]", "");
 		
 		return line;
 	}
