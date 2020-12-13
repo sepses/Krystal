@@ -77,83 +77,107 @@ public class Propagation {
 		
 	public  void intRead(Model jsonModel,String subject, String exec, String objectString) {
 		
-		process = "http://ss.r/dp/proc/"+subject+"#"+exec;
-		file = "http://ss.r/dp/obj#"+objectString;
-		Resource respro = jsonModel.createResource(process);
-		Resource resfile = jsonModel.createResource(file);
-		
-		double rsit = getEntityTag(jsonModel, intTag, respro);
-		double roit = getEntityTag(jsonModel, intTag, resfile);
-		
-		if(roit!=rsit) {
-	         double nit = min(roit,rsit);
-	         jsonModel.removeAll(respro, intTag, null);
-	         jsonModel.addLiteral(respro, intTag, nit);
-	    }
-		
+		String q = prefix+
+				"DELETE {"+process+" darpa:intTag ?sit.\r\n}"+
+				"INSERT { "+process+" darpa:intTag ?nit. \r\n}"+
+				"WHERE { \r\n" + 
+					file+" darpa:intTag  ?oit.\r\n"
+					+ file+" darpa:isReadBy "+process+".\r\n"
+					+process+" darpa:intTag  ?sit."
+					+"FILTER (?oit != ?sit).\r\n"
+				    + "BIND (afn:min(?oit,?sit) AS ?nit)."
+					+ "\r\n"+
+				"}";
+
+		UpdateRequest e = UpdateFactory.create(q);
+	    UpdateAction.execute(e,jsonModel) ;	
+			
 	}
 				  
 	//================WRITE===========================
 			
 	public  void confWrite(Model jsonModel, String subject, String exec, String objectString) {
-	    process = "http://ss.r/dp/proc/"+subject+"#"+exec;
-		file = "http://ss.r/dp/obj#"+objectString;
-		
+	    
+		process = "http://ss.r/dp/proc/"+subject+"#"+exec;
 		Resource respro = jsonModel.createResource(process);
-		Resource resfile = jsonModel.createResource(file);
 		
 		double rsst = getEntityTag(jsonModel, subjTag, respro);
-		double rsct = getEntityTag(jsonModel, confTag, respro);
-		double roct = getEntityTag(jsonModel, confTag, resfile);
-
+		String q = "";
 	    if(rsst >= 0.5) {
 	    	//benign
-	       if(roct!=rsct) {
-	         double noct = min(rsct+0.2,roct);
-	          if(noct!=roct) {
-	             jsonModel.removeAll(resfile, confTag, null);
-		         jsonModel.addLiteral(resfile, confTag, noct);
-		     }  
-	      }	      
+	    	q = prefix+
+					"DELETE {"+file+" darpa:confTag ?oct.\r\n}"+
+					"INSERT { "+file+" darpa:confTag ?noct. \r\n}"+
+					"WHERE { \r\n" + 
+						file+" darpa:confTag  ?oct.\r\n"
+						+ process+" darpa:writes "+file+".\r\n"
+						+process+" darpa:confTag  ?sct."
+						+"FILTER (?oct != ?sct).\r\n"
+						+"FILTER (?oct != ?noct).\r\n"
+						+ "BIND (?sct + 0.2 AS ?nsct)."
+						+ "BIND (afn:min(?oct,?nsct) AS ?noct)."
+						+ "\r\n"+
+					"}";
+	       	      
 	    }else {
 	    	//suspect
-	    	 if(roct!=rsct) {
-	           double noct = min(rsct,roct);
-	           	 jsonModel.removeAll(resfile, confTag, null);
-	           	 jsonModel.addLiteral(resfile, confTag, noct);
-	    	 }
-	    }
+	    	q = prefix+
+					"DELETE {"+file+" darpa:confTag ?oct.\r\n}"+
+					"INSERT { "+file+" darpa:confTag ?cct. \r\n}"+
+					"WHERE { \r\n" + 
+						file+" darpa:confTag  ?oct.\r\n"
+						+ process+" darpa:writes "+file+".\r\n"
+						+process+" darpa:confTag  ?sct."
+						+"FILTER (?oct != ?sct).\r\n"
+						+ "BIND (afn:min(?oct,?sct) AS ?cct)."
+						+ "\r\n"+
+					"}";
+	       	      }
+	    
+		UpdateRequest e = UpdateFactory.create(q);
+	    UpdateAction.execute(e,jsonModel) ;	
 	}
 	
 	public  void intWrite(Model jsonModel, String subject, String exec, String objectString) {
 		process = "http://ss.r/dp/proc/"+subject+"#"+exec;
-		file = "http://ss.r/dp/obj#"+objectString;
 		
 		Resource respro = jsonModel.createResource(process);
-		Resource resfile = jsonModel.createResource(file);
 		
 		double rsst = getEntityTag(jsonModel, subjTag, respro);
-		double rsit = getEntityTag(jsonModel, intTag, respro);
-		double roit = getEntityTag(jsonModel, intTag, resfile);
-			    
+		String q="";	    
 	    if(rsst >= 0.5) {
 	      //benign
-	    	if(roit!=rsit) {
-	         double noit = min(rsit+0.2,roit);
-	         if(noit!=roit) {
-	        	 jsonModel.removeAll(resfile, intTag, null);
-		         jsonModel.addLiteral(resfile, intTag, noit);
-		     }  
-	     }   
+	    	q = prefix+
+					"DELETE {"+file+" darpa:intTag ?oit.\r\n}"+
+					"INSERT { "+file+" darpa:intTag ?noit. \r\n}"+
+					"WHERE { \r\n" + 
+						file+" darpa:intTag  ?oit.\r\n"
+						+ process+" darpa:writes "+file+".\r\n"
+						+process+" darpa:intTag  ?sit."
+						+"FILTER (?oit != ?sit).\r\n"
+						+"FILTER (?oit != ?noit).\r\n"
+						+ "BIND (?sit + 0.2 AS ?nsit)."
+						+ "BIND (afn:min(?oit,?nsit) AS ?noit)."
+						+ "\r\n"+
+					"}";
+		
 	    }else {
 	     //suspect
-	    	if(roit!=rsit) {
-	         double noit = min(rsit,roit);
-	         jsonModel.removeAll(resfile, intTag, null);
-	         jsonModel.addLiteral(resfile, intTag, noit);
-	    	}
+
+	    	q = prefix+
+					"DELETE {"+file+" darpa:intTag ?oit.\r\n}"+
+					"INSERT { "+file+" darpa:intTag ?nit. \r\n}"+
+					"WHERE { \r\n" + 
+						file+" darpa:intTag  ?oit.\r\n"
+						+ process+" darpa:writes "+file+".\r\n"
+						+process+" darpa:intTag  ?sit."
+						+"FILTER (?oit != ?sit).\r\n"
+						+ "BIND (afn:min(?oit,?nsit) AS ?nit)."
+						+ "\r\n"+
+					"}";
 	    }
-	    	
+		UpdateRequest e = UpdateFactory.create(q);
+	    UpdateAction.execute(e,jsonModel) ;		    	
 	  }
 	
 	//================EXEC===========================
@@ -161,27 +185,40 @@ public class Propagation {
 	public  void subjExec(Model jsonModel, String subject, String exec, String objectString) {
 		
 		process = "http://ss.r/dp/proc/"+subject+"#"+exec;
-		file = "http://ss.r/dp/obj#"+objectString;
 		
 		Resource respro = jsonModel.createResource(process);
-		Resource resfile = jsonModel.createResource(file);
 		double rsst = getEntityTag(jsonModel, subjTag, respro);
-		double roit = getEntityTag(jsonModel, intTag, resfile);		
-	    
+		String q="";
 	    if(rsst >= 0.5) {
 	    	//benign
-			if(roit!=rsst) {
-		         jsonModel.removeAll(respro, subjTag, null);
-		         jsonModel.addLiteral(respro, subjTag, roit);
-		    }
+	    	 q = prefix+
+					"DELETE {"+process+" darpa:subjTag ?sst.\r\n}"+
+					"INSERT { "+process+" darpa:subjTag ?oit. \r\n}"+
+					"WHERE { \r\n" + 
+						file+" darpa:intTag  ?oit.\r\n"
+						+ file+" darpa:isExecutedBy "+process+".\r\n"
+						+process+" darpa:subjTag  ?sst."
+						+"FILTER (?sst != ?oit).\r\n"
+						+ "\r\n"+
+					"}";
+   
 	    }else {
 	    	//suspect
-	    	if(roit!=rsst) {
-	    		 double nsst = min(rsst,roit);
-		         jsonModel.removeAll(respro, subjTag, null);
-		         jsonModel.addLiteral(respro, subjTag, nsst);
-		    }
+	    	q = prefix+
+					"DELETE {"+process+" darpa:subjTag ?sst.\r\n}"+
+					"INSERT { "+process+" darpa:subjTag ?cit. \r\n}"+
+					"WHERE { \r\n" + 
+						file+" darpa:intTag  ?oit.\r\n"
+						+ file+" darpa:isExecutedBy "+process+".\r\n"
+						+process+" darpa:subjTag  ?sst."
+						+"FILTER (?sst != ?oit).\r\n"
+						+ "BIND (afn:min(?oit,?sst) AS ?cit)."
+						+ "\r\n"+
+					"}";
 	    }
+
+		UpdateRequest e = UpdateFactory.create(q);
+	    UpdateAction.execute(e,jsonModel) ;	
 	}
 	
 	
@@ -190,92 +227,107 @@ public class Propagation {
 	public  void confExec(Model jsonModel, String subject, String exec, String objectString) {
 		
 		process = "http://ss.r/dp/proc/"+subject+"#"+exec;
-		file = "http://ss.r/dp/obj#"+objectString;
 		
-		Resource respro = jsonModel.createResource(process);
-		Resource resfile = jsonModel.createResource(file);
-		
+		Resource respro = jsonModel.createResource(process);		
 		double rsst = getEntityTag(jsonModel, subjTag, respro);
-		double rsct = getEntityTag(jsonModel, confTag, respro);
-		double roct = getEntityTag(jsonModel, confTag, resfile);
+		String q ="";
 		
 		if(rsst < 0.5) {
 			//suspect
-			if(roct!=rsct) {
-		         double nsct = min(rsct,roct);
-		         jsonModel.removeAll(respro, confTag, null);
-		         jsonModel.addLiteral(respro, confTag, nsct);
-				}
+			q = prefix+
+					"DELETE {"+process+" darpa:confTag ?sct.\r\n}"+
+					"INSERT { "+process+" darpa:confTag ?oct. \r\n}"+
+					"WHERE { \r\n" + 
+						file+" darpa:confTag  ?oct.\r\n"
+						+ file+" darpa:isExecutedBy "+process+".\r\n"
+						+process+" darpa:confTag  ?sct."
+						+"FILTER (?sct != ?oct).\r\n"
+						+ "BIND (afn:min(?oct,?sct) AS ?cct)."
+						+ "\r\n"+
+					"}";
+   
 			}else {
 			//benign
-				double nrsst = 1.0;	
-			    jsonModel.removeAll(respro, confTag, null);
-			    jsonModel.addLiteral(respro, confTag, nrsst);
-			
+				q = prefix+
+						"DELETE {"+process+" darpa:confTag ?sct.\r\n}"+
+						"INSERT { "+process+" darpa:confTag 1.0^^xsd:double. \r\n}"+
+						"WHERE { \r\n" + 
+							 file+" darpa:isExecutedBy "+process+".\r\n"
+							+process+" darpa:confTag  ?sct."
+							+ "\r\n"+
+						"}";
 			}
+
+		UpdateRequest e = UpdateFactory.create(q);
+	    UpdateAction.execute(e,jsonModel) ;	
 	 }
 
 	public  void intExec(Model jsonModel, String subject, String exec, String objectString) {
 
 		process = "http://ss.r/dp/proc/"+subject+"#"+exec;
-		file = "http://ss.r/dp/obj#"+objectString;
 		
 		Resource respro = jsonModel.createResource(process);
-		Resource resfile = jsonModel.createResource(file);
 		
 		double rsst = getEntityTag(jsonModel, subjTag, respro);
-		double rsit = getEntityTag(jsonModel, intTag, respro);
-		double roit = getEntityTag(jsonModel, intTag, resfile);
-		
+		String q="";
 		if(rsst < 0.5) {
 			//suspect
-			if(roit!=rsit) {
-		         double nsit = min(rsit,roit);
-		         jsonModel.removeAll(respro, intTag, null);
-		         jsonModel.addLiteral(respro, intTag, nsit);
-				}
+			q = prefix+
+					"DELETE {"+process+" darpa:intTag ?sit.\r\n}"+
+					"INSERT { "+process+" darpa:intTag ?cit. \r\n}"+
+					"WHERE { \r\n" + 
+						file+" darpa:confTag  ?oit.\r\n"
+						+ file+" darpa:isExecutedBy "+process+".\r\n"
+						+process+" darpa:intTag  ?sit."
+						+"FILTER (?sit != ?oit).\r\n"
+						+ "BIND (afn:min(?oit,?sit) AS ?cit)."
+						+ "\r\n"+
+					"}";
 			}else {
-			//benign
-				double nrsit = 1.0;	
-			    jsonModel.removeAll(respro, intTag, null);
-			    jsonModel.addLiteral(respro, intTag, nrsit);
-			
+				q = prefix+
+						"DELETE {"+process+" darpa:intTag ?sit.\r\n}"+
+						"INSERT { "+process+" darpa:intTag 1.0^^xsd:double. \r\n}"+
+						"WHERE { \r\n" + 
+							 file+" darpa:isExecutedBy "+process+".\r\n"
+							+process+" darpa:intTag  ?sit."
+							+ "\r\n"+
+						"}";
 			}
-		
+		UpdateRequest e = UpdateFactory.create(q);
+	    UpdateAction.execute(e,jsonModel) ;	
 		}
 	
 	
 	//================FORK============
 
-		public  void forkTag(Model jsonModel, String prevProcess, String process) {
-			String prevProc = "http://ss.r/dp/proc/"+prevProcess;
-			process = "http://ss.r/dp/proc/"+process;
+		public  void forkTag(Model jsonModel, String prevProc, String proc) {
+			String prevProcess = "<http://ss.r/dp/proc/"+prevProc+">";
+			process = "<http://ss.r/dp/proc/"+proc+">";
 			
-			Resource resPrevPro = jsonModel.createResource(prevProc);
-			Resource respro = jsonModel.createResource(process);
-			
-			double rpsst = getEntityTag(jsonModel, subjTag, resPrevPro);
-			double rpsct = getEntityTag(jsonModel, confTag, resPrevPro);
-			double rpsit = getEntityTag(jsonModel, intTag, resPrevPro);
-			
-			jsonModel.removeAll(respro, subjTag, null);
-			jsonModel.addLiteral(respro, subjTag, rpsst);
-			jsonModel.removeAll(respro, confTag,  null);
-			jsonModel.addLiteral(respro, confTag, rpsct);
-			jsonModel.removeAll(respro, intTag,  null);
-			jsonModel.addLiteral(respro, intTag, rpsit);
+			String q = prefix+
+					"DELETE {"+process+" darpa:subjTag ?sst."
+					          +process+" darpa:confTag ?sct." 
+					          +process+" darpa:intTag ?sit.}" +
+					"INSERT {"+process+" darpa:subjTag ?psst."
+					          +process+" darpa:confTag ?psct." 
+					          +process+" darpa:intTag ?sit.}" +
+					          "WHERE { \r\n" + 
+						process+" darpa:subjTag  ?sst.\r\n"+
+						process+" darpa:confTag  ?sct.\r\n"+
+						process+" darpa:intTag  ?sit.\r\n"
+						+ prevProcess+" darpa:forks "+process+".\r\n"
+						+prevProcess+" darpa:subjTag  ?psst."
+						+prevProcess+" darpa:confTag  ?psct."
+						+prevProcess+" darpa:intTag  ?psit."
+						+ "\r\n"+
+					"}";
+
+			UpdateRequest e = UpdateFactory.create(q);
+		    UpdateAction.execute(e,jsonModel) ;	
 			
 		}
 		
 
-	public double min(double s, double o){
-		if(s<o) {
-			return s;
-		}else {
-			return o;
-		}
-	}	  
-	
 	public double getEntityTag(Model jsonModel, Property prop, Resource entity) {
 		double ptag = 0;
 		StmtIterator iter = jsonModel.listStatements(entity, prop,(RDFNode) null);
