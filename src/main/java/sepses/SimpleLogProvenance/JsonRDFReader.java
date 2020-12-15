@@ -95,8 +95,8 @@ public class JsonRDFReader {
 								
 								if(livestore!="false") {
 									//add rdfs reasoner first
-									InfModel infmodel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), jsonModel);
-									String rdfFile = Utility.saveToRDF(infmodel, outputdir, namegraph);
+									//InfModel infmodel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), jsonModel);
+									String rdfFile = Utility.saveToRDF(jsonModel, outputdir, namegraph);
 									Utility.storeFileInRepo(triplestore, rdfFile, sparqlEp, namegraph, "dba", "dba");
 								}	
 								templ=0;
@@ -112,8 +112,8 @@ public class JsonRDFReader {
 			
 			System.out.println("the rest is less than "+lineNumber+" which is "+templ);
 			if(livestore!="false") {
-				    InfModel infmodel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), jsonModel);
-					String rdfFile = Utility.saveToRDF(infmodel, outputdir, namegraph);
+				    Model ontologyModel = RDFDataMgr.loadModel(ontology);
+					String rdfFile = Utility.saveToRDF(jsonModel.union(ontologyModel), outputdir, namegraph);
 					Utility.storeFileInRepo(triplestore, rdfFile, sparqlEp, namegraph, "dba", "dba");
 					}	
 			templ=0;
@@ -124,8 +124,8 @@ public class JsonRDFReader {
 	       //end of folder
 	     
 			if(backupfile!="false") {
-				InfModel infmodel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), jsonModel);
-				String rdfFile = Utility.saveToRDF(infmodel, outputdir, namegraph);
+	 		    Model ontologyModel = RDFDataMgr.loadModel(ontology);
+				String rdfFile = Utility.saveToRDF(jsonModel.union(ontologyModel), outputdir, namegraph);
 				if(livestore=="false") {
 					Utility.storeFileInRepo(triplestore, rdfFile, sparqlEp, namegraph, "dba", "dba");
 				}
@@ -135,8 +135,7 @@ public class JsonRDFReader {
 	  System.out.println("Finish!, Generating query for attack construction.. ");
 	   //System.out.println(FileObject);
  	  //generate query for attack construction
-	  InfModel infmodel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), jsonModel);
-	  String q = AttackConstruction.AttackGeneration(infmodel);
+	  String q = AttackConstruction.AttackGeneration(jsonModel);
 	  System.out.println(q);
 	  
 	}
