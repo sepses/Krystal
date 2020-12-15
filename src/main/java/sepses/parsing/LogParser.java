@@ -69,6 +69,9 @@ public class LogParser {
 					
 					//is it forked by another previous process? 
 					prevProcess = getPreviousForkProcess(subject, ForkObject);
+					
+					
+					
 						//if yes create fork Event
 						if(!prevProcess.isEmpty() && !eventType.contains("EVENT_EXECUTE")) {
 							forkEvent(lm, prevProcess, subject+"#"+exec, jsonModel);
@@ -127,7 +130,6 @@ public class LogParser {
 									prop.readTag(jsonModel, subject, exec, objectString);										
 									
 									lastEvent.add(curRead);
-									
 									
 									//System.out.println(curRead);
 								}
@@ -190,11 +192,11 @@ public class LogParser {
 					
 						putNewForkObject(subject+"#"+exec, object, ForkObject);
 						
-						//storeEntity(subject+"#"+exec, Process);
+						storeEntity(subject+"#"+exec, Process);
 					
 						// System.out.println("fork");
-						//Reader targetReader = new StringReader(processMap);
-						//jsonModel.read(targetReader, null, "N-TRIPLE");
+						Reader targetReader = new StringReader(processMap);
+						jsonModel.read(targetReader, null, "N-TRIPLE");
 						 
 						
 						
