@@ -72,8 +72,10 @@ public class LogParser {
 					//is it forked by another previous process? 
 					prevProcess = getPreviousForkProcess(subject, ForkObject);
 						//if yes create fork Event
-						if(!prevProcess.isEmpty() && !eventType.contains("EVENT_EXECUTE")) {
-							forkEvent(lm, prevProcess, subject+"#"+exec, jsonModel);
+						if(!prevProcess.isEmpty()) {
+							if(!eventType.contains("EVENT_EXECUTE")) {
+  							    forkEvent(lm, prevProcess, subject+"#"+exec, jsonModel);
+							}
 						}else {
 	                       //tag new process
 							processMap = lm.initialProcessTagMap(subject+"#"+exec);
@@ -154,42 +156,41 @@ public class LogParser {
 										process2 = cmdline;
 									}
 							}
-						 
+
 						 if(!process2.isEmpty()) {
 							
+							 //if prevProcess not empty => entity is new
+							 //if prevProcess is empty => entity can be new or not
+							 
 							 
 							 if(prevProcess.isEmpty()) {
 								 putNewForkObject(subject+"#"+exec, subject, ForkObject);
-								 processMap = lm.initialProcessTagMap(subject+"#"+exec);
-								 Reader targetReader = new StringReader(processMap);
-								 jsonModel.read(targetReader, null, "N-TRIPLE");
 								 prevProcess = getPreviousForkProcess(subject, ForkObject);
 							 }
 							 
-						
-							 forkEvent(lm, prevProcess, subject+"#"+process2, jsonModel);
-
-						 }
-						 
-						
-						 
-						 mapper = lm.executeMap(subject,process2, objectString, cmdline)+fileMap;
-						 
-						 storeEntity(objectString, File);
-						 storeEntity(subject+"#"+exec, Process);
-						 storeEntity(subject+"#"+process2, Process);
-						 
-						// System.out.print("execute");
-						 Reader targetReader = new StringReader(mapper);
-						 jsonModel.read(targetReader, null, "N-TRIPLE");
-						 
-						 AlertRule alert = new AlertRule();
-						 alert.execAlert(jsonModel, subject+"#"+process2, objectString);
-						 
-						 
-						 PropagationRule prop = new PropagationRule();
-						 prop.execTag(jsonModel, subject, process2, objectString);
-						 
+							    Reader targetReader = new StringReader(processMap);
+							 	jsonModel.read(targetReader, null, "N-TRIPLE");
+							 	
+							 	
+								forkEvent(lm, prevProcess, subject+"#"+process2, jsonModel);
+							 
+								 mapper = lm.executeMap(subject,process2, objectString, cmdline)+fileMap;
+								 
+								 storeEntity(objectString, File);
+								// storeEntity(subject+"#"+exec, Process);
+								 storeEntity(subject+"#"+process2, Process);
+								 
+								// System.out.print("execute");
+								 Reader targetReader2 = new StringReader(mapper);
+								 jsonModel.read(targetReader2, null, "N-TRIPLE");
+								 
+								 AlertRule alert = new AlertRule();
+								 alert.execAlert(jsonModel, subject+"#"+process2, objectString);
+								 
+								 
+								 PropagationRule prop = new PropagationRule();
+								 prop.execTag(jsonModel, subject, process2, objectString);
+						}	 
 						 
 					
 					}else if(eventType.contains("EVENT_FORK")) {
