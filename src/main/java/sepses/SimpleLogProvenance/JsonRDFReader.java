@@ -124,8 +124,9 @@ public class JsonRDFReader {
 	       //end of folder
 	     
 			if(backupfile!="false") {
-	 		    Model ontologyModel = RDFDataMgr.loadModel(ontology);
-				String rdfFile = Utility.saveToRDF(jsonModel.union(ontologyModel), outputdir, namegraph);
+	 		    //Model ontologyModel = RDFDataMgr.loadModel(ontology);
+				InfModel infModel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), jsonModel);
+				String rdfFile = Utility.saveToRDF(infModel, outputdir, namegraph);
 				if(livestore=="false") {
 					Utility.storeFileInRepo(triplestore, rdfFile, sparqlEp, namegraph, "dba", "dba");
 				}
@@ -135,7 +136,8 @@ public class JsonRDFReader {
 	  System.out.println("Finish!, Generating query for attack construction.. ");
 	   //System.out.println(FileObject);
  	  //generate query for attack construction
-	  String q = AttackConstruction.AttackGeneration(jsonModel);
+	  InfModel infModel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), jsonModel);
+	  String q = AttackConstruction.AttackGeneration(infModel);
 	  System.out.println(q);
 	  
 	}

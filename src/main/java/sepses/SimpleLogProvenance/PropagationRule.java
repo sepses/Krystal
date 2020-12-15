@@ -255,7 +255,8 @@ public class PropagationRule {
 			
 		}
 		
-
+					  
+		
 	public double min(double s, double o){
 		if(s<o) {
 			return s;

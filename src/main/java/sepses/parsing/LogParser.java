@@ -43,7 +43,7 @@ public class LogParser {
 			eventType = eventNode.toString();
 			if(!filterLine(eventType, fieldfilter)){
 				String mapper = "";
-				LogMapping lm = new LogMapping();	
+				LogMapper lm = new LogMapper();	
 				subject = shortenUUID(eventNode.get("subject").get("com.bbn.tc.schema.avro.cdm18.UUID").toString(),uuIndex);
 				exec = eventNode.get("properties").get("map").get("exec").toString();
 				objectString = cleanLine(eventNode.get("predicateObjectPath").get("string").toString());	
@@ -291,7 +291,7 @@ public class LogParser {
 	
 
 
-	private void forkEvent(LogMapping lm, String prevProcess, String process, Model jsonModel) {
+	private void forkEvent(LogMapper lm, String prevProcess, String process, Model jsonModel) {
 		
 		if(!prevProcess.equals(process)) {
 				String forkMap = lm.forkMap(prevProcess, process);

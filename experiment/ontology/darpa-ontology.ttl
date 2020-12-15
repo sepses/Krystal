@@ -1,24 +1,60 @@
-@prefix wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#> .
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix owl: <http://www.w3.org/2002/07/owl#> .
-@prefix gn: <http://www.geonames.org/ontology#> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix darpa: <http://ss.l/dp#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> . 	
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+darpa:Process a rdfs:Class .
+darpa:FileObject a rdfs:Class .
+darpa:Network a rdfs:Class .
+
+darpa:forks a rdf:Property;
+    rdfs:subPropertyOf darpa:connects ;
+    rdfs:domain darpa:Process ;
+    rdfs:range darpa:Process.
+
+darpa:isExecutedBy a rdf:Property;
+    rdfs:subPropertyOf darpa:connects ;
+    rdfs:domain darpa:FileObject ;
+    rdfs:range darpa:Process .
+
+darpa:isReadBy a rdf:Property;
+    rdfs:subPropertyOf darpa:connects ;
+    rdfs:domain darpa:FileObject ;
+    rdfs:range darpa:Process .
+
+darpa:writes a rdf:Property;
+    rdfs:subPropertyOf darpa:connects ;
+    rdfs:domain darpa:Process ;
+    rdfs:range darpa:FileObject .    
 
 
-darpa:isReadBy rdfs:subPropertyOf darpa:connects .
+darpa:isReceivedBy a rdf:Property;
+    rdfs:subPropertyOf darpa:connects ;
+    rdfs:domain darpa:Network ;
+    rdfs:range darpa:Process .
 
-darpa:forks rdfs:subPropertyOf darpa:connects .
+darpa:sends a rdf:Property;
+    rdfs:subPropertyOf darpa:connects ;
+    rdfs:domain darpa:Process ;
+    rdfs:range darpa:Network .    
 
-darpa:writes rdfs:subPropertyOf darpa:connects .
 
-darpa:isExecutedBy rdfs:subPropertyOf darpa:connects .
+darpa:isIllegallyExecutedBy a rdf:Property;
+    rdfs:subPropertyOf darpa:alertAccess ;
+    rdfs:domain darpa:FileObject ;
+    rdfs:range darpa:Process .
 
-darpa:sends rdfs:subPropertyOf darpa:connects .
 
-darpa:isReceivedBy rdfs:subPropertyOf darpa:connects .
+darpa:leaksDataTo a rdf:Property;
+    rdfs:subPropertyOf darpa:alertAccess ;
+    rdfs:domain darpa:Process ;
+    rdfs:range darpa:Network .
 
-darpa:isIllegallyExecutedBy rdfs:subPropertyOf darpa:alertAccess .
+darpa:connects a rdf:Property .
 
-darpa:leaksDataTo rdfs:subPropertyOf darpa:alertAccess .
+darpa:leaksDataTo a rdf:Property .
+
+darpa:isIllegallyExecutedBy a rdf:Property .
+
+
+
