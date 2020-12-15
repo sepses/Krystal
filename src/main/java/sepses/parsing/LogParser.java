@@ -44,10 +44,10 @@ public class LogParser {
 			if(!filterLine(eventType, fieldfilter)){
 				String mapper = "";
 				LogMapping lm = new LogMapping();	
-				subject = shortenUUID(eventNode.get("subject").get("com.bbn.tc.schema.avro.cdm18.UUID").toString(),uuIndex);
+				subject = eventNode.get("subject").get("com.bbn.tc.schema.avro.cdm18.UUID").toString();
 				exec = eventNode.get("properties").get("map").get("exec").toString();
 				objectString = cleanLine(eventNode.get("predicateObjectPath").get("string").toString());	
-				object = shortenUUID(eventNode.get("predicateObject").get("com.bbn.tc.schema.avro.cdm18.UUID").toString(),uuIndex);
+				object = eventNode.get("predicateObject").get("com.bbn.tc.schema.avro.cdm18.UUID").toString();
 				String processMap = "";
 				String fileMap = "";
 				String prevProcess="";
@@ -273,7 +273,7 @@ public class LogParser {
 			 
 		}else if(datumNode.get("com.bbn.tc.schema.avro.cdm18.NetFlowObject").toBoolean()) {
 			    networkNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.NetFlowObject");
-				netObject = shortenUUID(networkNode.get("uuid").toString(),uuIndex); 
+				netObject = networkNode.get("uuid").toString(); 
 				netAddress = networkNode.get("remoteAddress").toString()+":"+networkNode.get("remotePort").toString();
 				putNewNetworkObject(netObject, netAddress, NetworkObject);
 
