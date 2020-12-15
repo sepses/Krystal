@@ -63,8 +63,10 @@ public class LogParser {
 					
 				}
 				
+				
 				//is process new
 				if(isEntityNew(subject+"#"+exec, Process)) {
+					
 					//is it forked by another previous process? 
 					prevProcess = getPreviousForkProcess(subject, ForkObject);
 						//if yes create fork Event
@@ -79,6 +81,7 @@ public class LogParser {
 				
 				
 				  if(eventType.contains("EVENT_WRITE")) {
+					  
 						if(objectString!="" && !objectString.contains("<unknown>")) {
 							String curWrite = subject+exec+"write"+objectString;
 							if	(!lastEvent.contains(curWrite)) {				
@@ -107,6 +110,7 @@ public class LogParser {
 					  }
 					  
 					}else if(eventType.contains("EVENT_READ")) {
+					
 						//check last read to reduce unnecessary duplicate event processing			
 						String curRead = subject+exec+"read"+objectString;
 							if(objectString!="" && !objectString.contains("<unknown>")) {
@@ -130,7 +134,7 @@ public class LogParser {
 							}
 					
 					}else if(eventType.contains("EVENT_EXECUTE")) {	
-
+					
 						 cmdline = eventNode.get("properties").get("map").get("cmdLine").toString();
 						 cmdline = cleanCmd(cmdline);
 						 
@@ -195,7 +199,7 @@ public class LogParser {
 						
 						
 					}else if(eventType.contains("EVENT_SENDTO")) {
-						
+					
 						String IPAddress = getIpAddress(object, NetworkObject);
 						
 						if(!IPAddress.isEmpty()) {						
@@ -232,6 +236,8 @@ public class LogParser {
 						
 					}else if(eventType.contains("EVENT_RECVFROM")) {
 					
+				
+						
 						String IPAddress = getIpAddress(object, NetworkObject);
 					
 						
@@ -241,7 +247,7 @@ public class LogParser {
 								networkMap = lm.initialNetworkTagMap(IPAddress);
 							}
 							
-							String curReceive = subject+exec+"receive"+objectString;
+							String curReceive = subject+exec+"receive"+IPAddress;
 							if	(!lastEvent.contains(curReceive)) {
 								mapper = lm.receiveMap(subject,exec,IPAddress) + networkMap+processMap;
 								
