@@ -177,7 +177,7 @@ public class LogParser {
 								 mapper = lm.executeMap(subject,process2, objectString, cmdline)+fileMap;
 								 
 								 storeEntity(objectString, File);
-								// storeEntity(subject+"#"+exec, Process);
+								 storeEntity(subject+"#"+exec, Process);
 								 storeEntity(subject+"#"+process2, Process);
 								 
 								// System.out.print("execute");
