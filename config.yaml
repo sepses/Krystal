@@ -17,10 +17,6 @@ confidential-dir:
  - /var/log
  - /etc/shadow
 
-#recognized host = trusted-host
-recognized-host:
- - localhost
-
 
 field-filter:
  - EVENT_EXIT

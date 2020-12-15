@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>sepses</groupId>
-  <artifactId>jsontordf</artifactId>
+  <artifactId>SimpleLogProvenance</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
   <build>
@@ -60,7 +60,7 @@
         </plugins>
     </build>
 
-  <name>jsontordf</name>
+  <name>SimpleLogProvenance</name>
   <url>http://maven.apache.org</url>
 
   <properties>
@@ -94,7 +94,6 @@
 		    <artifactId>jackson-databind</artifactId>
 		    <version>2.11.3</version>
 		</dependency>-->
-			<!-- https://mvnrepository.com/artifact/eu.wdaqua/hdt-java-core -->
 	<!-- https://mvnrepository.com/artifact/eu.wdaqua/hdt-jena -->
 	 <dependency>
 	    <groupId>eu.wdaqua</groupId>

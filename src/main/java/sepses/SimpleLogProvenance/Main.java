@@ -45,6 +45,7 @@ public class Main {
 	    //=====end commandline argument===========
 	      
 	  	//====== only for experiment in IDE, please uncomment this lines when you compile ========= 
+	      
 	      type = "darpa";
 	      filefolder = inputdir+"darpa/";
 	  	  line = "10000";
@@ -59,7 +60,7 @@ public class Main {
 	      namegraph = "http://w3id.org/sepses/graph/cadets10000";
 	  	  startingLine = "0";
 
-	  	  //	      //=======end of experiment in IDE=============
+	  	  //=======end of experiment in IDE=============
 	    
 	  /* general algorithm 	  
 	  	  1. Log Parsing (convert raw log data into structured, interpretable format e.g. (JSON)
