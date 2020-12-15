@@ -31,15 +31,13 @@ public class LogParser {
 	public LogParser(String line) {
 		Any jsonNode=JsonIterator.deserialize(line);
 			datumNode = jsonNode.get("datum");
-			//eventNode = jsonNode.get("datum").get("com.bbn.tc.schema.avro.cdm18.Event");
-			//networkNode = jsonNode.get("datum").get("com.bbn.tc.schema.avro.cdm18.NetFlowObject");
 	}
 	
-	public String parseJSONtoRDF(Model jsonModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject ,String lastAccess ) throws IOException{	
+	public Set<String> parseJSONtoRDF(Model jsonModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess ) throws IOException{	
 		
 		//filter is the line is an event or not
-		if(datumNode.get("com.bbn.tc.schema.avro.cdm18.Event").toBoolean()) {
-			eventNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.Event");
+		eventNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.Event");
+		if(eventNode.toBoolean()) {
 			eventType = eventNode.toString();
 			if(!filterLine(eventType, fieldfilter)){
 				String mapper = "";
@@ -82,8 +80,8 @@ public class LogParser {
 				
 				  if(eventType.contains("EVENT_WRITE")) {
 						if(objectString!="" && !objectString.contains("<unknown>")) {
-							String curAccess = subject+exec+"write"+objectString;
-							if	(!lastAccess.contains(curAccess)) {				
+							String curWrite = subject+exec+"write"+objectString;
+							if	(!lastEvent.contains(curWrite)) {				
 								
 								mapper = lm.writeMap(subject,exec,objectString)+fileMap+processMap;
 						
@@ -100,7 +98,9 @@ public class LogParser {
 								PropagationRule prop = new PropagationRule();
 								prop.writeTag(jsonModel, subject, exec, objectString);
 								
-								lastAccess = curAccess;
+								lastEvent.add(curWrite);
+								
+								//System.out.println("write"+objectString);
 								
 								
 							}
@@ -108,22 +108,24 @@ public class LogParser {
 					  
 					}else if(eventType.contains("EVENT_READ")) {
 						//check last read to reduce unnecessary duplicate event processing			
-						String curAccess = subject+exec+"read"+objectString;
+						String curRead = subject+exec+"read"+objectString;
 							if(objectString!="" && !objectString.contains("<unknown>")) {
-								if	(!lastAccess.contains(curAccess)) {
+								if	(!lastEvent.contains(curRead)) {
 									mapper = lm.readMap(subject,exec,objectString)+fileMap+processMap;
 						
 									storeEntity(objectString, File);
 									storeEntity(subject+"#"+exec, Process);
-						
+									
 									Reader targetReader = new StringReader(mapper);
 									jsonModel.read(targetReader, null, "N-TRIPLE");
 																
 									PropagationRule prop = new PropagationRule();
 									prop.readTag(jsonModel, subject, exec, objectString);										
-									lastAccess = curAccess;
+									
+									lastEvent.add(curRead);
 									
 									
+									//System.out.println("read"+subject+"#"+exec+" file: "+objectString);
 								}
 							}
 					
@@ -167,8 +169,7 @@ public class LogParser {
 						 storeEntity(subject+"#"+exec, Process);
 						 storeEntity(subject+"#"+process2, Process);
 						 
-
-						 
+						// System.out.print("execute");
 						 Reader targetReader = new StringReader(mapper);
 						 jsonModel.read(targetReader, null, "N-TRIPLE");
 						 
@@ -186,7 +187,8 @@ public class LogParser {
 						putNewForkObject(subject+"#"+exec, object, ForkObject);
 						
 						storeEntity(subject+"#"+exec, Process);
-						
+					
+						// System.out.print("fork");
 						Reader targetReader = new StringReader(processMap);
 						jsonModel.read(targetReader, null, "N-TRIPLE");
 						 
@@ -205,7 +207,7 @@ public class LogParser {
 							
 							storeEntity(IPAddress, Network);
 							storeEntity(subject+"#"+exec, Process);
-							
+							// System.out.print("sendto");
 							Reader targetReader = new StringReader(mapper);
 							jsonModel.read(targetReader, null, "N-TRIPLE");
 							
@@ -235,7 +237,7 @@ public class LogParser {
 							
 							storeEntity(IPAddress, Network);
 							storeEntity(subject+"#"+exec, Process);
-							
+							// System.out.print("receive");
 							Reader targetReader = new StringReader(mapper);
 							jsonModel.read(targetReader, null, "N-TRIPLE");
 							
@@ -244,10 +246,6 @@ public class LogParser {
 							
 														 
 						}
-						
-						
-					
-						
 					}
 				}
 			 
@@ -256,9 +254,10 @@ public class LogParser {
 				netObject = shortenUUID(networkNode.get("uuid").toString(),uuIndex); 
 				netAddress = networkNode.get("remoteAddress").toString()+":"+networkNode.get("remotePort").toString();
 				putNewNetworkObject(netObject, netAddress, NetworkObject);
-			
+
+
 		}
-		return lastAccess;
+		return lastEvent;
 	
 	}
 	

@@ -42,11 +42,19 @@ public class JsonRDFReader {
 	    Set<String> Process = new HashSet<>();
 		Set<String> File = new HashSet<>();
 		Set<String> Network = new HashSet<>();
+		Set<String> lastEvent = new HashSet<>();
+		
+		
+		Set<String> readEvent = new HashSet<>();
+
+		
 		
 		HashMap<String, String> uuIndex = new HashMap<String, String>();
 		HashMap<String, String> NetworkObject = new HashMap<String, String>();
 		HashMap<String, String> ForkObject = new HashMap<String, String>();
 		String lastAccess = "";
+		
+		
 		File folder = new File(filefolder);
 		
 		ArrayList<String> listFiles = Utility.listFilesForFolder(folder);
@@ -71,8 +79,8 @@ public class JsonRDFReader {
 							//skip strange character inside line
 							try {		
 									LogParser lp = new LogParser(line);
-									lastAccess = lp.parseJSONtoRDF(jsonModel,fieldfilter, confidentialdir, uuIndex, Process, File, 
-											                  Network, NetworkObject, ForkObject, lastAccess);
+									lastEvent = lp.parseJSONtoRDF(jsonModel,fieldfilter, confidentialdir, uuIndex, Process, File, 
+											                  Network, NetworkObject, ForkObject, lastEvent, lastAccess);
 									//System.out.println(lastAccess);
 							} catch (Exception e) {
 								System.out.print("strange character skipped => ");
@@ -127,7 +135,7 @@ public class JsonRDFReader {
 			} 
 	   
 	  System.out.println("Finish!, Generating query for attack construction.. ");
-	   
+	   //System.out.println(FileObject);
  	  //generate query for attack construction
 	  InfModel infmodel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), jsonModel);
 	  String q = AttackConstruction.AttackGeneration(infmodel);
