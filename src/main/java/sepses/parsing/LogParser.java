@@ -158,6 +158,7 @@ public class LogParser {
 							}
 
 						 if(!process2.isEmpty()) {
+							
 							 //if prevProcess not empty => entity is new
 							 //if prevProcess is empty => entity can be new or not
 							 
@@ -293,11 +294,14 @@ public class LogParser {
 	private void forkEvent(LogMapping lm, String prevProcess, String process, Model jsonModel) {
 		
 		if(!prevProcess.equals(process)) {
+			String p[] = process.split("#",2);
+			if(!p[1].isEmpty()) {
 				String forkMap = lm.forkMap(prevProcess, process);
 				Reader targetReader = new StringReader(forkMap);
 				jsonModel.read(targetReader, null, "N-TRIPLE");
 				PropagationRule prop = new PropagationRule();
 				prop.forkTag(jsonModel, prevProcess, process);
+			}
 		}
 		
 	}
