@@ -14,9 +14,4 @@ public interface Storage {
     public void replaceData(String file, String endpoint, String namegraph, Boolean isUseAuth, String user,
             String pass);
 
-    /**
-     * execute update query in selected triplestore
-     */
-    public void executeUpdate(String endpoint, String query, Boolean isUseAuth, String user, String pass);
-
 }

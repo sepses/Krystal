@@ -174,10 +174,6 @@ public class Utility {
 		  Storage storage = null;
 		 if(triplestore.equals("graphdb")){
 			  storage = GraphDBStorage.getInstance();
-		 }else if (triplestore.equals("virtuoso")) {
-			  storage = VirtuosoStorage.getInstance();
-		 }else {
-			  storage = GraphDBStorage.getInstance();
 		 }
 		 
 		//  System.out.println("Store data: "+fileLocation+" to " + sparqlEndpoint + " using graph " + namegraph);

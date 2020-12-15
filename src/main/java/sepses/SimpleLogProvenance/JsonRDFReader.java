@@ -15,7 +15,6 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.tdb.TDBFactory;
-import org.rdfhdt.hdt.rdf.parsers.JenaModelIterator;
 
 import helper.Utility;
 import sepses.parsing.LogParser;
@@ -47,11 +46,8 @@ public class JsonRDFReader {
 		HashMap<String, String> uuIndex = new HashMap<String, String>();
 		HashMap<String, String> NetworkObject = new HashMap<String, String>();
 		HashMap<String, String> ForkObject = new HashMap<String, String>();
-		
 		String lastAccess = "";
-		
-		
-		final File folder = new File(filefolder);
+		File folder = new File(filefolder);
 		
 		ArrayList<String> listFiles = Utility.listFilesForFolder(folder);
 		
@@ -83,7 +79,6 @@ public class JsonRDFReader {
 								System.out.println(line);
 							}
 							
-							
 							templ++;
 							
 							if(templ.equals(lineNumber)) {
@@ -91,8 +86,9 @@ public class JsonRDFReader {
 								System.out.print("parsing "+group+" of "+lineNumber+" finished in "+(System.currentTimeMillis() - time1));
 								System.out.println(" triple: "+jsonModel.size());
 								if(livestore!="false") {
-								//save and store to db?
-									String rdfFile = Utility.saveToRDF(jsonModel, outputdir, namegraph);
+									//add rdfs reasoner first
+									InfModel infmodel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), jsonModel);
+									String rdfFile = Utility.saveToRDF(infmodel, outputdir, namegraph);
 									Utility.storeFileInRepo(triplestore, rdfFile, sparqlEp, namegraph, "dba", "dba");
 								}	
 								templ=0;
@@ -107,7 +103,8 @@ public class JsonRDFReader {
 		if(templ!=0) {
 			System.out.println("the rest is less than "+lineNumber+" which is "+templ);
 			if(livestore!="false") {
-					String rdfFile = Utility.saveToRDF(jsonModel, outputdir, namegraph);
+				    InfModel infmodel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), jsonModel);
+					String rdfFile = Utility.saveToRDF(infmodel, outputdir, namegraph);
 					Utility.storeFileInRepo(triplestore, rdfFile, sparqlEp, namegraph, "dba", "dba");
 					}	
 			templ=0;
@@ -118,7 +115,8 @@ public class JsonRDFReader {
 	       //end of folder
 	     
 			if(backupfile!="false") {
-				String rdfFile = Utility.saveToRDF(jsonModel, outputdir, namegraph);
+				InfModel infmodel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), jsonModel);
+				String rdfFile = Utility.saveToRDF(infmodel, outputdir, namegraph);
 				if(livestore=="false") {
 					Utility.storeFileInRepo(triplestore, rdfFile, sparqlEp, namegraph, "dba", "dba");
 				}
@@ -130,7 +128,6 @@ public class JsonRDFReader {
  	  //generate query for attack construction
 	  InfModel infmodel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), jsonModel);
 	  String q = AttackConstruction.AttackGeneration(infmodel);
-	  
 	  System.out.println(q);
 	  
 	}

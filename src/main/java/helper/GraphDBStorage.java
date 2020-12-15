@@ -10,7 +10,7 @@ public enum GraphDBStorage implements Storage {
 
     INSTANCE();
 
-    private static final Logger log = LoggerFactory.getLogger(VirtuosoStorage.class);
+    private static final Logger log = LoggerFactory.getLogger(GraphDBStorage.class);
 
     public static GraphDBStorage getInstance() {
         return INSTANCE;
@@ -53,10 +53,8 @@ public enum GraphDBStorage implements Storage {
 	                return;
 	            }
 
-	            long start = System.currentTimeMillis() / 1000;
-	           
-	            String command = "curl -X PUT -H \"Content-Type:application/x-turtle\" -T "+file+"  -G --data-urlencode \"graph="+namegraph+"\" "+endpoint+"/rdf-graphs/service";
-	            	
+	            long start = System.currentTimeMillis() / 1000;         
+	            String command = "curl -X PUT -H \"Content-Type:application/x-turtle\" -T "+file+"  -G --data-urlencode \"graph="+namegraph+"\" "+endpoint+"/rdf-graphs/service";            	
 	           // System.out.println(command);
 	            Process process = Runtime.getRuntime().exec(command);
 	            InputStream is = process.getInputStream();
@@ -71,11 +69,5 @@ public enum GraphDBStorage implements Storage {
 	        }
 		
 	}
-
-	public void executeUpdate(String endpoint, String query, Boolean isUseAuth, String user, String pass) {
-		// TODO Auto-generated method stub
-		
-	}
-
 
 }
