@@ -198,25 +198,33 @@ public class LogParser {
 						
 						String IPAddress = getIpAddress(object, NetworkObject);
 						
-						if(!IPAddress.isEmpty()) {
+						if(!IPAddress.isEmpty()) {						
 							if(isEntityNew(IPAddress, Network)) {
 								 networkMap = lm.initialNetworkTagMap(IPAddress);
 							}
 							
-							mapper = lm.sendMap(subject,exec,IPAddress) + networkMap+processMap;	
+							String curSend = subject+exec+"send"+IPAddress;
 							
-							storeEntity(IPAddress, Network);
-							storeEntity(subject+"#"+exec, Process);
-							// System.out.print("sendto");
-							Reader targetReader = new StringReader(mapper);
-							jsonModel.read(targetReader, null, "N-TRIPLE");
-							
-							AlertRule alert = new AlertRule();
-							alert.dataLeakAlert(jsonModel, subject+"#"+exec, IPAddress);
-							
-							PropagationRule prop = new PropagationRule();
-							prop.writeTag(jsonModel, subject, exec, IPAddress);
-					
+							if	(!lastEvent.contains(curSend)) {
+								mapper = lm.sendMap(subject,exec,IPAddress) + networkMap+processMap;	
+								
+								storeEntity(IPAddress, Network);
+								storeEntity(subject+"#"+exec, Process);
+								
+								 //System.out.println("sendto"+subject+"#"+exec+IPAddress);
+								 
+								Reader targetReader = new StringReader(mapper);
+								jsonModel.read(targetReader, null, "N-TRIPLE");
+								
+								AlertRule alert = new AlertRule();
+								alert.dataLeakAlert(jsonModel, subject+"#"+exec, IPAddress);
+								
+								PropagationRule prop = new PropagationRule();
+								prop.writeTag(jsonModel, subject, exec, IPAddress);
+								
+								lastEvent.add(curSend);
+								
+							}
 							
 						}
 						
@@ -233,17 +241,20 @@ public class LogParser {
 								networkMap = lm.initialNetworkTagMap(IPAddress);
 							}
 							
-							mapper = lm.receiveMap(subject,exec,IPAddress) + networkMap+processMap;
-							
-							storeEntity(IPAddress, Network);
-							storeEntity(subject+"#"+exec, Process);
-							// System.out.print("receive");
-							Reader targetReader = new StringReader(mapper);
-							jsonModel.read(targetReader, null, "N-TRIPLE");
-							
-							PropagationRule prop = new PropagationRule();
-							prop.readTag(jsonModel, subject, exec, IPAddress);
-							
+							String curReceive = subject+exec+"receive"+objectString;
+							if	(!lastEvent.contains(curReceive)) {
+								mapper = lm.receiveMap(subject,exec,IPAddress) + networkMap+processMap;
+								
+								storeEntity(IPAddress, Network);
+								storeEntity(subject+"#"+exec, Process);
+								//System.out.println("receivefrom"+subject+"#"+exec+IPAddress);
+								Reader targetReader = new StringReader(mapper);
+								jsonModel.read(targetReader, null, "N-TRIPLE");
+								
+								PropagationRule prop = new PropagationRule();
+								prop.readTag(jsonModel, subject, exec, IPAddress);
+								lastEvent.add(curReceive);
+							}
 														 
 						}
 					}
