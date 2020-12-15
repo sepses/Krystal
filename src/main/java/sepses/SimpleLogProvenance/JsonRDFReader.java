@@ -82,9 +82,11 @@ public class JsonRDFReader {
 							templ++;
 							
 							if(templ.equals(lineNumber)) {
+								
 								group++;
 								System.out.print("parsing "+group+" of "+lineNumber+" finished in "+(System.currentTimeMillis() - time1));
 								System.out.println(" triple: "+jsonModel.size());
+								
 								if(livestore!="false") {
 									//add rdfs reasoner first
 									InfModel infmodel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), jsonModel);
@@ -101,6 +103,7 @@ public class JsonRDFReader {
 		// check the rest 
 		in.close();
 		if(templ!=0) {
+			
 			System.out.println("the rest is less than "+lineNumber+" which is "+templ);
 			if(livestore!="false") {
 				    InfModel infmodel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), jsonModel);

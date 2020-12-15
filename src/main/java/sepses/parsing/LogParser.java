@@ -16,6 +16,7 @@ public class LogParser {
 	public String eventType;
 	public Any eventNode;
 	public Any networkNode;
+	public Any datumNode;
 	public String objectString;
 	public String exec;
 	public String subject;
@@ -29,17 +30,20 @@ public class LogParser {
 	
 	public LogParser(String line) {
 		Any jsonNode=JsonIterator.deserialize(line);
-			eventNode = jsonNode.get("datum").get("com.bbn.tc.schema.avro.cdm18.Event");
-			networkNode = jsonNode.get("datum").get("com.bbn.tc.schema.avro.cdm18.NetFlowObject");
+			datumNode = jsonNode.get("datum");
+			//eventNode = jsonNode.get("datum").get("com.bbn.tc.schema.avro.cdm18.Event");
+			//networkNode = jsonNode.get("datum").get("com.bbn.tc.schema.avro.cdm18.NetFlowObject");
 	}
 	
 	public String parseJSONtoRDF(Model jsonModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject ,String lastAccess ) throws IOException{	
-		String mapper = "";
-		LogMapping lm = new LogMapping();	
+		
 		//filter is the line is an event or not
-		if(eventNode.toBoolean()) {
-			eventType = eventNode.get("type").toString();
+		if(datumNode.get("com.bbn.tc.schema.avro.cdm18.Event").toBoolean()) {
+			eventNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.Event");
+			eventType = eventNode.toString();
 			if(!filterLine(eventType, fieldfilter)){
+				String mapper = "";
+				LogMapping lm = new LogMapping();	
 				subject = shortenUUID(eventNode.get("subject").get("com.bbn.tc.schema.avro.cdm18.UUID").toString(),uuIndex);
 				exec = eventNode.get("properties").get("map").get("exec").toString();
 				objectString = cleanLine(eventNode.get("predicateObjectPath").get("string").toString());	
@@ -168,8 +172,8 @@ public class LogParser {
 						 Reader targetReader = new StringReader(mapper);
 						 jsonModel.read(targetReader, null, "N-TRIPLE");
 						 
-//						 AlertRule alert = new AlertRule();
-//						 alert.execAlert(jsonModel, subject+"#"+process2, objectString);
+						 AlertRule alert = new AlertRule();
+						 alert.execAlert(jsonModel, subject+"#"+process2, objectString);
 						 
 						 
 						 PropagationRule prop = new PropagationRule();
@@ -205,8 +209,8 @@ public class LogParser {
 							Reader targetReader = new StringReader(mapper);
 							jsonModel.read(targetReader, null, "N-TRIPLE");
 							
-//							AlertRule alert = new AlertRule();
-//							alert.dataLeakAlert(jsonModel, subject+"#"+exec, IPAddress);
+							AlertRule alert = new AlertRule();
+							alert.dataLeakAlert(jsonModel, subject+"#"+exec, IPAddress);
 							
 							PropagationRule prop = new PropagationRule();
 							prop.writeTag(jsonModel, subject, exec, IPAddress);
@@ -247,7 +251,8 @@ public class LogParser {
 					}
 				}
 			 
-		}else if(networkNode.toBoolean()) {
+		}else if(datumNode.get("com.bbn.tc.schema.avro.cdm18.NetFlowObject").toBoolean()) {
+			    networkNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.NetFlowObject");
 				netObject = shortenUUID(networkNode.get("uuid").toString(),uuIndex); 
 				netAddress = networkNode.get("remoteAddress").toString()+":"+networkNode.get("remotePort").toString();
 				putNewNetworkObject(netObject, netAddress, NetworkObject);
