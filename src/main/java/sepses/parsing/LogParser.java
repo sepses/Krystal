@@ -35,7 +35,7 @@ public class LogParser {
 			datumNode = jsonNode.get("datum");
 	}
 	
-	public Set<String> parseJSONtoRDF(Model jsonModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess ) throws IOException{	
+	public String parseJSONtoRDF(Model jsonModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess ) throws IOException{	
 		
 		//filter is the line is an event or not
 		eventNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.Event");
@@ -85,8 +85,8 @@ public class LogParser {
 				  if(eventType.contains("EVENT_WRITE")) {
 					  
 						if(objectString!="" && !objectString.contains("<unknown>")) {
-							String curWrite = subject+exec+"write"+objectString;
-							if	(!lastEvent.contains(curWrite)) {				
+							String curWrite = subject+exec+objectString;
+							if	(!lastAccess.contains(curWrite)) {				
 								
 								mapper = lm.writeMap(subject,exec,objectString)+fileMap+processMap;
 						
@@ -103,9 +103,9 @@ public class LogParser {
 								PropagationRule prop = new PropagationRule();
 								prop.writeTag(jsonModel, subject, exec, objectString);
 								
-								lastEvent.add(curWrite);
+								lastAccess = curWrite;
 								
-								//System.out.println(curWrite);
+								//System.out.println("write: "+curWrite);
 								
 								
 							}
@@ -114,9 +114,9 @@ public class LogParser {
 					}else if(eventType.contains("EVENT_READ")) {
 					
 						//check last read to reduce unnecessary duplicate event processing			
-						String curRead = subject+exec+"read"+objectString;
+						String curRead = subject+exec+objectString;
 							if(objectString!="" && !objectString.contains("<unknown>")) {
-								if	(!lastEvent.contains(curRead)) {
+								if	(!lastAccess.contains(curRead)) {
 									mapper = lm.readMap(subject,exec,objectString)+fileMap+processMap;
 						
 									storeEntity(objectString, File);
@@ -128,9 +128,9 @@ public class LogParser {
 									PropagationRule prop = new PropagationRule();
 									prop.readTag(jsonModel, subject, exec, objectString);										
 									
-									lastEvent.add(curRead);
+									lastAccess = curRead;
 									
-									//System.out.println(curRead);
+									//System.out.println("read: "+curRead);
 								}
 							}
 					
@@ -210,15 +210,15 @@ public class LogParser {
 								 networkMap = lm.initialNetworkTagMap(IPAddress);
 							}
 							
-						//	String curSend = subject+exec+"send"+IPAddress;
-						//	if	(!lastEvent.contains(curSend)) {
+							String curSend = subject+exec+IPAddress;
+							if	(!lastAccess.contains(curSend)) {
 								
 								mapper = lm.sendMap(subject,exec,IPAddress) + networkMap+processMap;	
 								
 								storeEntity(IPAddress, Network);
 								storeEntity(subject+"#"+exec, Process);
 								
-								 //System.out.println("sendto"+subject+"#"+exec+IPAddress);
+								// System.out.println("sendto"+subject+"#"+exec+IPAddress);
 								 
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");
@@ -229,9 +229,9 @@ public class LogParser {
 								PropagationRule prop = new PropagationRule();
 								prop.writeTag(jsonModel, subject, exec, IPAddress);
 								
-							//	lastEvent.add(curSend);
+								lastAccess=curSend;
 								
-							//}
+							}
 							
 						}
 						
@@ -250,8 +250,8 @@ public class LogParser {
 								networkMap = lm.initialNetworkTagMap(IPAddress);
 							}
 							
-							//String curReceive = subject+exec+"receive"+IPAddress;
-							//if	(!lastEvent.contains(curReceive)) {
+							String curReceive = subject+exec+IPAddress;
+							if	(!lastAccess.contains(curReceive)) {
 								
 								mapper = lm.receiveMap(subject,exec,IPAddress) + networkMap+processMap;
 								
@@ -264,8 +264,8 @@ public class LogParser {
 								PropagationRule prop = new PropagationRule();
 								prop.readTag(jsonModel, subject, exec, IPAddress);
 								
-								//	lastEvent.add(curReceive);
-							//}
+									lastAccess=curReceive;
+							}
 														 
 						}
 					}
@@ -279,7 +279,7 @@ public class LogParser {
 
 
 		}
-		return lastEvent;
+		return lastAccess;
 	
 	}
 	

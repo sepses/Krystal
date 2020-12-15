@@ -43,9 +43,7 @@ public class JsonRDFReader {
 		Set<String> File = new HashSet<>();
 		Set<String> Network = new HashSet<>();
 		Set<String> lastEvent = new HashSet<>();
-		
-		
-		Set<String> readEvent = new HashSet<>();
+
 
 		
 		
@@ -79,7 +77,7 @@ public class JsonRDFReader {
 							//skip strange character inside line
 							try {		
 									LogParser lp = new LogParser(line);
-									lastEvent = lp.parseJSONtoRDF(jsonModel,fieldfilter, confidentialdir, uuIndex, Process, File, 
+									lastAccess = lp.parseJSONtoRDF(jsonModel,fieldfilter, confidentialdir, uuIndex, Process, File, 
 											                  Network, NetworkObject, ForkObject, lastEvent, lastAccess);
 									//System.out.println(lastAccess);
 							} catch (Exception e) {

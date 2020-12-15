@@ -48,7 +48,7 @@ public class Main {
 	      
 //	      type = "darpa";
 //	      filefolder = inputdir+"darpa/";
-//	  	  line = "100000";
+//	  	  line = "10000";
 //	      if(triplestore.equals("virtuoso")) {  	  
 //	  	     sparqlEp ="http://localhost:8890/sparql";
 //	      }else if(triplestore.equals("graphdb")){
