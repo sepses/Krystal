@@ -69,9 +69,6 @@ public class LogParser {
 					
 					//is it forked by another previous process? 
 					prevProcess = getPreviousForkProcess(subject, ForkObject);
-					
-					
-					
 						//if yes create fork Event
 						if(!prevProcess.isEmpty() && !eventType.contains("EVENT_EXECUTE")) {
 							forkEvent(lm, prevProcess, subject+"#"+exec, jsonModel);
@@ -159,7 +156,6 @@ public class LogParser {
 						 if(!process2.isEmpty()) {
 							
 							 if(prevProcess.isEmpty()) {
-
 								 putNewForkObject(subject+"#"+exec, subject, ForkObject);
 								 prevProcess = getPreviousForkProcess(subject, ForkObject);
 							 }
@@ -209,9 +205,9 @@ public class LogParser {
 								 networkMap = lm.initialNetworkTagMap(IPAddress);
 							}
 							
-							String curSend = subject+exec+"send"+IPAddress;
-							
-							if	(!lastEvent.contains(curSend)) {
+						//	String curSend = subject+exec+"send"+IPAddress;
+						//	if	(!lastEvent.contains(curSend)) {
+								
 								mapper = lm.sendMap(subject,exec,IPAddress) + networkMap+processMap;	
 								
 								storeEntity(IPAddress, Network);
@@ -228,9 +224,9 @@ public class LogParser {
 								PropagationRule prop = new PropagationRule();
 								prop.writeTag(jsonModel, subject, exec, IPAddress);
 								
-								lastEvent.add(curSend);
+							//	lastEvent.add(curSend);
 								
-							}
+							//}
 							
 						}
 						
@@ -249,8 +245,9 @@ public class LogParser {
 								networkMap = lm.initialNetworkTagMap(IPAddress);
 							}
 							
-							String curReceive = subject+exec+"receive"+IPAddress;
-							if	(!lastEvent.contains(curReceive)) {
+							//String curReceive = subject+exec+"receive"+IPAddress;
+							//if	(!lastEvent.contains(curReceive)) {
+								
 								mapper = lm.receiveMap(subject,exec,IPAddress) + networkMap+processMap;
 								
 								storeEntity(IPAddress, Network);
@@ -261,8 +258,9 @@ public class LogParser {
 								
 								PropagationRule prop = new PropagationRule();
 								prop.readTag(jsonModel, subject, exec, IPAddress);
-								lastEvent.add(curReceive);
-							}
+								
+								//	lastEvent.add(curReceive);
+							//}
 														 
 						}
 					}
