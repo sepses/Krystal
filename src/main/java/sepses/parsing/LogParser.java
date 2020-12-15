@@ -44,10 +44,10 @@ public class LogParser {
 			if(!filterLine(eventType, fieldfilter)){
 				String mapper = "";
 				LogMapping lm = new LogMapping();	
-				subject = eventNode.get("subject").get("com.bbn.tc.schema.avro.cdm18.UUID").toString();
+				subject = shortenUUID(eventNode.get("subject").get("com.bbn.tc.schema.avro.cdm18.UUID").toString(),uuIndex);
 				exec = eventNode.get("properties").get("map").get("exec").toString();
 				objectString = cleanLine(eventNode.get("predicateObjectPath").get("string").toString());	
-				object = eventNode.get("predicateObject").get("com.bbn.tc.schema.avro.cdm18.UUID").toString();
+				object = shortenUUID(eventNode.get("predicateObject").get("com.bbn.tc.schema.avro.cdm18.UUID").toString(),uuIndex);
 				String processMap = "";
 				String fileMap = "";
 				String prevProcess="";
@@ -160,6 +160,9 @@ public class LogParser {
 							 
 							 if(prevProcess.isEmpty()) {
 								 putNewForkObject(subject+"#"+exec, subject, ForkObject);
+								 processMap = lm.initialProcessTagMap(subject+"#"+exec);
+								 Reader targetReader = new StringReader(processMap);
+								 jsonModel.read(targetReader, null, "N-TRIPLE");
 								 prevProcess = getPreviousForkProcess(subject, ForkObject);
 							 }
 							 
@@ -273,7 +276,7 @@ public class LogParser {
 			 
 		}else if(datumNode.get("com.bbn.tc.schema.avro.cdm18.NetFlowObject").toBoolean()) {
 			    networkNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.NetFlowObject");
-				netObject = networkNode.get("uuid").toString(); 
+				netObject = shortenUUID(networkNode.get("uuid").toString(),uuIndex); 
 				netAddress = networkNode.get("remoteAddress").toString()+":"+networkNode.get("remotePort").toString();
 				putNewNetworkObject(netObject, netAddress, NetworkObject);
 
