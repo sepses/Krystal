@@ -46,19 +46,19 @@ public class Main {
 	      
 	  	//====== only for experiment in IDE, please uncomment this lines when you compile ========= 
 	      
-	      type = "darpa";
-	      filefolder = inputdir+"darpa/";
-	  	  line = "10000";
-	      if(triplestore.equals("virtuoso")) {  	  
-	  	     sparqlEp ="http://localhost:8890/sparql";
-	      }else if(triplestore.equals("graphdb")){
-	  	     sparqlEp = "http://localhost:7200/repositories/cadets100000";
-	      }else {
-	  	    //default: graphdb	 
-	  	     sparqlEp = "http://localhost:7200/repositories/cadets100000";
-	  	   }
-	      namegraph = "http://w3id.org/sepses/graph/cadets10000";
-	  	  startingLine = "0";
+//	      type = "darpa";
+//	      filefolder = inputdir+"darpa/";
+//	  	  line = "10000";
+//	      if(triplestore.equals("virtuoso")) {  	  
+//	  	     sparqlEp ="http://localhost:8890/sparql";
+//	      }else if(triplestore.equals("graphdb")){
+//	  	     sparqlEp = "http://localhost:7200/repositories/cadets100000";
+//	      }else {
+//	  	    //default: graphdb	 
+//	  	     sparqlEp = "http://localhost:7200/repositories/cadets100000";
+//	  	   }
+//	      namegraph = "http://w3id.org/sepses/graph/cadets10000";
+//	  	  startingLine = "0";
 
 	  	  //=======end of experiment in IDE=============
 	    

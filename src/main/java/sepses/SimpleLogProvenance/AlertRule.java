@@ -6,8 +6,8 @@ import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
 
 public class AlertRule {
-	public  String prefix; 
-	public  String process; 
+	public String prefix; 
+	public String process; 
 	public String file;
 	public String network;
 	public String alert;
@@ -75,7 +75,6 @@ public class AlertRule {
 					+ "\r\n"+
 				"}";
 	
-		
 		UpdateRequest e = UpdateFactory.create(q);
 	    UpdateAction.execute(e,jsonModel) ;
 	    

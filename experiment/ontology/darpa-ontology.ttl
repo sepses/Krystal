@@ -6,9 +6,6 @@
 @prefix darpa: <http://ss.l/dp#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
-darpa:confTag rdfs:subPropertyOf darpa:propTag .
-
-darpa:intTag rdfs:subPropertyOf darpa:propTag .
 
 darpa:isReadBy rdfs:subPropertyOf darpa:connects .
 
@@ -17,8 +14,6 @@ darpa:forks rdfs:subPropertyOf darpa:connects .
 darpa:writes rdfs:subPropertyOf darpa:connects .
 
 darpa:isExecutedBy rdfs:subPropertyOf darpa:connects .
-
-darpa:subjTag rdfs:subPropertyOf darpa:propTag .
 
 darpa:sends rdfs:subPropertyOf darpa:connects .
 
