@@ -168,8 +168,8 @@ public class LogParser {
 						 Reader targetReader = new StringReader(mapper);
 						 jsonModel.read(targetReader, null, "N-TRIPLE");
 						 
-						 AlertRule alert = new AlertRule();
-						 alert.execAlert(jsonModel, subject+"#"+process2, objectString);
+//						 AlertRule alert = new AlertRule();
+//						 alert.execAlert(jsonModel, subject+"#"+process2, objectString);
 						 
 						 
 						 PropagationRule prop = new PropagationRule();
@@ -205,8 +205,8 @@ public class LogParser {
 							Reader targetReader = new StringReader(mapper);
 							jsonModel.read(targetReader, null, "N-TRIPLE");
 							
-							AlertRule alert = new AlertRule();
-							alert.dataLeakAlert(jsonModel, subject+"#"+exec, IPAddress);
+//							AlertRule alert = new AlertRule();
+//							alert.dataLeakAlert(jsonModel, subject+"#"+exec, IPAddress);
 							
 							PropagationRule prop = new PropagationRule();
 							prop.writeTag(jsonModel, subject, exec, IPAddress);
