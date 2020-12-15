@@ -5,6 +5,9 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -56,6 +59,7 @@ public class JsonRDFReader {
 		File folder = new File(filefolder);
 		
 		ArrayList<String> listFiles = Utility.listFilesForFolder(folder);
+		Collections.sort(listFiles);
 		
 		 if (listFiles.size()==0) { System.out.print("folder is empty!"); System.exit(0);}
 	     for (String file : listFiles) {
