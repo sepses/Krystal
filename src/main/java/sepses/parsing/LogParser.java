@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.sparql.pfunction.library.splitIRI;
+
 import com.jsoniter.JsonIterator;
 import com.jsoniter.any.Any;
 
@@ -155,15 +157,18 @@ public class LogParser {
 						 
 						 if(!process2.isEmpty()) {
 							
+							 
 							 if(prevProcess.isEmpty()) {
 								 putNewForkObject(subject+"#"+exec, subject, ForkObject);
 								 prevProcess = getPreviousForkProcess(subject, ForkObject);
 							 }
-
+							 
+						
 							 forkEvent(lm, prevProcess, subject+"#"+process2, jsonModel);
 
 						 }
 						 
+						
 						 
 						 mapper = lm.executeMap(subject,process2, objectString, cmdline)+fileMap;
 						 
@@ -284,14 +289,16 @@ public class LogParser {
 
 
 	private void forkEvent(LogMapping lm, String prevProcess, String process, Model jsonModel) {
-		// TODO Auto-generated method stub
-		if(!prevProcess.equals(process)) {
-			String forkMap = lm.forkMap(prevProcess, process);
-			Reader targetReader = new StringReader(forkMap);
-			jsonModel.read(targetReader, null, "N-TRIPLE");
 		
-			PropagationRule prop = new PropagationRule();
-			prop.forkTag(jsonModel, prevProcess, process);
+		if(!prevProcess.equals(process)) {
+			String p[] = process.split("#",2);
+			if(!p[1].isEmpty()) {
+				String forkMap = lm.forkMap(prevProcess, process);
+				Reader targetReader = new StringReader(forkMap);
+				jsonModel.read(targetReader, null, "N-TRIPLE");
+				PropagationRule prop = new PropagationRule();
+				prop.forkTag(jsonModel, prevProcess, process);
+			}
 		}
 		
 	}
