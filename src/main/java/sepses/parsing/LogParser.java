@@ -100,7 +100,7 @@ public class LogParser {
 								
 								lastEvent.add(curWrite);
 								
-								//System.out.println("write"+objectString);
+								//System.out.println(curWrite);
 								
 								
 							}
@@ -125,7 +125,7 @@ public class LogParser {
 									lastEvent.add(curRead);
 									
 									
-									//System.out.println("read"+subject+"#"+exec+" file: "+objectString);
+									//System.out.println(curRead);
 								}
 							}
 					
@@ -186,11 +186,11 @@ public class LogParser {
 					
 						putNewForkObject(subject+"#"+exec, object, ForkObject);
 						
-						storeEntity(subject+"#"+exec, Process);
+						//storeEntity(subject+"#"+exec, Process);
 					
-						// System.out.print("fork");
-						Reader targetReader = new StringReader(processMap);
-						jsonModel.read(targetReader, null, "N-TRIPLE");
+						// System.out.println("fork");
+						//Reader targetReader = new StringReader(processMap);
+						//jsonModel.read(targetReader, null, "N-TRIPLE");
 						 
 						
 						
