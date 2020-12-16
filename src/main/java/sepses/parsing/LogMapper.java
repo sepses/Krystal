@@ -27,7 +27,7 @@ public class LogMapper {
 		writes = "<http://ss.l/dp#writes>";
 		sends = "<http://ss.l/dp#sends>";
 		isExecutedBy = "<http://ss.l/dp#isExecutedBy>";
-		isReceivedBy = "<http://ss.l/dp#isREceivedBy>";
+		isReceivedBy = "<http://ss.l/dp#isReceivedBy>";
 		isReadBy = "<http://ss.l/dp#isReadBy>";
 		remoteAddress= "<http://ss.l/dp#remoteAddress>";
 		forks = "<http://ss.l/dp#forks>";

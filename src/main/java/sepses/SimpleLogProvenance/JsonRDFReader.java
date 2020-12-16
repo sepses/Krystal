@@ -97,8 +97,8 @@ public class JsonRDFReader {
 								
 								if(livestore!="false") {
 									//add rdfs reasoner first
-									//InfModel infmodel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), jsonModel);
-									String rdfFile = Utility.saveToRDF(jsonModel, outputdir, namegraph);
+									InfModel infmodel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), jsonModel);
+									String rdfFile = Utility.saveToRDF(infmodel, outputdir, namegraph);
 									Utility.storeFileInRepo(triplestore, rdfFile, sparqlEp, namegraph, "dba", "dba");
 								}	
 								templ=0;

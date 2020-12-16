@@ -1,55 +1,38 @@
 @prefix darpa: <http://ss.l/dp#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> . 	
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .	
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 
-darpa:forks a rdf:Property;
-    rdfs:subPropertyOf darpa:connects ;
+darpa:forks rdfs:subPropertyOf darpa:connects ;
     rdfs:domain darpa:Process ;
     rdfs:range darpa:Process.
 
-darpa:isExecutedBy a rdf:Property;
-    rdfs:subPropertyOf darpa:connects ;
+darpa:isExecutedBy rdfs:subPropertyOf darpa:connects ;
     rdfs:domain darpa:FileObject ;
     rdfs:range darpa:Process .
 
-darpa:isReadBy a rdf:Property;
-    rdfs:subPropertyOf darpa:connects ;
+darpa:isReadBy rdfs:subPropertyOf darpa:connects ;
     rdfs:domain darpa:FileObject ;
     rdfs:range darpa:Process .
 
-darpa:writes a rdf:Property;
-    rdfs:subPropertyOf darpa:connects ;
+darpa:writes rdfs:subPropertyOf darpa:connects ;
     rdfs:domain darpa:Process ;
     rdfs:range darpa:FileObject .    
 
 
-darpa:isReceivedBy a rdf:Property;
-    rdfs:subPropertyOf darpa:connects ;
+darpa:isReceivedBy rdfs:subPropertyOf darpa:connects ;
     rdfs:domain darpa:Network ;
     rdfs:range darpa:Process .
 
-darpa:sends a rdf:Property;
-    rdfs:subPropertyOf darpa:connects ;
+darpa:sends rdfs:subPropertyOf darpa:connects ;
     rdfs:domain darpa:Process ;
     rdfs:range darpa:Network .    
 
 
-darpa:isIllegallyExecutedBy a rdf:Property;
-    rdfs:subPropertyOf darpa:alertAccess ;
+darpa:isIllegallyExecutedBy rdfs:subPropertyOf darpa:alertAccess ;
     rdfs:domain darpa:FileObject ;
     rdfs:range darpa:Process .
 
 
-darpa:leaksDataTo a rdf:Property;
-    rdfs:subPropertyOf darpa:alertAccess ;
+darpa:leaksDataTo rdfs:subPropertyOf darpa:alertAccess ;
     rdfs:domain darpa:Process ;
     rdfs:range darpa:Network .
-
-darpa:connects a rdf:Property .
-
-darpa:leaksDataTo a rdf:Property .
-
-darpa:isIllegallyExecutedBy a rdf:Property .
-
-
-
