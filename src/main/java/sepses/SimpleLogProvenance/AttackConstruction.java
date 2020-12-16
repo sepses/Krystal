@@ -93,10 +93,15 @@ public class AttackConstruction {
 		//perform forward search to construct attack graph
 		if(!source.isEmpty()) {
 		String q = "PREFIX darpa: <http://ss.l/dp#>\r\n" + 
-				"   CONSTRUCT {?s ?p ?o.}\r\n" + 
+				"   CONSTRUCT {?s ?p ?o. ?s2 ?p2 ?s}\r\n" + 
 				"     WHERE {  \r\n" + 
 				"     <"+source+"> darpa:connects* ?s .\r\n" + 
-				"      ?s ?p ?o. \r\n" + 
+				"      ?s ?p ?o.\r\n" + 
+				"    OPTIONAL {?s2 ?p2 ?s. ?s2 darpa:confTag ?sct. \r\n" + 
+				"              FILTER (?sct < 0.5 && ?p2!=darpa:connects)\r\n" + 
+				"              FILTER (?p2!=darpa:alertAccess)\r\n" + 
+				"              FILTER (?p2!=darpa:isIllegallyExecutedBy)\r\n" + 
+				"              FILTER (?p2!=darpa:leaksDataTo)}\r\n" + 
 				"      ?s  darpa:intTag ?spt.\r\n" + 
 				" 	  ?o darpa:intTag ?opt.\r\n" + 
 				"   	FILTER ( \r\n" + 
