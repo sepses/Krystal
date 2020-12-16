@@ -45,7 +45,7 @@ public class AlertRule {
 				+ "INSERT { "+process+" darpa:leaksDataTo "+network+". \r\n}"+
 				   "WHERE { \r\n" + 
 				    network+" darpa:confTag  ?oct.\r\n"+
-					process+" darpa:writes "+network+" .\r\n"
+					process+" darpa:sends "+network+" .\r\n"
 					+process+" darpa:intTag  ?sit.\r\n"
 					+process+" darpa:confTag  ?sct.\r\n"
 					+"FILTER (?oct >= 0.5).\r\n"
