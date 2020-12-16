@@ -3,10 +3,6 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> . 	
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 
-darpa:Process a rdfs:Class .
-darpa:FileObject a rdfs:Class .
-darpa:Network a rdfs:Class .
-
 darpa:forks a rdf:Property;
     rdfs:subPropertyOf darpa:connects ;
     rdfs:domain darpa:Process ;

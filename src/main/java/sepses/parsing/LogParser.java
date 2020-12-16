@@ -87,7 +87,7 @@ public class LogParser {
 				  if(eventType.contains("EVENT_WRITE")) {
 					  
 						if(objectString!="" && !objectString.contains("<unknown>")) {
-							String curWrite = subject+exec+objectString;
+							String curWrite = subject+exec+objectString+"write";
 							if	(!lastAccess.contains(curWrite)) {				
 								
 								mapper = lm.writeMap(subject,exec,objectString)+fileMap+processMap;
@@ -116,7 +116,7 @@ public class LogParser {
 					}else if(eventType.contains("EVENT_READ")) {
 					
 						//check last read to reduce unnecessary duplicate event processing			
-						String curRead = subject+exec+objectString;
+						String curRead = subject+exec+objectString+"read";
 							if(objectString!="" && !objectString.contains("<unknown>")) {
 								if	(!lastAccess.contains(curRead)) {
 									mapper = lm.readMap(subject,exec,objectString)+fileMap+processMap;
@@ -213,7 +213,7 @@ public class LogParser {
 								 networkMap = lm.initialNetworkTagMap(IPAddress);
 							}
 							
-							String curSend = subject+exec+IPAddress;
+							String curSend = subject+exec+IPAddress+"send";
 							if	(!lastAccess.contains(curSend)) {
 								
 								mapper = lm.sendMap(subject,exec,IPAddress) + networkMap+processMap;	
@@ -253,7 +253,7 @@ public class LogParser {
 								networkMap = lm.initialNetworkTagMap(IPAddress);
 							}
 							
-							String curReceive = subject+exec+IPAddress;
+							String curReceive = subject+exec+IPAddress+"receive";
 							if	(!lastAccess.contains(curReceive)) {
 								
 								mapper = lm.receiveMap(subject,exec,IPAddress) + networkMap+processMap;
