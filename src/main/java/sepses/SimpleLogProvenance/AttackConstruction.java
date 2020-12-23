@@ -111,7 +111,10 @@ public class AttackConstruction {
 				"    FILTER (?p!=darpa:leaksDataTo)\r\n" + 
 				"    \r\n" + 
 				"}";
+		System.out.print(q);
+		System.exit(0);
 		return q;
+		
 	  }else {
 		return "no alert";
 	  }

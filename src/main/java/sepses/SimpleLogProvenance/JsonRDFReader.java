@@ -51,6 +51,7 @@ public class JsonRDFReader {
 		HashMap<String, String> uuIndex = new HashMap<String, String>();
 		HashMap<String, String> NetworkObject = new HashMap<String, String>();
 		HashMap<String, String> ForkObject = new HashMap<String, String>();
+		HashMap<String, String> UserObject = new HashMap<String, String>();
 		String lastAccess = "";
 		
 		
@@ -80,7 +81,7 @@ public class JsonRDFReader {
 							try {		
 									LogParser lp = new LogParser(line);
 									lastAccess = lp.parseJSONtoRDF(jsonModel,fieldfilter, confidentialdir, uuIndex, Process, File, 
-											                  Network, NetworkObject, ForkObject, lastEvent, lastAccess);
+											                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject);
 									//System.out.println(lastAccess);
 							} catch (Exception e) {
 								System.out.print("strange character skipped => ");

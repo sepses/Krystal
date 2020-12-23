@@ -21,10 +21,19 @@ public class LogMapper {
 	public  String lowTag;
 	public  String cmdLine;
 	public  String hasCmd;
+	public  String hasExe;
+	public  String hasHost;
+	public  String hasUser;
+	public  String exe;
+	public  String host;
+	public  String user;
 	
 	public LogMapper(){
 	//property 
 		writes = "<http://ss.l/dp#writes>";
+		hasExe = "<http://ss.l/dp#hasExe>";
+		hasHost = "<http://ss.l/dp#hasHost>";
+		hasUser = "<http://ss.l/dp#hasUser>";
 		sends = "<http://ss.l/dp#sends>";
 		isExecutedBy = "<http://ss.l/dp#isExecutedBy>";
 		isReceivedBy = "<http://ss.l/dp#isReceivedBy>";
@@ -44,70 +53,87 @@ public class LogMapper {
 		dot = ".\r\n";
 	}
 	 
-	public  String writeMap(String subject, String exec, String objectString) {	
+	public  String writeMap(String subject, String exec, String objectString, String hostId, String userId) {	
 		process = "<http://ss.r/dp/proc/"+subject+"#"+exec+">";
 		file = "<http://ss.r/dp/obj#"+objectString+">";
+		exe = "<http://ss.r/dp/exe#"+exec+">";
+		host = "<http://ss.r/dp/host/"+hostId+">";
+		user = "<http://ss.r/dp/user/"+userId+">";
 		
-		return   process +s+ writes +s+ file +dot;
+		
+		return   process +s+ writes +s+ file +dot + process +s+ hasExe +s+ exe +dot
+				+ process +s+ hasHost +s+ host +dot
+				+ process +s+ hasUser +s+ user +dot;
 				        
 	}
 	
-	public  String readMap(String subject, String exec, String objectString) {
+	public  String readMap(String subject, String exec, String objectString,  String hostId, String userId) {
 		process = "<http://ss.r/dp/proc/"+subject+"#"+exec+">";
 		file = "<http://ss.r/dp/obj#"+objectString+">";
+		exe = "<http://ss.r/dp/exe#"+exec+">";
+		host = "<http://ss.r/dp/host/"+hostId+">";
+		user = "<http://ss.r/dp/user/"+userId+">";
 		
-		return	file +s+ isReadBy +s+ process +dot;
+		return	file +s+ isReadBy +s+ process +dot + process +s+ hasExe +s+ exe +dot
+				+ process +s+ hasHost +s+ host +dot
+				+ process +s+ hasUser +s+ user +dot;
 				         
 		
 	}
 
-	public  String executeMap(String subject, String newproc, String objectString, String cmdline) {
+	public  String executeMap(String subject, String newproc, String objectString, String cmdline, String hostId, String userId) {
 
 		file = "<http://ss.r/dp/obj#"+objectString+">";
 		String process2 = "<http://ss.r/dp/proc/"+subject+"#"+newproc+">";
 		cmdLine = "\""+cmdline+"\"^^<http://www.w3.org/2001/XMLSchema#string>";
+		exe = "<http://ss.r/dp/exe#"+newproc+">";
+		host = "<http://ss.r/dp/host/"+hostId+">";
+		user = "<http://ss.r/dp/user/"+userId+">";
 
 		
 		String executeMap =  file +s+ isExecutedBy +s+ process2 +dot +
-				   process2 +s+ hasCmd +s+ cmdLine + dot;
+				   process2 +s+ hasCmd +s+ cmdLine + dot + process2 +s+ hasExe +s+ exe +dot
+				   + process2 +s+ hasHost +s+ host +dot
+				   + process2 +s+ hasUser +s+ user +dot;
 		
 		return executeMap;
 		
 	}
 	
-	public  String sendMap(String subject, String exec, String ip) {
+	public  String sendMap(String subject, String exec, String ip, String hostId, String userId) {
 		
 		process = "<http://ss.r/dp/proc/"+subject+"#"+exec+">";
 		String ipAddress = "<http://ss.r/dp/obj#"+ip+">";
-		return process +s+ sends +s+ ipAddress +dot;
+		exe = "<http://ss.r/dp/exe#"+exec+">";
+		host = "<http://ss.r/dp/host/"+hostId+">";
+		user = "<http://ss.r/dp/user/"+userId+">";
+		
+		return process +s+ sends +s+ ipAddress +dot + process +s+ hasExe +s+ exe +dot
+				 + process +s+ hasHost +s+ host +dot
+				 + process +s+ hasUser +s+ user +dot;
 		
 	}
 	
-	public  String receiveMap(String subject, String exec, String ip) {
+	public  String receiveMap(String subject, String exec, String ip, String hostId, String userId) {
 		process = "<http://ss.r/dp/proc/"+subject+"#"+exec+">";
 		String ipAddress = "<http://ss.r/dp/obj#"+ip+">";
-		return    ipAddress +s+ isReceivedBy +s+ process +dot; 
+		exe = "<http://ss.r/dp/exe#"+exec+">";
+		host = "<http://ss.r/dp/host/"+hostId+">";
+		user = "<http://ss.r/dp/user/"+userId+">";
+		
+		return    ipAddress +s+ isReceivedBy +s+ process +dot + process +s+ hasExe +s+ exe +dot
+				+ process +s+ hasHost +s+ host +dot
+				+ process +s+ hasUser +s+ user +dot;
 		
 	}
-	
 	
 	public  String forkMap(String prevProcess, String process) {
 		
 		String prevProc = "<http://ss.r/dp/proc/"+prevProcess+">";
 		String proc = "<http://ss.r/dp/proc/"+process+">";
-		
 		return prevProc +s+ forks +s+ proc +dot;
 		
 	}
-	
-	public  String networkMap(String netObject, String netAddress) {
-		entityNetwork ="<http://ss.r/dp/e#"+netObject+">";
-		network = "<http://ss.r/dp/obj#"+netAddress+">";
-				
-		return entityNetwork +s+ remoteAddress +s+ network +dot;	 
-		
-	}
-	
 	
 	public  String initialConfFileTagMap(String objectString) {
 		file = "<http://ss.r/dp/obj#"+objectString+">";

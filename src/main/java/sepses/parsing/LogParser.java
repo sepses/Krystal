@@ -18,9 +18,13 @@ public class LogParser {
 	public String eventType;
 	public Any eventNode;
 	public Any networkNode;
+	public Any subjectNode;
+	public Any hostNode;
 	public Any datumNode;
 	public String objectString;
 	public String exec;
+	public String hostId;
+	public String userId;
 	public String subject;
 	public String object;
 	public String netObject;
@@ -35,7 +39,7 @@ public class LogParser {
 			datumNode = jsonNode.get("datum");
 	}
 	
-	public String parseJSONtoRDF(Model jsonModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess ) throws IOException{	
+	public String parseJSONtoRDF(Model jsonModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject ) throws IOException{	
 		
 		//filter is the line is an event or not
 		eventNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.Event");
@@ -46,6 +50,8 @@ public class LogParser {
 				LogMapper lm = new LogMapper();	
 				subject = shortenUUID(eventNode.get("subject").get("com.bbn.tc.schema.avro.cdm18.UUID").toString(),uuIndex);
 				exec = eventNode.get("properties").get("map").get("exec").toString();
+				hostId = eventNode.get("hostId").toString();
+				userId = getUserId(subject, UserObject);
 				objectString = cleanLine(eventNode.get("predicateObjectPath").get("string").toString());	
 				object = shortenUUID(eventNode.get("predicateObject").get("com.bbn.tc.schema.avro.cdm18.UUID").toString(),uuIndex);
 				String processMap = "";
@@ -90,7 +96,9 @@ public class LogParser {
 							String curWrite = subject+exec+objectString+"write";
 							if	(!lastAccess.contains(curWrite)) {				
 								
-								mapper = lm.writeMap(subject,exec,objectString)+fileMap+processMap;
+								
+								
+								mapper = lm.writeMap(subject,exec,objectString,hostId,userId)+fileMap+processMap;
 						
 								storeEntity(objectString, File);
 								storeEntity(subject+"#"+exec, Process);
@@ -119,7 +127,7 @@ public class LogParser {
 						String curRead = subject+exec+objectString+"read";
 							if(objectString!="" && !objectString.contains("<unknown>")) {
 								if	(!lastAccess.contains(curRead)) {
-									mapper = lm.readMap(subject,exec,objectString)+fileMap+processMap;
+									mapper = lm.readMap(subject,exec,objectString,hostId,userId)+fileMap+processMap;
 						
 									storeEntity(objectString, File);
 									storeEntity(subject+"#"+exec, Process);
@@ -137,6 +145,8 @@ public class LogParser {
 							}
 					
 					}else if(eventType.contains("EVENT_EXECUTE")) {	
+						
+						
 					
 						 cmdline = eventNode.get("properties").get("map").get("cmdLine").toString();
 						 cmdline = cleanCmd(cmdline);
@@ -173,7 +183,8 @@ public class LogParser {
 							 	
 								forkEvent(lm, prevProcess, subject+"#"+process2, jsonModel);
 							 
-								 mapper = lm.executeMap(subject,process2, objectString, cmdline)+fileMap;
+								
+								 mapper = lm.executeMap(subject,process2, objectString, cmdline, hostId, userId)+fileMap;
 								 
 								 storeEntity(objectString, File);
 								 storeEntity(subject+"#"+exec, Process);
@@ -216,7 +227,7 @@ public class LogParser {
 							String curSend = subject+exec+IPAddress+"send";
 							if	(!lastAccess.contains(curSend)) {
 								
-								mapper = lm.sendMap(subject,exec,IPAddress) + networkMap+processMap;	
+								mapper = lm.sendMap(subject,exec,IPAddress,hostId,userId) + networkMap+processMap;	
 								
 								storeEntity(IPAddress, Network);
 								storeEntity(subject+"#"+exec, Process);
@@ -256,7 +267,7 @@ public class LogParser {
 							String curReceive = subject+exec+IPAddress+"receive";
 							if	(!lastAccess.contains(curReceive)) {
 								
-								mapper = lm.receiveMap(subject,exec,IPAddress) + networkMap+processMap;
+								mapper = lm.receiveMap(subject,exec,IPAddress,hostId,userId) + networkMap+processMap;
 								
 								storeEntity(IPAddress, Network);
 								storeEntity(subject+"#"+exec, Process);
@@ -281,7 +292,13 @@ public class LogParser {
 				putNewNetworkObject(netObject, netAddress, NetworkObject);
 
 
+		}else if(datumNode.get("com.bbn.tc.schema.avro.cdm18.Subject").toBoolean()) {
+		    subjectNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.Subject");
+			subject = shortenUUID(subjectNode.get("uuid").toString(),uuIndex); 
+			String userId = subjectNode.get("localPrincipal").toString();
+			putNewUserObject(subject, userId, UserObject);
 		}
+		
 		return lastAccess;
 	
 	}
@@ -355,6 +372,28 @@ public class LogParser {
 		if(!netObject.isEmpty() && !netAddress.isEmpty()) {
 			if(!NetworkObject.containsKey(netObject)) {
 				NetworkObject.put(netObject, netAddress);
+				
+			}
+		}
+		 
+	}
+	
+	private  static String getUserId(String subject, HashMap<String, String> UserObject) {
+		//process
+		String userId="";
+		if(!subject.isEmpty()) {
+			if(UserObject.containsKey(subject)) {
+				userId = UserObject.get(subject);
+			}
+		}
+	
+		 return userId;	
+	}
+	private  static void putNewUserObject(String subject, String userId, HashMap<String, String> UserObject) {
+		//process
+		if(!subject.isEmpty() && !userId.isEmpty()) {
+			if(!UserObject.containsKey(subject)) {
+				UserObject.put(subject, userId);
 				
 			}
 		}
