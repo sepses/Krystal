@@ -92,10 +92,7 @@ darpa:leaksDataTo a rdf:Property;
 
 #===================background-knowledge=============
 
-<http://ss.r/dp/host/83C8ED1F-5045-DBCD-B39F-918F0DF4F851> a darpa:Host;
+<http://ss.r/dp/host#83C8ED1F-5045-DBCD-B39F-918F0DF4F851> a darpa:Host;
    darpa:hostName "ta1-cadets"^^xsd:string;
    darpa:hostOS "FreeBSD 12.0-CURRENT"^^xsd:string;
    darpa:IPAddress "10.0.6.23"^^xsd:string,"128.55.12.73"^^xsd:string.
-
-<http://ss.r/dp/user/26B62C58-E245-578A-AE04-495EBA139703> a darpa:User;
-   darpa:userName "root"^^xsd:string.

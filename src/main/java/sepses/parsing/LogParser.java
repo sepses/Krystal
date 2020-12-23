@@ -19,6 +19,7 @@ public class LogParser {
 	public Any eventNode;
 	public Any networkNode;
 	public Any subjectNode;
+	public Any userNode;
 	public Any hostNode;
 	public Any datumNode;
 	public String objectString;
@@ -295,8 +296,26 @@ public class LogParser {
 		}else if(datumNode.get("com.bbn.tc.schema.avro.cdm18.Subject").toBoolean()) {
 		    subjectNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.Subject");
 			subject = shortenUUID(subjectNode.get("uuid").toString(),uuIndex); 
-			String userId = subjectNode.get("localPrincipal").toString();
+			String userId = shortenUUID(subjectNode.get("localPrincipal").toString(),uuIndex); 
 			putNewUserObject(subject, userId, UserObject);
+			
+			
+		}else if(datumNode.get("com.bbn.tc.schema.avro.cdm18.Principal").toBoolean()) {
+			
+				String mapper="";
+				LogMapper lm = new LogMapper();	
+			    userNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.Principal");
+				userId = shortenUUID(userNode.get("uuid").toString(),uuIndex); 
+				String userName = userNode.get("username").get("string").toString(); 
+				
+				
+				mapper = lm.userMap(userId,userName);	
+				//System.out.print(mapper);
+				
+				Reader targetReader = new StringReader(mapper);
+				jsonModel.read(targetReader, null, "N-TRIPLE");
+			
+		
 		}
 		
 		return lastAccess;

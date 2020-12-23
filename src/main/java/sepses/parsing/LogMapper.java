@@ -57,8 +57,8 @@ public class LogMapper {
 		process = "<http://ss.r/dp/proc/"+subject+"#"+exec+">";
 		file = "<http://ss.r/dp/obj#"+objectString+">";
 		exe = "<http://ss.r/dp/exe#"+exec+">";
-		host = "<http://ss.r/dp/host/"+hostId+">";
-		user = "<http://ss.r/dp/user/"+userId+">";
+		host = "<http://ss.r/dp/host#"+hostId+">";
+		user = "<http://ss.r/dp/user#"+userId+">";
 		
 		
 		return   process +s+ writes +s+ file +dot + process +s+ hasExe +s+ exe +dot
@@ -71,8 +71,8 @@ public class LogMapper {
 		process = "<http://ss.r/dp/proc/"+subject+"#"+exec+">";
 		file = "<http://ss.r/dp/obj#"+objectString+">";
 		exe = "<http://ss.r/dp/exe#"+exec+">";
-		host = "<http://ss.r/dp/host/"+hostId+">";
-		user = "<http://ss.r/dp/user/"+userId+">";
+		host = "<http://ss.r/dp/host#"+hostId+">";
+		user = "<http://ss.r/dp/user#"+userId+">";
 		
 		return	file +s+ isReadBy +s+ process +dot + process +s+ hasExe +s+ exe +dot
 				+ process +s+ hasHost +s+ host +dot
@@ -87,8 +87,8 @@ public class LogMapper {
 		String process2 = "<http://ss.r/dp/proc/"+subject+"#"+newproc+">";
 		cmdLine = "\""+cmdline+"\"^^<http://www.w3.org/2001/XMLSchema#string>";
 		exe = "<http://ss.r/dp/exe#"+newproc+">";
-		host = "<http://ss.r/dp/host/"+hostId+">";
-		user = "<http://ss.r/dp/user/"+userId+">";
+		host = "<http://ss.r/dp/host#"+hostId+">";
+		user = "<http://ss.r/dp/user#"+userId+">";
 
 		
 		String executeMap =  file +s+ isExecutedBy +s+ process2 +dot +
@@ -105,8 +105,8 @@ public class LogMapper {
 		process = "<http://ss.r/dp/proc/"+subject+"#"+exec+">";
 		String ipAddress = "<http://ss.r/dp/obj#"+ip+">";
 		exe = "<http://ss.r/dp/exe#"+exec+">";
-		host = "<http://ss.r/dp/host/"+hostId+">";
-		user = "<http://ss.r/dp/user/"+userId+">";
+		host = "<http://ss.r/dp/host#"+hostId+">";
+		user = "<http://ss.r/dp/user#"+userId+">";
 		
 		return process +s+ sends +s+ ipAddress +dot + process +s+ hasExe +s+ exe +dot
 				 + process +s+ hasHost +s+ host +dot
@@ -118,8 +118,8 @@ public class LogMapper {
 		process = "<http://ss.r/dp/proc/"+subject+"#"+exec+">";
 		String ipAddress = "<http://ss.r/dp/obj#"+ip+">";
 		exe = "<http://ss.r/dp/exe#"+exec+">";
-		host = "<http://ss.r/dp/host/"+hostId+">";
-		user = "<http://ss.r/dp/user/"+userId+">";
+		host = "<http://ss.r/dp/host#"+hostId+">";
+		user = "<http://ss.r/dp/user#"+userId+">";
 		
 		return    ipAddress +s+ isReceivedBy +s+ process +dot + process +s+ hasExe +s+ exe +dot
 				+ process +s+ hasHost +s+ host +dot
@@ -132,6 +132,14 @@ public class LogMapper {
 		String prevProc = "<http://ss.r/dp/proc/"+prevProcess+">";
 		String proc = "<http://ss.r/dp/proc/"+process+">";
 		return prevProc +s+ forks +s+ proc +dot;
+		
+	}
+	
+public  String userMap(String userId, String userName) {
+		String user = "<http://ss.r/dp/user#"+userId+">";
+		userName = "\""+userName+"\"^^<http://www.w3.org/2001/XMLSchema#string>";
+		String username = "<http://ss.l/dp#userName>";
+		return user +s+ username +s+ userName +dot;
 		
 	}
 	
