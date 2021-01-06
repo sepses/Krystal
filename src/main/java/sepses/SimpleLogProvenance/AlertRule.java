@@ -101,6 +101,8 @@ public class AlertRule {
 	}
 	
 	public static void generateAlertFromRuleDir(Model jsonModel, String ruledir) {
+		System.out.println("generate alert from community rule");
+		
 		Model addJsonModel = ModelFactory.createDefaultModel();
 	
 		//get rule-query from ruledir
