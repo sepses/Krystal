@@ -134,7 +134,7 @@ public class AlertRule {
 		         while (qres.hasNext()) {
 			            QuerySolution qs = qres.nextSolution();
 			            Resource res = qs.get("?s").asResource();
-			            Property detectedRule = ruleModel.createProperty("http://ss.l/dp#detectedRule");
+			            Property detectedRule = ruleModel.createProperty("http://ss.l/dp#hasDetectedRule");
 			            addJsonModel.add(res, detectedRule, subj);
 			    	  }
 		            }
