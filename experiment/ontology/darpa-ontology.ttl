@@ -2,14 +2,14 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .	
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix cat: <http://w3id.org/sepses/vocab/ref/cat#> .
 
 
 darpa:Process a rdfs:Class.
 
 darpa:File a rdfs:Class.
 
-darpa:Executable a rdfs:Class;
-      rdfs:subClassOf darpa:File.
+darpa:Executable a rdfs:Class.
 
 darpa:Network a rdfs:Class.
 
@@ -42,6 +42,7 @@ darpa:isReceivedBy a rdf:Property;
     rdfs:subPropertyOf darpa:connects ;
     rdfs:domain darpa:Network ;
     rdfs:range darpa:Process .
+
 
 darpa:sends a rdf:Property;
     rdfs:subPropertyOf darpa:connects ;
@@ -90,9 +91,19 @@ darpa:leaksDataTo a rdf:Property;
     rdfs:domain darpa:Process ;
     rdfs:range darpa:Network .
 
-#===================background-knowledge=============
+#==================additional ontology===============
+
+cat:Technique a rdfs:Class.
+
+darpa:hasPotentialAttackTechnique a rdf:Property;
+    rdfs:domain darpa:Process ;
+    rdfs:range cat:Technique .
+
+
+#===================an example background-knowledge=============
 
 <http://ss.r/dp/host#83C8ED1F-5045-DBCD-B39F-918F0DF4F851> a darpa:Host;
    darpa:hostName "ta1-cadets"^^xsd:string;
    darpa:hostOS "FreeBSD 12.0-CURRENT"^^xsd:string;
    darpa:IPAddress "10.0.6.23"^^xsd:string,"128.55.12.73"^^xsd:string.
+

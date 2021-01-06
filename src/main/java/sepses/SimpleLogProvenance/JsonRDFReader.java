@@ -21,7 +21,9 @@ import helper.Utility;
 import sepses.parsing.LogParser;
 
 public class JsonRDFReader {
-	public static void readJson(String t, String filefolder, String l, String se, String ng, String sl, String outputdir, String inputdir, String triplestore, String backupfile,  ArrayList<String> fieldfilter, String livestore, ArrayList<String> confidentialdir, String tdbdir, String ontology) throws Exception {
+	public static void readJson(String t, String filefolder, String l, String se, String ng, String sl, String outputdir, String inputdir, String triplestore, String backupfile,  ArrayList<String> fieldfilter, String livestore, ArrayList<String> confidentialdir, String tdbdir, String ontology, String ruledir) throws Exception {
+		
+		  
 		Integer lineNumber = 1; // 1 here means the minimum line to be extracted
 		if(l!=null) {lineNumber=Integer.parseInt(l);}
 		String sparqlEp = se;
@@ -40,14 +42,12 @@ public class JsonRDFReader {
 		Model jsonModel = d.getDefaultModel();
 		long time1 = System.currentTimeMillis();
 		
+		
 	    Set<String> Process = new HashSet<>();
 		Set<String> File = new HashSet<>();
 		Set<String> Network = new HashSet<>();
 		Set<String> lastEvent = new HashSet<>();
 
-
-		
-		
 		HashMap<String, String> uuIndex = new HashMap<String, String>();
 		HashMap<String, String> NetworkObject = new HashMap<String, String>();
 		HashMap<String, String> ForkObject = new HashMap<String, String>();
@@ -98,8 +98,10 @@ public class JsonRDFReader {
 								
 								if(livestore!="false") {
 									//add rdfs reasoner first
-									InfModel infmodel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), jsonModel);
-									String rdfFile = Utility.saveToRDF(infmodel, outputdir, namegraph);
+									InfModel infModel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), jsonModel);
+									 //detect alert from rule dir (i.e. sigma rule)
+									AlertRule.generateAlertFromRuleDir(infModel, ruledir);
+									String rdfFile = Utility.saveToRDF(infModel, outputdir, namegraph);
 									Utility.storeFileInRepo(triplestore, rdfFile, sparqlEp, namegraph, "dba", "dba");
 								}	
 								templ=0;
@@ -116,7 +118,9 @@ public class JsonRDFReader {
 			System.out.println("the rest is less than "+lineNumber+" which is "+templ);
 			if(livestore!="false") {
 				    InfModel infModel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), jsonModel);
-					String rdfFile = Utility.saveToRDF(jsonModel.union(infModel), outputdir, namegraph);
+				    //detect alert from rule dir (i.e. sigma rule)
+					AlertRule.generateAlertFromRuleDir(infModel, ruledir);
+					String rdfFile = Utility.saveToRDF(infModel, outputdir, namegraph);
 					Utility.storeFileInRepo(triplestore, rdfFile, sparqlEp, namegraph, "dba", "dba");
 					}	
 			templ=0;
@@ -127,8 +131,10 @@ public class JsonRDFReader {
 	       //end of folder
 	     
 			if(backupfile!="false") {
-	 		    //Model ontologyModel = RDFDataMgr.loadModel(ontology);
+	 		    
 				InfModel infModel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), jsonModel);
+				 //detect alert from rule dir (i.e. sigma rule)
+				AlertRule.generateAlertFromRuleDir(infModel, ruledir);
 				String rdfFile = Utility.saveToRDF(infModel, outputdir, namegraph);
 				if(livestore=="false") {
 					Utility.storeFileInRepo(triplestore, rdfFile, sparqlEp, namegraph, "dba", "dba");
@@ -141,9 +147,14 @@ public class JsonRDFReader {
  	  //generate query for attack construction
 	  InfModel infModel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), jsonModel);
 	  String q = AttackConstruction.AttackGeneration(infModel);
+	  
 	  System.out.println(q);
 	  
+	  
+	  
 	}
+
+	
 
 
 

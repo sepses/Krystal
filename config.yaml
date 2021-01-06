@@ -6,6 +6,8 @@ tdb-dir: experiment/tdb
 
 ontology: experiment/ontology/darpa-ontology.ttl
 
+rule-dir : experiment/rule/
+
 triple-store: graphdb
 
 live-store: no

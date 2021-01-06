@@ -6,6 +6,8 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
+import org.apache.jena.rdf.model.InfModel;
+
 import helper.Utility;
 
 
@@ -17,6 +19,7 @@ public class Main {
 		  Map<String, Object> s = Utility.readYamlFile("config.yaml");
 	       String outputdir= s.get("output-dir").toString();
 	       String inputdir= s.get("input-dir").toString();
+	       String ruledir= s.get("rule-dir").toString();
 	       String triplestore= s.get("triple-store").toString();
 	       String backupfile= s.get("backup-file").toString();
 	       String livestore= s.get("live-store").toString();
@@ -73,9 +76,14 @@ public class Main {
 	      
 	      JsonRDFReader.readJson(type, filefolder, line, sparqlEp, namegraph, startingLine, 
 	    		  outputdir, inputdir, triplestore, backupfile, fieldfilter,
-	    		  livestore, confidentialdir, tdbdir, ontology);
+	    		  livestore, confidentialdir, tdbdir, ontology, ruledir);
 	    		  
 	    
 	  	
-    }	      
+    }
+	
+	public static void generateAlertUsingRule(InfModel infModel, String ruledir) {
+		// TODO Auto-generated method stub
+		
+	}
 }
