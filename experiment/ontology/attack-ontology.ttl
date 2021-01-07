@@ -2,6 +2,7 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dcterm: <http://purl.org/dc/terms/> .
 @prefix : <http://w3id.org/sepses/vocab/ref/attack#> .
 @base <http://w3id.org/sepses/vocab/ref/attack> .
 
@@ -112,6 +113,74 @@
                                                      rdfs:range :Technique ;
                                                      rdfs:domain :AdversaryGroup .
 
+
+###  http://purl.org/dc/terms/contributor
+dcterm:contributor rdf:type rdf:Property ;
+                                       rdfs:range xsd:string ;
+                                       rdfs:domain  :Group  ,
+                                                    :Mitigation  ,
+                                                    :Software  ,
+                                                    :Tactic  ,
+                                                    :Technique .
+
+
+###  http://purl.org/dc/terms/created
+dcterm:created rdf:type rdf:Property ;
+                                   rdfs:range xsd:dateTimeStamp ;
+                                   rdfs:domain  :Group  ,
+                                                :Mitigation  ,
+                                                :Software  ,
+                                                :Tactic  ,
+                                                :Technique .
+
+
+###  http://purl.org/dc/terms/description
+dcterm:description rdf:type rdf:Property ;
+                                       rdfs:range xsd:string ;
+                                       rdfs:domain  :Group  ,
+                                                    :Mitigation  ,
+                                                    :Software  ,
+                                                    :Tactic  ,
+                                                    :Technique .
+
+
+###  http://purl.org/dc/terms/id
+dcterm:id rdf:type rdf:Property ;
+                              rdfs:range xsd:string ;
+                              rdfs:domain  :Group  ,
+                                           :Mitigation  ,
+                                           :Software  ,
+                                           :Tactic  ,
+                                           :Technique .
+
+
+###  http://purl.org/dc/terms/modified
+dcterm:modified rdf:type rdf:Property ;
+                                    rdfs:range xsd:dateTimeStamp ;
+                                    rdfs:domain  :Group  ,
+                                                 :Mitigation  ,
+                                                 :Software  ,
+                                                 :Tactic  ,
+                                                 :Technique .
+
+
+###  http://purl.org/dc/terms/title
+dcterm:title rdf:type rdf:Property ;
+                                 rdfs:range xsd:string ;
+                                 rdfs:domain  :Group  ,
+                                              :Mitigation  ,
+                                              :Software  ,
+                                              :Tactic  ,
+                                              :Technique .
+
+
+###  http://purl.org/dc/terms/version
+dcterm:version rdf:type rdf:Property ;
+                                   rdfs:range xsd:string ;
+                                   rdfs:domain  :Group  ,
+                                                :Mitigation  ,
+                                                :Software  ,
+                                                :Technique .
 
 #################################################################
 #    Classes
