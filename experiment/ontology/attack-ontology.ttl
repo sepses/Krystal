@@ -1,0 +1,140 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix : <http://w3id.org/sepses/vocab/ref/attack#> .
+@base <http://w3id.org/sepses/vocab/ref/attack> .
+
+<http://w3id.org/sepses/vocab/ref/attack> rdf:type owl:Ontology .
+
+#################################################################
+#    Annotation properties
+#################################################################
+
+###  http://w3id.org/sepses/vocab/ref/cat#accomplishesTactic
+:accomplishesTactic rdf:type rdf:Property ;
+                                                          rdfs:range :Tactic ;
+                                                          rdfs:domain :Technique .
+
+
+###  http://w3id.org/sepses/vocab/ref/cat#aliases
+:aliases rdf:type rdf:Property ;
+                                               rdfs:range xsd:string ;
+                                               rdfs:domain :AdversaryGroup .
+
+
+###  http://w3id.org/sepses/vocab/ref/cat#dataSource
+:dataSource rdf:type rdf:Property ;
+                                                  rdfs:range xsd:string ;
+                                                  rdfs:domain :Technique .
+
+
+###  http://w3id.org/sepses/vocab/ref/cat#detection
+:detection rdf:type rdf:Property ;
+                                                 rdfs:range xsd:string ;
+                                                 rdfs:domain :Technique .
+
+
+###  http://w3id.org/sepses/vocab/ref/cat#hasGroup
+:hasAdversaryGroup rdf:type rdf:Property ;
+                                                rdfs:range :AdversaryGroup ;
+                                                rdfs:domain :Software .
+
+
+###  http://w3id.org/sepses/vocab/ref/cat#hasMitigation
+:hasMitigation rdf:type rdf:Property ;
+                                                     rdfs:range :Mitigation ;
+                                                     rdfs:domain :Technique .
+
+
+###  http://w3id.org/sepses/vocab/ref/cat#hasSoftware
+:hasSoftware rdf:type rdf:Property ;
+                                                   rdfs:range :Software ;
+                                                   rdfs:domain :Technique .
+
+
+###  http://w3id.org/sepses/vocab/ref/cat#hasTechnique
+:hasTechnique rdf:type rdf:Property ;
+                                                    rdfs:range :Technique ;
+                                                    rdfs:domain :Tactic .
+
+
+###  http://w3id.org/sepses/vocab/ref/cat#implementsTechnique
+:implementsTechnique rdf:type rdf:Property ;
+                                                           rdfs:range :Technique ;
+                                                           rdfs:domain :Software .
+
+
+###  http://w3id.org/sepses/vocab/ref/cat#isSubTechniqueOf
+:isSubTechniqueOf rdf:type rdf:Property ;
+                                                        rdfs:range :Technique ;
+                                                        rdfs:domain :Technique .
+
+
+###  http://w3id.org/sepses/vocab/ref/cat#isSubtechnique
+:isSubtechnique rdf:type rdf:Property ;
+                                                      rdfs:range xsd:boolean ;
+                                                      rdfs:domain :Technique .
+
+
+###  http://w3id.org/sepses/vocab/ref/cat#permissionRequired
+:permissionRequired rdf:type rdf:Property ;
+                                                          rdfs:range xsd:string ;
+                                                          rdfs:domain :Technique .
+
+
+###  http://w3id.org/sepses/vocab/ref/cat#platform
+:platform rdf:type rdf:Property ;
+                                                rdfs:range xsd:string ;
+                                                rdfs:domain :Technique .
+
+
+###  http://w3id.org/sepses/vocab/ref/cat#preventsTechnique
+:preventsTechnique rdf:type rdf:Property ;
+                                                         rdfs:range :Technique ;
+                                                         rdfs:domain :Mitigation .
+
+
+###  http://w3id.org/sepses/vocab/ref/cat#shortname
+:shortname rdf:type rdf:Property ;
+                                                 rdfs:range xsd:string ;
+                                                 rdfs:domain :Tactic .
+
+
+###  http://w3id.org/sepses/vocab/ref/cat#usesSoftware
+:usesSoftware rdf:type rdf:Property ;
+                                                    rdfs:range :Software ;
+                                                    rdfs:domain :AdversaryGroup .
+
+
+###  http://w3id.org/sepses/vocab/ref/cat#usesTechnique
+:usesTechnique rdf:type rdf:Property ;
+                                                     rdfs:range :Technique ;
+                                                     rdfs:domain :AdversaryGroup .
+
+
+#################################################################
+#    Classes
+#################################################################
+
+###  http://w3id.org/sepses/vocab/ref/cat#AdversaryGroup
+:AdversaryGroup rdf:type owl:Class .
+
+
+###  http://w3id.org/sepses/vocab/ref/cat#Mitigation
+:Mitigation rdf:type owl:Class .
+
+
+###  http://w3id.org/sepses/vocab/ref/cat#Software
+:Software rdf:type owl:Class .
+
+
+###  http://w3id.org/sepses/vocab/ref/cat#Tactic
+:Tactic rdf:type owl:Class .
+
+
+###  http://w3id.org/sepses/vocab/ref/cat#Technique
+:Technique rdf:type owl:Class .
+
+
+###  Generated by the OWL API (version 4.2.8.20170104-2310) https://github.com/owlcs/owlapi
