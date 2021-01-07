@@ -115,72 +115,72 @@
 
 
 ###  http://purl.org/dc/terms/contributor
-dcterm:contributor rdf:type rdf:Property ;
-                                       rdfs:range xsd:string ;
-                                       rdfs:domain  :Group  ,
-                                                    :Mitigation  ,
-                                                    :Software  ,
-                                                    :Tactic  ,
-                                                    :Technique .
+#dcterm:contributor rdf:type rdf:Property ;
+#                                       rdfs:range xsd:string ;
+#                                       rdfs:domain  :AdversaryGroup  ,
+#                                                    :Mitigation  ,
+#                                                    :Software  ,
+#                                                    :Tactic  ,
+#                                                    :Technique .
 
 
 ###  http://purl.org/dc/terms/created
-dcterm:created rdf:type rdf:Property ;
-                                   rdfs:range xsd:dateTimeStamp ;
-                                   rdfs:domain  :Group  ,
-                                                :Mitigation  ,
-                                                :Software  ,
-                                                :Tactic  ,
-                                                :Technique .
+#dcterm:created rdf:type rdf:Property ;
+#                                   rdfs:range xsd:dateTimeStamp ;
+#                                   rdfs:domain  :AdversaryGroup  ,
+#                                                :Mitigation  ,
+#                                                :Software  ,
+#                                                :Tactic  ,
+#                                                :Technique .
 
 
 ###  http://purl.org/dc/terms/description
-dcterm:description rdf:type rdf:Property ;
-                                       rdfs:range xsd:string ;
-                                       rdfs:domain  :Group  ,
-                                                    :Mitigation  ,
-                                                    :Software  ,
-                                                    :Tactic  ,
-                                                    :Technique .
+#dcterm:description rdf:type rdf:Property ;
+#                                      rdfs:range xsd:string ;
+#                                       rdfs:domain  :AdversaryGroup  ,
+#                                                    :Mitigation  ,
+#                                                    :Software  ,
+#                                                    :Tactic  ,
+#                                                    :Technique .
 
 
 ###  http://purl.org/dc/terms/id
-dcterm:id rdf:type rdf:Property ;
-                              rdfs:range xsd:string ;
-                              rdfs:domain  :Group  ,
-                                           :Mitigation  ,
-                                           :Software  ,
-                                           :Tactic  ,
-                                           :Technique .
+#dcterm:id rdf:type rdf:Property ;
+#                              rdfs:range xsd:string ;
+#                              rdfs:domain  :AdversaryGroup  ,
+#                                           :Mitigation  ,
+#                                           :Software  ,
+#                                           :Tactic  ,
+#                                           :Technique .
 
 
 ###  http://purl.org/dc/terms/modified
-dcterm:modified rdf:type rdf:Property ;
-                                    rdfs:range xsd:dateTimeStamp ;
-                                    rdfs:domain  :Group  ,
-                                                 :Mitigation  ,
-                                                 :Software  ,
-                                                 :Tactic  ,
-                                                 :Technique .
+#dcterm:modified rdf:type rdf:Property ;
+#                                    rdfs:range xsd:dateTimeStamp ;
+#                                    rdfs:domain  :AdversaryGroup  ,
+#                                                 :Mitigation  ,
+#                                                 :Software  ,
+#                                                 :Tactic  ,
+#                                                 :Technique .
 
 
 ###  http://purl.org/dc/terms/title
-dcterm:title rdf:type rdf:Property ;
-                                 rdfs:range xsd:string ;
-                                 rdfs:domain  :Group  ,
-                                              :Mitigation  ,
-                                              :Software  ,
-                                              :Tactic  ,
-                                              :Technique .
+#dcterm:title rdf:type rdf:Property ;
+#                                 rdfs:range xsd:string ;
+#                                 rdfs:domain  :AdversaryGroup  ,
+#                                              :Mitigation  ,
+#                                              :Software  ,
+#                                              :Tactic  ,
+#                                              :Technique .
 
 
 ###  http://purl.org/dc/terms/version
-dcterm:version rdf:type rdf:Property ;
-                                   rdfs:range xsd:string ;
-                                   rdfs:domain  :Group  ,
-                                                :Mitigation  ,
-                                                :Software  ,
-                                                :Technique .
+#dcterm:version rdf:type rdf:Property ;
+#                                   rdfs:range xsd:string ;
+#                                   rdfs:domain  :AdversaryGroup  ,
+#                                                :Mitigation  ,
+#                                                :Software  ,
+#                                                :Technique .
 
 #################################################################
 #    Classes
