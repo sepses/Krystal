@@ -1,9 +1,13 @@
 @prefix darpa: <http://ss.l/dp#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .	
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix sigma: <http://w3id.org/sepses/vocab/rule/sigma#> .
 @prefix cat: <http://w3id.org/sepses/vocab/ref/cat#> .
+@base <http://ss.l/dp> .
 
+<http://ss.l/dp> a owl:Ontology .
 
 darpa:Process a rdfs:Class.
 
@@ -63,7 +67,7 @@ darpa:hasUser a rdf:Property;
 
 darpa:userName a rdf:Property;
    rdfs:domain darpa:User ;
-   rdfs:range xsd:String.
+   rdfs:range xsd:string.
 
 darpa:hasHost a rdf:Property;
    rdfs:domain darpa:Process ;
@@ -71,15 +75,15 @@ darpa:hasHost a rdf:Property;
 
 darpa:hostName a rdf:Property;
    rdfs:domain darpa:Host ;
-   rdfs:range xsd:String.
+   rdfs:range xsd:string.
 
 darpa:hostOS a rdf:Property;
    rdfs:domain darpa:Host ;
-   rdfs:range xsd:String.
+   rdfs:range xsd:string.
 
 darpa:IPAddress a rdf:Property;
    rdfs:domain darpa:Host ;
-   rdfs:range xsd:String.
+   rdfs:range xsd:string.
 
 darpa:isIllegallyExecutedBy a rdf:Property;
     rdfs:subPropertyOf darpa:alertAccess ;
@@ -95,15 +99,13 @@ darpa:leaksDataTo a rdf:Property;
 
 cat:Technique a rdfs:Class.
 
+sigma:SigmaRule a rdfs:Class.
+
 darpa:hasPotentialAttackTechnique a rdf:Property;
     rdfs:domain darpa:Process ;
     rdfs:range cat:Technique .
 
-
-#===================an example background-knowledge=============
-
-<http://ss.r/dp/host#83C8ED1F-5045-DBCD-B39F-918F0DF4F851> a darpa:Host;
-   darpa:hostName "ta1-cadets"^^xsd:string;
-   darpa:hostOS "FreeBSD 12.0-CURRENT"^^xsd:string;
-   darpa:IPAddress "10.0.6.23"^^xsd:string,"128.55.12.73"^^xsd:string.
+darpa:hasDetectedRule a rdf:Property;
+    rdfs:domain darpa:Process ;
+    rdfs:range sigma:SigmaRule .
 
