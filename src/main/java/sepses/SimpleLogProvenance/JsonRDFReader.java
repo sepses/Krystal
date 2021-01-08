@@ -136,9 +136,9 @@ public class JsonRDFReader {
 				 //detect alert from rule dir (i.e. sigma rule)
 				AlertRule.generateAlertFromRuleDir(infModel, ruledir);
 				String rdfFile = Utility.saveToRDF(infModel, outputdir, namegraph);
-				if(livestore=="false") {
-					Utility.storeFileInRepo(triplestore, rdfFile, sparqlEp, namegraph, "dba", "dba");
-				}
+				//if(livestore=="false") {
+				//	Utility.storeFileInRepo(triplestore, rdfFile, sparqlEp, namegraph, "dba", "dba");
+				//}
 				//Utility.exportHDT(rdfFile, outputdir, namegraph);
 			} 
 	   
