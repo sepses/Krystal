@@ -105,7 +105,7 @@ public class LogParser {
 								
 								
 								mapper = lm.writeMap(subject,exec,objectString,hostId,userId, timestamp)+fileMap+processMap;
-								System.out.println(mapper);
+								
 								storeEntity(objectString, File);
 								storeEntity(subject+"#"+exec, Process);
 						
