@@ -139,7 +139,7 @@ public class JsonRDFReader {
 				if(livestore=="false") {
 					Utility.storeFileInRepo(triplestore, rdfFile, sparqlEp, namegraph, "dba", "dba");
 				}
-				Utility.exportHDT(rdfFile, outputdir, namegraph);
+				//Utility.exportHDT(rdfFile, outputdir, namegraph);
 			} 
 	   
 	  System.out.println("Finish!, Generating query for attack construction.. ");

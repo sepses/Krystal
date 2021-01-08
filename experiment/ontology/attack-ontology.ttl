@@ -36,7 +36,7 @@
                                                  rdfs:domain :Technique .
 
 
-###  http://w3id.org/sepses/vocab/ref/cat#hasGroup
+###  http://w3id.org/sepses/vocab/ref/cat#hasAdversaryGroup
 :hasAdversaryGroup rdf:type rdf:Property ;
                                                 rdfs:range :AdversaryGroup ;
                                                 rdfs:domain :Software .

@@ -3,6 +3,7 @@ package sepses.parsing;
 public class LogMapper {
 	public  String entityNetwork;
 	public  String process;
+	public  String timestamp;
 	public  String writes;
 	public  String sends;
 	public  String isExecutedBy;
@@ -41,6 +42,7 @@ public class LogMapper {
 		remoteAddress= "<http://ss.l/dp#remoteAddress>";
 		forks = "<http://ss.l/dp#forks>";
 		hasCmd = "<http://ss.l/dp#hasCmd>";
+		timestamp = "<http://ss.l/dp#timestamp>";
 	//tag-property
 		intTag = "<http://ss.l/dp#intTag>";
 		confTag = "<http://ss.l/dp#confTag>";
@@ -53,35 +55,41 @@ public class LogMapper {
 		dot = ".\r\n";
 	}
 	 
-	public  String writeMap(String subject, String exec, String objectString, String hostId, String userId) {	
+	public  String writeMap(String subject, String exec, String objectString, String hostId, String userId, String ts) {	
 		process = "<http://ss.r/dp/proc/"+subject+"#"+exec+">";
 		file = "<http://ss.r/dp/obj#"+objectString+">";
 		exe = "<http://ss.r/dp/exe#"+exec+">";
 		host = "<http://ss.r/dp/host#"+hostId+">";
 		user = "<http://ss.r/dp/user#"+userId+">";
+		String time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#dateTime>";
 		
 		
-		return   process +s+ writes +s+ file +dot + process +s+ hasExe +s+ exe +dot
+		return   "<<" +s+ process +s+ writes +s+ file +s+ ">>"+s+ timestamp +s+ time +dot 
+				//process +s+ writes +s+ file +dot 
+				+ process +s+ hasExe +s+ exe +dot
 				+ process +s+ hasHost +s+ host +dot
 				+ process +s+ hasUser +s+ user +dot;
 				        
 	}
 	
-	public  String readMap(String subject, String exec, String objectString,  String hostId, String userId) {
+	public  String readMap(String subject, String exec, String objectString,  String hostId, String userId, String ts) {
 		process = "<http://ss.r/dp/proc/"+subject+"#"+exec+">";
 		file = "<http://ss.r/dp/obj#"+objectString+">";
 		exe = "<http://ss.r/dp/exe#"+exec+">";
 		host = "<http://ss.r/dp/host#"+hostId+">";
 		user = "<http://ss.r/dp/user#"+userId+">";
+		String time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#dateTime>";
 		
-		return	file +s+ isReadBy +s+ process +dot + process +s+ hasExe +s+ exe +dot
+		return	"<<" +s+ file +s+ isReadBy +s+ process +s+ ">>"+s+ timestamp +s+ time +dot
+				//file +s+ isReadBy +s+ process +dot 
+				+ process +s+ hasExe +s+ exe +dot
 				+ process +s+ hasHost +s+ host +dot
 				+ process +s+ hasUser +s+ user +dot;
 				         
 		
 	}
 
-	public  String executeMap(String subject, String newproc, String objectString, String cmdline, String hostId, String userId) {
+	public  String executeMap(String subject, String newproc, String objectString, String cmdline, String hostId, String userId, String ts) {
 
 		file = "<http://ss.r/dp/obj#"+objectString+">";
 		String process2 = "<http://ss.r/dp/proc/"+subject+"#"+newproc+">";
@@ -89,10 +97,14 @@ public class LogMapper {
 		exe = "<http://ss.r/dp/exe#"+newproc+">";
 		host = "<http://ss.r/dp/host#"+hostId+">";
 		user = "<http://ss.r/dp/user#"+userId+">";
+		String time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#dateTime>";
 
 		
-		String executeMap =  file +s+ isExecutedBy +s+ process2 +dot +
-				   process2 +s+ hasCmd +s+ cmdLine + dot + process2 +s+ hasExe +s+ exe +dot
+		String executeMap =  
+				   "<<" +s+ file +s+ isExecutedBy +s+ process2 +s+ ">>"+s+ timestamp +s+ time +dot
+				   //file +s+ isExecutedBy +s+ process2 +dot 
+				   +process2 +s+ hasCmd +s+ cmdLine + dot +
+				   process2 +s+ hasExe +s+ exe +dot
 				   + process2 +s+ hasHost +s+ host +dot
 				   + process2 +s+ hasUser +s+ user +dot;
 		
@@ -100,38 +112,47 @@ public class LogMapper {
 		
 	}
 	
-	public  String sendMap(String subject, String exec, String ip, String hostId, String userId) {
+	public  String sendMap(String subject, String exec, String ip, String hostId, String userId, String ts) {
 		
 		process = "<http://ss.r/dp/proc/"+subject+"#"+exec+">";
 		String ipAddress = "<http://ss.r/dp/obj#"+ip+">";
 		exe = "<http://ss.r/dp/exe#"+exec+">";
 		host = "<http://ss.r/dp/host#"+hostId+">";
 		user = "<http://ss.r/dp/user#"+userId+">";
+		String time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#dateTime>";
 		
-		return process +s+ sends +s+ ipAddress +dot + process +s+ hasExe +s+ exe +dot
+		return "<<" +s+ process +s+ sends +s+ ipAddress +s+ ">>"+s+ timestamp +s+ time +dot
+				//process +s+ sends +s+ ipAddress +dot 
+				+ process +s+ hasExe +s+ exe +dot
 				 + process +s+ hasHost +s+ host +dot
 				 + process +s+ hasUser +s+ user +dot;
 		
 	}
 	
-	public  String receiveMap(String subject, String exec, String ip, String hostId, String userId) {
+	public  String receiveMap(String subject, String exec, String ip, String hostId, String userId, String ts) {
 		process = "<http://ss.r/dp/proc/"+subject+"#"+exec+">";
 		String ipAddress = "<http://ss.r/dp/obj#"+ip+">";
 		exe = "<http://ss.r/dp/exe#"+exec+">";
 		host = "<http://ss.r/dp/host#"+hostId+">";
 		user = "<http://ss.r/dp/user#"+userId+">";
+		String time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#dateTime>";
 		
-		return    ipAddress +s+ isReceivedBy +s+ process +dot + process +s+ hasExe +s+ exe +dot
+		return  "<<" +s+ ipAddress +s+ isReceivedBy +s+ process +s+ ">>"+s+ timestamp +s+ time +dot
+				//ipAddress +s+ isReceivedBy +s+ process +dot 
+				+ process +s+ hasExe +s+ exe +dot
 				+ process +s+ hasHost +s+ host +dot
 				+ process +s+ hasUser +s+ user +dot;
 		
 	}
 	
-	public  String forkMap(String prevProcess, String process) {
+	public  String forkMap(String prevProcess, String process, String ts) {
 		
 		String prevProc = "<http://ss.r/dp/proc/"+prevProcess+">";
 		String proc = "<http://ss.r/dp/proc/"+process+">";
-		return prevProc +s+ forks +s+ proc +dot;
+		String time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#dateTime>";
+		
+		return "<<" +s+ prevProc +s+ forks +s+ proc +s+ ">>"+s+ timestamp +s+ time +dot;
+				//prevProc +s+ forks +s+ proc +dot;
 		
 	}
 	

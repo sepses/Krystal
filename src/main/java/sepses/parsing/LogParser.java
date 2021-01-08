@@ -2,6 +2,7 @@ package sepses.parsing;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
@@ -26,6 +27,7 @@ public class LogParser {
 	public String exec;
 	public String hostId;
 	public String userId;
+	public String timestamp; 
 	public String subject;
 	public String object;
 	public String netObject;
@@ -52,6 +54,9 @@ public class LogParser {
 				subject = shortenUUID(eventNode.get("subject").get("com.bbn.tc.schema.avro.cdm18.UUID").toString(),uuIndex);
 				exec = eventNode.get("properties").get("map").get("exec").toString();
 				hostId = eventNode.get("hostId").toString();
+				long timestampNanos = eventNode.get("timestampNanos").toLong();
+				timestamp = new Timestamp(timestampNanos/1000000).toString();
+				//System.out.print(timestamp);
 				userId = getUserId(subject, UserObject);
 				objectString = cleanLine(eventNode.get("predicateObjectPath").get("string").toString());	
 				object = shortenUUID(eventNode.get("predicateObject").get("com.bbn.tc.schema.avro.cdm18.UUID").toString(),uuIndex);
@@ -81,7 +86,7 @@ public class LogParser {
 						//if yes create fork Event
 						if(!prevProcess.isEmpty()) {
 							if(!eventType.contains("EVENT_EXECUTE")) {
-  							    forkEvent(lm, prevProcess, subject+"#"+exec, jsonModel);
+  							    forkEvent(lm, prevProcess, subject+"#"+exec,timestamp, jsonModel);
 							}
 						}else {
 	                       //tag new process
@@ -99,8 +104,8 @@ public class LogParser {
 								
 								
 								
-								mapper = lm.writeMap(subject,exec,objectString,hostId,userId)+fileMap+processMap;
-						
+								mapper = lm.writeMap(subject,exec,objectString,hostId,userId, timestamp)+fileMap+processMap;
+								System.out.println(mapper);
 								storeEntity(objectString, File);
 								storeEntity(subject+"#"+exec, Process);
 						
@@ -128,7 +133,7 @@ public class LogParser {
 						String curRead = subject+exec+objectString+"read";
 							if(objectString!="" && !objectString.contains("<unknown>")) {
 								if	(!lastAccess.contains(curRead)) {
-									mapper = lm.readMap(subject,exec,objectString,hostId,userId)+fileMap+processMap;
+									mapper = lm.readMap(subject,exec,objectString,hostId,userId,timestamp)+fileMap+processMap;
 						
 									storeEntity(objectString, File);
 									storeEntity(subject+"#"+exec, Process);
@@ -182,10 +187,10 @@ public class LogParser {
 							 	jsonModel.read(targetReader, null, "N-TRIPLE");
 							 	
 							 	
-								forkEvent(lm, prevProcess, subject+"#"+process2, jsonModel);
+								forkEvent(lm, prevProcess, subject+"#"+process2, timestamp, jsonModel);
 							 
 								
-								 mapper = lm.executeMap(subject,process2, objectString, cmdline, hostId, userId)+fileMap;
+								 mapper = lm.executeMap(subject,process2, objectString, cmdline, hostId, userId, timestamp)+fileMap;
 								 
 								 storeEntity(objectString, File);
 								 storeEntity(subject+"#"+exec, Process);
@@ -228,7 +233,7 @@ public class LogParser {
 							String curSend = subject+exec+IPAddress+"send";
 							if	(!lastAccess.contains(curSend)) {
 								
-								mapper = lm.sendMap(subject,exec,IPAddress,hostId,userId) + networkMap+processMap;	
+								mapper = lm.sendMap(subject,exec,IPAddress,hostId,userId, timestamp) + networkMap+processMap;	
 								
 								storeEntity(IPAddress, Network);
 								storeEntity(subject+"#"+exec, Process);
@@ -268,7 +273,7 @@ public class LogParser {
 							String curReceive = subject+exec+IPAddress+"receive";
 							if	(!lastAccess.contains(curReceive)) {
 								
-								mapper = lm.receiveMap(subject,exec,IPAddress,hostId,userId) + networkMap+processMap;
+								mapper = lm.receiveMap(subject,exec,IPAddress,hostId,userId, timestamp) + networkMap+processMap;
 								
 								storeEntity(IPAddress, Network);
 								storeEntity(subject+"#"+exec, Process);
@@ -327,10 +332,10 @@ public class LogParser {
 	
 
 
-	private void forkEvent(LogMapper lm, String prevProcess, String process, Model jsonModel) {
+	private void forkEvent(LogMapper lm, String prevProcess, String process, String ts, Model jsonModel) {
 		
 		if(!prevProcess.equals(process)) {
-				String forkMap = lm.forkMap(prevProcess, process);
+				String forkMap = lm.forkMap(prevProcess, process, ts);
 				Reader targetReader = new StringReader(forkMap);
 				jsonModel.read(targetReader, null, "N-TRIPLE");
 				PropagationRule prop = new PropagationRule();
