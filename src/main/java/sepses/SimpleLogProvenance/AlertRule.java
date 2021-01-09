@@ -111,11 +111,9 @@ public class AlertRule {
 	    
 	}
 	
-	public static void generateAlertFromRuleDir(Model jsonModel, String ruledir) {
+	public static void generateAlertFromRuleDir(Model jsonModel, Model alertModel, String ruledir) {
 		System.out.println("generate alert from community rule");
 		
-		Model addJsonModel = ModelFactory.createDefaultModel();
-	
 		//get rule-query from ruledir
 		File rulefolder = new File(ruledir);
 		Model ruleModel = ModelFactory.createDefaultModel();
@@ -136,7 +134,6 @@ public class AlertRule {
 			 
 				//apply (iteratively) rule query from infModel
 			 if(!ruleQuery.isEmpty()) {
-				 
 				 Query rq = QueryFactory.create(ruleQuery);
 			     QueryExecution qe = QueryExecutionFactory.create(rq, jsonModel);
 		         ResultSet qres = qe.execSelect();
@@ -146,12 +143,11 @@ public class AlertRule {
 			            QuerySolution qs = qres.nextSolution();
 			            Resource res = qs.get("?s").asResource();
 			            Property detectedRule = ruleModel.createProperty("http://ss.l/dp#hasDetectedRule");
-			            addJsonModel.add(res, detectedRule, subj);
+			            alertModel.add(res, detectedRule, subj);
 			    	  }
 		            }
-			      
 			   }
-			jsonModel.add(addJsonModel);  
+			
 			 
 		  }
 }

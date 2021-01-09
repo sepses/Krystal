@@ -104,7 +104,7 @@ public class JsonRDFReader {
 									//add rdfs reasoner first
 									InfModel infModel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), jsonModel);
 									 //detect alert from rule dir (i.e. sigma rule)
-									AlertRule.generateAlertFromRuleDir(infModel, ruledir);
+									AlertRule.generateAlertFromRuleDir(infModel, alertModel, ruledir);
 									String rdfFile = Utility.saveToRDF(infModel, outputdir, namegraph);
 									//Utility.storeFileInRepo(triplestore, rdfFile, sparqlEp, namegraph, "dba", "dba");
 								}	
@@ -125,7 +125,7 @@ public class JsonRDFReader {
 				
 				    InfModel infModel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), jsonModel);
 				    //detect alert from rule dir (i.e. sigma rule)
-					AlertRule.generateAlertFromRuleDir(infModel, ruledir);
+					AlertRule.generateAlertFromRuleDir(infModel, alertModel, ruledir);
 					String rdfFile = Utility.saveToRDF(infModel, outputdir, namegraph);
 					//Utility.storeFileInRepo(triplestore, rdfFile, sparqlEp, namegraph, "dba", "dba");
 					}	
@@ -144,7 +144,7 @@ public class JsonRDFReader {
 			 	String rdfFile = Utility.saveToRDF(infModel, outputdir, namegraph);
 				Utility.exportHDT(rdfFile, outputdir, namegraph);
 				//detect alert from rule dir (i.e. sigma rule)
-				//AlertRule.generateAlertFromRuleDir(infModel, ruledir);
+				AlertRule.generateAlertFromRuleDir(infModel,alertModel, ruledir);
 				String alertFile = Utility.saveToRDF(alertModel, outputdir, namegraph+"_alert");
 				if(livestore=="false") {
 					Utility.storeFileInRepo(triplestore, rdfFile, sparqlEp, namegraph, "dba", "dba");
