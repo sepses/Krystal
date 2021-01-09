@@ -10,8 +10,6 @@ import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
-import org.apache.jena.rdf.model.InfModel;
-import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
@@ -20,9 +18,6 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.riot.RDFDataMgr;
-import org.apache.jena.update.UpdateAction;
-import org.apache.jena.update.UpdateFactory;
-import org.apache.jena.update.UpdateRequest;
 
 import helper.Utility;
 
@@ -32,18 +27,23 @@ public class AlertRule {
 	public String file;
 	public String network;
 	public String alert;
+	public  String timestamp;
 	
 	public AlertRule(){
 		prefix = "PREFIX darpa: <http://ss.l/dp#>\r\n";
-
+		timestamp = "<http://ss.l/dp#timestamp>";
+		
 	}
 	
-	public void execAlert(Model jsonModel, String proc, String objectString) {
+	public void execAlert(Model jsonModel, Model alertModel, String proc, String objectString, String ts) {
 		process = "<http://ss.r/dp/proc/"+proc+">";
 		file = "<http://ss.r/dp/obj#"+objectString+">";
+		String time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#dateTime>";
 		
-		String q =prefix+""
-				+ "INSERT { "+file+" darpa:isIllegallyExecutedBy "+process+". \r\n}"+
+		String q ="CONSTRUCT { << "+file+" darpa:isExecutedBy "+process+" >> "
+					+ "darpa:hasAlert <http://ss.r/dp/alert#exec-alert>; \r\n"
+					+ "			             darpa:timestamp "+time+"."
+						+ " \r\n}"+
 				   "WHERE { \r\n" + 
 				    file+" darpa:intTag  ?oit.\r\n"+
 					file+" darpa:isExecutedBy "+process+" .\r\n"
@@ -53,18 +53,24 @@ public class AlertRule {
 					+ "\r\n"+
 				"}";
 		
-		UpdateRequest e = UpdateFactory.create(q);
-	    UpdateAction.execute(e,jsonModel) ;
+	    QueryExecution qe = QueryExecutionFactory.create(prefix+q, jsonModel);
+        Model currentAlert = qe.execConstruct();
+        alertModel.add(currentAlert);
+        currentAlert.close();
 	    
 	}
 	
-	public void dataLeakAlert(Model jsonModel, String proc, String net) {
+	public void dataLeakAlert(Model jsonModel, Model alertModel, String proc, String net, String ts) {
+		
 		process = "<http://ss.r/dp/proc/"+proc+">";
 		network = "<http://ss.r/dp/obj#"+net+">";
+		String time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#dateTime>";
 		
-		String q =prefix+""
-				+ "INSERT { "+process+" darpa:leaksDataTo "+network+". \r\n}"+
-				   "WHERE { \r\n" + 
+		String q ="CONSTRUCT { << "+process+" darpa:sends "+network+" >> "
+								+ "darpa:hasAlert <http://ss.r/dp/alert#data-leak-alert>; \r\n"+
+								"darpa:timestamp "+time+"."+
+						   " \r\n}"+
+				"WHERE { \r\n" + 
 				    network+" darpa:confTag  ?oct.\r\n"+
 					process+" darpa:sends "+network+" .\r\n"
 					+process+" darpa:intTag  ?sit.\r\n"
@@ -75,17 +81,21 @@ public class AlertRule {
 					+ "\r\n"+
 				"}";
 		
-		UpdateRequest e = UpdateFactory.create(q);
-	    UpdateAction.execute(e,jsonModel) ;
-	    
+		QueryExecution qe = QueryExecutionFactory.create(prefix+q, jsonModel);
+        Model currentAlert = qe.execConstruct();
+        alertModel.add(currentAlert);
+        currentAlert.close();
 	}
 	
-	public void corruptFileAlert(Model jsonModel, String proc, String objectString) {
+	public void corruptFileAlert(Model jsonModel, Model alertModel, String proc, String objectString, String ts) {
 		process = "<http://ss.r/dp/proc/"+proc+">";
 		file = "<http://ss.r/dp/obj#"+objectString+">";
+		String time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#dateTime>";
 		
-		String q =prefix+""
-				+ "INSERT { "+process+" darpa:corruptFile "+file+". \r\n}"+
+		String q ="CONSTRUCT { << "+process+" darpa:writes "+file+" >> "
+								+ "darpa:hasAlert <http://ss.r/dp/alert#corrupt-file-alert>;\r\n"+
+						  			"darpa:timestamp "+time+"."+
+						   " \r\n}"+
 				   "WHERE { \r\n" + 
 				    file+" darpa:intTag  ?oit.\r\n"+
 					process+" darpa:writes "+file+" .\r\n"
@@ -95,8 +105,9 @@ public class AlertRule {
 					+ "\r\n"+
 				"}";
 	
-		UpdateRequest e = UpdateFactory.create(q);
-	    UpdateAction.execute(e,jsonModel) ;
+		QueryExecution qe = QueryExecutionFactory.create(prefix+q, jsonModel);
+        Model currentAlert = qe.execConstruct();
+        alertModel.add(currentAlert);
 	    
 	}
 	

@@ -36,8 +36,8 @@ public class AttackConstruction {
 		
 		String q = "PREFIX darpa: <http://ss.l/dp#>\r\n" + 
 				"select ?s (count (?s) as ?c) where { \r\n" + 
-				"    ?s a darpa:Process.\r\n" + 
-				"	?s darpa:alertAccess ?o\r\n" + 
+				"   ?s a darpa:Process.\r\n" + 
+				"	<< ?s ?p ?o >> darpa:hasAlert ?a\r\n" + 
 				"} group by ?s\r\n" + 
 				"order by DESC(?c)\r\n";
 		
@@ -65,7 +65,7 @@ public class AttackConstruction {
 					"   SELECT  ?s\r\n" + 
 					"     WHERE {  \r\n" + 
 					"     <"+source+"> ^darpa:connects* ?s .\r\n" + 
-					"    ?s darpa:alertAccess ?o\r\n" + 
+					"    <<?s ?p ?o>> darpa:hasAlert ?alert . \r\n" + 
 					"    \r\n" + 
 					"}";
 		
@@ -99,22 +99,14 @@ public class AttackConstruction {
 				"      ?s ?p ?o.\r\n" + 
 				"    OPTIONAL {?s2 ?p2 ?s. ?s2 darpa:confTag ?sct. \r\n" + 
 				"              FILTER (?sct < 0.5 && ?p2!=darpa:connects)\r\n" + 
-				"              FILTER (?p2!=darpa:alertAccess)\r\n" + 
-				"              FILTER (?p2!=darpa:isIllegallyExecutedBy)\r\n" + 
-				"              FILTER (?p2!=darpa:leaksDataTo)}\r\n" + 
+				"}\r\n" + 
 				"      ?s  darpa:intTag ?spt.\r\n" + 
 				" 	  ?o darpa:intTag ?opt.\r\n" + 
 				"   	FILTER ( \r\n" + 
 				"        ?spt < 0.5 && ?opt < 0.5  && ?p!=darpa:connects)\r\n" + 
-				"    FILTER (?p!=darpa:alertAccess)\r\n" + 
-				"    FILTER (?p!=darpa:isIllegallyExecutedBy)\r\n" + 
-				"    FILTER (?p!=darpa:leaksDataTo)\r\n" + 
 				"    \r\n" + 
 				"}";
-		System.out.print(q);
-		System.exit(0);
 		return q;
-		
 	  }else {
 		return "no alert";
 	  }

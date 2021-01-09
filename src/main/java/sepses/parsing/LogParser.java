@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.sparql.pfunction.library.splitIRI;
-
 import com.jsoniter.JsonIterator;
 import com.jsoniter.any.Any;
 
@@ -42,8 +40,7 @@ public class LogParser {
 			datumNode = jsonNode.get("datum");
 	}
 	
-	public String parseJSONtoRDF(Model jsonModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject ) throws IOException{	
-		
+	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject ) throws IOException{	
 		//filter is the line is an event or not
 		eventNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.Event");
 		if(eventNode.toBoolean()) {
@@ -56,7 +53,6 @@ public class LogParser {
 				hostId = eventNode.get("hostId").toString();
 				long timestampNanos = eventNode.get("timestampNanos").toLong();
 				timestamp = new Timestamp(timestampNanos/1000000).toString();
-				//System.out.print(timestamp);
 				userId = getUserId(subject, UserObject);
 				objectString = cleanLine(eventNode.get("predicateObjectPath").get("string").toString());	
 				object = shortenUUID(eventNode.get("predicateObject").get("com.bbn.tc.schema.avro.cdm18.UUID").toString(),uuIndex);
@@ -64,7 +60,6 @@ public class LogParser {
 				String fileMap = "";
 				String prevProcess="";
 				String networkMap="";
-				
 				
 				//is file new
 				if(isEntityNew(objectString, File)) {
@@ -114,7 +109,7 @@ public class LogParser {
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 								
 								//AlertRule alert = new AlertRule();
-								//alert.corruptFileAlert(jsonModel, subject+"#"+exec, objectString);
+								//alert.corruptFileAlert(jsonModel, subject+"#"+exec, objectString, timestamp);
 								
 								PropagationRule prop = new PropagationRule();
 								prop.writeTag(jsonModel, subject, exec, objectString);
@@ -201,7 +196,7 @@ public class LogParser {
 								 jsonModel.read(targetReader2, null, "N-TRIPLE");
 								 
 								 AlertRule alert = new AlertRule();
-								 alert.execAlert(jsonModel, subject+"#"+process2, objectString);
+								 alert.execAlert(jsonModel,alertModel, subject+"#"+process2, objectString, timestamp);
 								 
 								 
 								 PropagationRule prop = new PropagationRule();
@@ -244,7 +239,7 @@ public class LogParser {
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 								
 								AlertRule alert = new AlertRule();
-								alert.dataLeakAlert(jsonModel, subject+"#"+exec, IPAddress);
+								alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, timestamp);
 								
 								PropagationRule prop = new PropagationRule();
 								prop.writeTag(jsonModel, subject, exec, IPAddress);

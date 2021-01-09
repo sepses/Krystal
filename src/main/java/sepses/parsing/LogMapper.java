@@ -64,8 +64,8 @@ public class LogMapper {
 		String time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#dateTime>";
 		
 		
-		return   "<<" +s+ process +s+ writes +s+ file +s+ ">>"+s+ timestamp +s+ time +dot 
-				//process +s+ writes +s+ file +dot 
+		return  process +s+ writes +s+ file +dot 
+				//"<<" +s+ process +s+ writes +s+ file +s+ ">>"+s+ timestamp +s+ time +dot 
 				+ process +s+ hasExe +s+ exe +dot
 				+ process +s+ hasHost +s+ host +dot
 				+ process +s+ hasUser +s+ user +dot;
@@ -80,8 +80,8 @@ public class LogMapper {
 		user = "<http://ss.r/dp/user#"+userId+">";
 		String time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#dateTime>";
 		
-		return	"<<" +s+ file +s+ isReadBy +s+ process +s+ ">>"+s+ timestamp +s+ time +dot
-				//file +s+ isReadBy +s+ process +dot 
+		return	file +s+ isReadBy +s+ process +dot
+				//"<<" +s+ file +s+ isReadBy +s+ process +s+ ">>"+s+ timestamp +s+ time +dot
 				+ process +s+ hasExe +s+ exe +dot
 				+ process +s+ hasHost +s+ host +dot
 				+ process +s+ hasUser +s+ user +dot;
@@ -101,8 +101,8 @@ public class LogMapper {
 
 		
 		String executeMap =  
-				   "<<" +s+ file +s+ isExecutedBy +s+ process2 +s+ ">>"+s+ timestamp +s+ time +dot
-				   //file +s+ isExecutedBy +s+ process2 +dot 
+				   file +s+ isExecutedBy +s+ process2 +dot 
+				   //"<<" +s+ file +s+ isExecutedBy +s+ process2 +s+ ">>"+s+ timestamp +s+ time +dot
 				   +process2 +s+ hasCmd +s+ cmdLine + dot +
 				   process2 +s+ hasExe +s+ exe +dot
 				   + process2 +s+ hasHost +s+ host +dot
@@ -121,8 +121,8 @@ public class LogMapper {
 		user = "<http://ss.r/dp/user#"+userId+">";
 		String time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#dateTime>";
 		
-		return "<<" +s+ process +s+ sends +s+ ipAddress +s+ ">>"+s+ timestamp +s+ time +dot
-				//process +s+ sends +s+ ipAddress +dot 
+		return process +s+ sends +s+ ipAddress +dot
+				//"<<" +s+ process +s+ sends +s+ ipAddress +s+ ">>"+s+ timestamp +s+ time +dot
 				+ process +s+ hasExe +s+ exe +dot
 				 + process +s+ hasHost +s+ host +dot
 				 + process +s+ hasUser +s+ user +dot;
@@ -137,8 +137,8 @@ public class LogMapper {
 		user = "<http://ss.r/dp/user#"+userId+">";
 		String time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#dateTime>";
 		
-		return  "<<" +s+ ipAddress +s+ isReceivedBy +s+ process +s+ ">>"+s+ timestamp +s+ time +dot
-				//ipAddress +s+ isReceivedBy +s+ process +dot 
+		return  ipAddress +s+ isReceivedBy +s+ process +dot 
+				//"<<" +s+ ipAddress +s+ isReceivedBy +s+ process +s+ ">>"+s+ timestamp +s+ time +dot
 				+ process +s+ hasExe +s+ exe +dot
 				+ process +s+ hasHost +s+ host +dot
 				+ process +s+ hasUser +s+ user +dot;
@@ -151,9 +151,9 @@ public class LogMapper {
 		String proc = "<http://ss.r/dp/proc/"+process+">";
 		String time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#dateTime>";
 		
-		return "<<" +s+ prevProc +s+ forks +s+ proc +s+ ">>"+s+ timestamp +s+ time +dot;
-				//prevProc +s+ forks +s+ proc +dot;
-		
+		return prevProc +s+ forks +s+ proc +dot;
+				//"<<" +s+ prevProc +s+ forks +s+ proc +s+ ">>"+s+ timestamp +s+ time +dot;
+				
 	}
 	
 public  String userMap(String userId, String userName) {

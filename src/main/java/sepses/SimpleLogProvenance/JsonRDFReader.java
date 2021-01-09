@@ -36,12 +36,16 @@ public class JsonRDFReader {
 		Integer templ = 0;
 		Integer group=0;
 			
-	
-		//Model jsonModel = ModelFactory.createDefaultModel();
+		//provenance Model store in TDB
 		Dataset d = TDBFactory.createDataset(tdbdir);
 		Model jsonModel = d.getDefaultModel();
 		long time1 = System.currentTimeMillis();
-		
+	
+
+		//alert model store in jena model
+		Model alertModel = ModelFactory.createDefaultModel();
+	
+	
 		
 	    Set<String> Process = new HashSet<>();
 		Set<String> File = new HashSet<>();
@@ -80,7 +84,7 @@ public class JsonRDFReader {
 							//skip strange character inside line
 							try {		
 									LogParser lp = new LogParser(line);
-									lastAccess = lp.parseJSONtoRDF(jsonModel,fieldfilter, confidentialdir, uuIndex, Process, File, 
+									lastAccess = lp.parseJSONtoRDF(jsonModel,alertModel,fieldfilter, confidentialdir, uuIndex, Process, File, 
 											                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject);
 									//System.out.println(lastAccess);
 							} catch (Exception e) {
@@ -102,7 +106,7 @@ public class JsonRDFReader {
 									 //detect alert from rule dir (i.e. sigma rule)
 									AlertRule.generateAlertFromRuleDir(infModel, ruledir);
 									String rdfFile = Utility.saveToRDF(infModel, outputdir, namegraph);
-									Utility.storeFileInRepo(triplestore, rdfFile, sparqlEp, namegraph, "dba", "dba");
+									//Utility.storeFileInRepo(triplestore, rdfFile, sparqlEp, namegraph, "dba", "dba");
 								}	
 								templ=0;
 							}
@@ -116,13 +120,16 @@ public class JsonRDFReader {
 		if(templ!=0) {
 			
 			System.out.println("the rest is less than "+lineNumber+" which is "+templ);
+			
 			if(livestore!="false") {
+				
 				    InfModel infModel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), jsonModel);
 				    //detect alert from rule dir (i.e. sigma rule)
 					AlertRule.generateAlertFromRuleDir(infModel, ruledir);
 					String rdfFile = Utility.saveToRDF(infModel, outputdir, namegraph);
-					Utility.storeFileInRepo(triplestore, rdfFile, sparqlEp, namegraph, "dba", "dba");
+					//Utility.storeFileInRepo(triplestore, rdfFile, sparqlEp, namegraph, "dba", "dba");
 					}	
+			
 			templ=0;
 		}
 			//end of a file	
@@ -130,23 +137,24 @@ public class JsonRDFReader {
 	   }
 	       //end of folder
 	     
-			if(backupfile!="false") {
-	 		    
-				InfModel infModel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), jsonModel);
-				 //detect alert from rule dir (i.e. sigma rule)
-				AlertRule.generateAlertFromRuleDir(infModel, ruledir);
-				String rdfFile = Utility.saveToRDF(infModel, outputdir, namegraph);
-				//if(livestore=="false") {
-				//	Utility.storeFileInRepo(triplestore, rdfFile, sparqlEp, namegraph, "dba", "dba");
-				//}
-				//Utility.exportHDT(rdfFile, outputdir, namegraph);
+	     
+			InfModel infModel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), jsonModel);
+			
+	     if(backupfile!="false") {
+			 	String rdfFile = Utility.saveToRDF(infModel, outputdir, namegraph);
+				Utility.exportHDT(rdfFile, outputdir, namegraph);
+				//detect alert from rule dir (i.e. sigma rule)
+				//AlertRule.generateAlertFromRuleDir(infModel, ruledir);
+				String alertFile = Utility.saveToRDF(alertModel, outputdir, namegraph+"_alert");
+				if(livestore=="false") {
+					Utility.storeFileInRepo(triplestore, rdfFile, sparqlEp, namegraph, "dba", "dba");
+					Utility.storeFileInRepo(triplestore, alertFile, sparqlEp, namegraph, "dba", "dba");
+				}	
 			} 
 	   
 	  System.out.println("Finish!, Generating query for attack construction.. ");
-	   //System.out.println(FileObject);
  	  //generate query for attack construction
-	  InfModel infModel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), jsonModel);
-	  String q = AttackConstruction.AttackGeneration(infModel);
+	  String q = AttackConstruction.AttackGeneration(infModel.union(alertModel));
 	  
 	  System.out.println(q);
 	  

@@ -4,7 +4,7 @@ output-dir: experiment/output/
 
 tdb-dir: experiment/tdb
 
-ontology: experiment/ontology/darpa-ontology.ttl
+ontology: experiment/ontology/sepses-ontology.ttl
 
 rule-dir : experiment/rule/
 

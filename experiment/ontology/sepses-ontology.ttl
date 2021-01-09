@@ -16,23 +16,11 @@ darpa:File a rdfs:Class.
 darpa:Executable a rdfs:Class.
 
 darpa:Network a rdfs:Class.
-      
-darpa:Host a rdfs:Class.
-
-darpa:IPAddress a rdfs:Class.
 
 darpa:User a rdfs:Class.
 
-darpa:RootUser a rdfs:Class;
-	rdfs:subClassOf :User.
+darpa:Host a rdfs:Class.
 
-darpa:LocalUser a rdfs:Class;
-      	rdfs:subClassOf :User.
-
-darpa:SystemUser a rdfs:Class;
-	rdfs:subClassOf :User.
-
-#=====property===================
 
 darpa:forks a rdf:Property;
     rdfs:subPropertyOf darpa:connects ;
@@ -80,10 +68,6 @@ darpa:userName a rdf:Property;
    rdfs:domain darpa:User ;
    rdfs:range xsd:string.
 
-darpa:userId a rdf:Property;
-   rdfs:domain darpa:User ;
-   rdfs:range xsd:integer.
-
 darpa:hasHost a rdf:Property;
    rdfs:domain darpa:Process ;
    rdfs:range darpa:Host.
@@ -98,25 +82,7 @@ darpa:hostOS a rdf:Property;
 
 darpa:IPAddress a rdf:Property;
    rdfs:domain darpa:Host ;
-   rdfs:range  xsd:string.
-
-#darpa:isIllegallyExecutedBy a rdf:Property;
-#    rdfs:subPropertyOf darpa:alertAccess ;
-#    rdfs:domain darpa:File ;
-#    rdfs:range darpa:Process .
-
-#darpa:leaksDataTo a rdf:Property;
-#    rdfs:subPropertyOf darpa:alertAccess ;
-#    rdfs:domain darpa:Process ;
-#    rdfs:range darpa:Network .
-
-darpa:hasIPAddress a rdf:Property;
-    rdfs:domain darpa:Network;
-    rdfs:range darpa:IPAddress.
-
-darpa:port a rdf:Property;
-    rdfs:domain darpa:Network;
-    rdfs:range xsd:integer.
+   rdfs:range xsd:string.
 
 #==================additional ontology===============
 
@@ -131,4 +97,3 @@ darpa:hasPotentialAttackTechnique a rdf:Property;
 darpa:hasDetectedRule a rdf:Property;
     rdfs:domain darpa:Process ;
     rdfs:range sigma:SigmaRule .
-
