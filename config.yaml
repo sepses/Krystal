@@ -8,6 +8,8 @@ ontology: experiment/ontology/sepses-ontology.ttl
 
 rule-dir : experiment/rule/
 
+os-platform: linux
+
 triple-store: graphdb
 
 live-store: no

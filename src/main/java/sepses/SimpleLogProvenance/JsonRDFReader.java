@@ -19,9 +19,14 @@ import org.apache.jena.tdb.TDBFactory;
 
 import helper.Utility;
 import sepses.parsing.LogParser;
+import sepses.parsing.LogParserWin;
+//import sepses.parsing.LogParserLinux;
 
 public class JsonRDFReader {
-	public static void readJson(String t, String filefolder, String l, String se, String ng, String sl, String outputdir, String inputdir, String triplestore, String backupfile,  ArrayList<String> fieldfilter, String livestore, ArrayList<String> confidentialdir, String tdbdir, String ontology, String ruledir) throws Exception {
+	public static void readJson(String t, String filefolder, String l, String se, String ng, String sl, String outputdir, 
+									String inputdir, String triplestore, String backupfile,  ArrayList<String> fieldfilter,
+										String livestore, ArrayList<String> confidentialdir, String tdbdir, String ontology, 
+										String ruledir, String os) throws Exception {
 		
 		  
 		Integer lineNumber = 1; // 1 here means the minimum line to be extracted
@@ -50,12 +55,14 @@ public class JsonRDFReader {
 	    Set<String> Process = new HashSet<>();
 		Set<String> File = new HashSet<>();
 		Set<String> Network = new HashSet<>();
+		Set<String> Registry = new HashSet<>();
 		Set<String> lastEvent = new HashSet<>();
 
 		HashMap<String, String> uuIndex = new HashMap<String, String>();
 		HashMap<String, String> NetworkObject = new HashMap<String, String>();
 		HashMap<String, String> ForkObject = new HashMap<String, String>();
 		HashMap<String, String> UserObject = new HashMap<String, String>();
+		HashMap<String, String> RegistryObject = new HashMap<String, String>();
 		String lastAccess = "";
 		
 		
@@ -82,10 +89,24 @@ public class JsonRDFReader {
 						if(countLine >= startingLine) {
 							//line = cleanLine(line); // sometimes the data should be cleaned first
 							//skip strange character inside line
-							try {		
-									LogParser lp = new LogParser(line);
-									lastAccess = lp.parseJSONtoRDF(jsonModel,alertModel,fieldfilter, confidentialdir, uuIndex, Process, File, 
-											                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject);
+							try {	
+									if(os.equals("windows")) {
+										line = line.substring(0, line.length() - 1);
+										LogParserWin lp = new LogParserWin(line);
+										lastAccess = lp.parseJSONtoRDF(jsonModel,alertModel,fieldfilter, confidentialdir, uuIndex, Process, File, 
+								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, Registry, RegistryObject);
+									}
+//									else if (os.equals("linux")){
+//										LogParserLinux lp = new LogParserLinux(line);
+//										lastAccess = lp.parseJSONtoRDF(jsonModel,alertModel,fieldfilter, confidentialdir, uuIndex, Process, File, 
+//								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject);
+//									}
+									else{
+										LogParser lp = new LogParser(line);
+										lastAccess = lp.parseJSONtoRDF(jsonModel,alertModel,fieldfilter, confidentialdir, uuIndex, Process, File, 
+								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject);
+									}
+									
 									//System.out.println(lastAccess);
 							} catch (Exception e) {
 								System.out.print("strange character skipped => ");

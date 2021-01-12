@@ -9,7 +9,7 @@ import org.apache.jena.rdf.model.StmtIterator;
 
 
 public class PropagationRule {
-	public  String prefDarpa ; 
+	public  String prefRule ; 
 	public  String prefXSD ;
 	public  String prefix; 
 	public  String process; 
@@ -20,10 +20,10 @@ public class PropagationRule {
 				
 	public PropagationRule() {
 		Model model = ModelFactory.createDefaultModel();		
-		prefDarpa = "http://ss.l/dp#";
-		confTag = model.createProperty(prefDarpa+"confTag");
-		intTag = model.createProperty(prefDarpa+"intTag");
-		subjTag = model.createProperty(prefDarpa+"subjTag");
+		prefRule = "http://w3id.org/sepses/ns/rule#";
+		confTag = model.createProperty(prefRule+"confTag");
+		intTag = model.createProperty(prefRule+"intTag");
+		subjTag = model.createProperty(prefRule+"subjTag");
 		
 	}
 	
@@ -47,8 +47,8 @@ public class PropagationRule {
 	
 	public void confRead(Model jsonModel, String subject, String exec, String objectString) {
 		
-		process = "http://ss.r/dp/proc/"+subject+"#"+exec;
-		file = "http://ss.r/dp/obj#"+objectString;
+		process = "http://w3id.org/sepses/res/proc/"+subject+"#"+exec;
+		file = "http://w3id.org/sepses/res/obj#"+objectString;
 		
 		Resource respro = jsonModel.createResource(process);
 		Resource resfile = jsonModel.createResource(file);
@@ -65,8 +65,8 @@ public class PropagationRule {
 		
 	public  void intRead(Model jsonModel,String subject, String exec, String objectString) {
 		
-		process = "http://ss.r/dp/proc/"+subject+"#"+exec;
-		file = "http://ss.r/dp/obj#"+objectString;
+		process = "http://w3id.org/sepses/res/proc/"+subject+"#"+exec;
+		file = "http://w3id.org/sepses/res/obj#"+objectString;
 		Resource respro = jsonModel.createResource(process);
 		Resource resfile = jsonModel.createResource(file);
 		
@@ -84,8 +84,8 @@ public class PropagationRule {
 	//================WRITE===========================
 			
 	public  void confWrite(Model jsonModel, String subject, String exec, String objectString) {
-	    process = "http://ss.r/dp/proc/"+subject+"#"+exec;
-		file = "http://ss.r/dp/obj#"+objectString;
+	    process = "http://w3id.org/sepses/res/proc/"+subject+"#"+exec;
+		file = "http://w3id.org/sepses/res/obj#"+objectString;
 		
 		Resource respro = jsonModel.createResource(process);
 		Resource resfile = jsonModel.createResource(file);
@@ -114,8 +114,8 @@ public class PropagationRule {
 	}
 	
 	public  void intWrite(Model jsonModel, String subject, String exec, String objectString) {
-		process = "http://ss.r/dp/proc/"+subject+"#"+exec;
-		file = "http://ss.r/dp/obj#"+objectString;
+		process = "http://w3id.org/sepses/res/proc/"+subject+"#"+exec;
+		file = "http://w3id.org/sepses/res/obj#"+objectString;
 		
 		Resource respro = jsonModel.createResource(process);
 		Resource resfile = jsonModel.createResource(file);
@@ -148,8 +148,8 @@ public class PropagationRule {
 			
 	public  void subjExec(Model jsonModel, String subject, String exec, String objectString) {
 		
-		process = "http://ss.r/dp/proc/"+subject+"#"+exec;
-		file = "http://ss.r/dp/obj#"+objectString;
+		process = "http://w3id.org/sepses/res/proc/"+subject+"#"+exec;
+		file = "http://w3id.org/sepses/res/obj#"+objectString;
 		
 		Resource respro = jsonModel.createResource(process);
 		Resource resfile = jsonModel.createResource(file);
@@ -177,8 +177,8 @@ public class PropagationRule {
 
 	public  void confExec(Model jsonModel, String subject, String exec, String objectString) {
 		
-		process = "http://ss.r/dp/proc/"+subject+"#"+exec;
-		file = "http://ss.r/dp/obj#"+objectString;
+		process = "http://w3id.org/sepses/res/proc/"+subject+"#"+exec;
+		file = "http://w3id.org/sepses/res/obj#"+objectString;
 		
 		Resource respro = jsonModel.createResource(process);
 		Resource resfile = jsonModel.createResource(file);
@@ -205,8 +205,8 @@ public class PropagationRule {
 
 	public  void intExec(Model jsonModel, String subject, String exec, String objectString) {
 
-		process = "http://ss.r/dp/proc/"+subject+"#"+exec;
-		file = "http://ss.r/dp/obj#"+objectString;
+		process = "http://w3id.org/sepses/res/proc/"+subject+"#"+exec;
+		file = "http://w3id.org/sepses/res/obj#"+objectString;
 		
 		Resource respro = jsonModel.createResource(process);
 		Resource resfile = jsonModel.createResource(file);
@@ -236,8 +236,8 @@ public class PropagationRule {
 	//================FORK============
 
 		public  void forkTag(Model jsonModel, String prevProcess, String process) {
-			String prevProc = "http://ss.r/dp/proc/"+prevProcess;
-			process = "http://ss.r/dp/proc/"+process;
+			String prevProc = "http://w3id.org/sepses/res/proc/"+prevProcess;
+			process = "http://w3id.org/sepses/res/proc/"+process;
 			
 			Resource resPrevPro = jsonModel.createResource(prevProc);
 			Resource respro = jsonModel.createResource(process);

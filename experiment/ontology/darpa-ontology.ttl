@@ -24,13 +24,13 @@ darpa:IPAddress a rdfs:Class.
 darpa:User a rdfs:Class.
 
 darpa:RootUser a rdfs:Class;
-	rdfs:subClassOf :User.
+	rdfs:subClassOf darpa:User.
 
 darpa:LocalUser a rdfs:Class;
-      	rdfs:subClassOf :User.
+      	rdfs:subClassOf darpa:User.
 
 darpa:SystemUser a rdfs:Class;
-	rdfs:subClassOf :User.
+	rdfs:subClassOf darpa:User.
 
 #=====property===================
 

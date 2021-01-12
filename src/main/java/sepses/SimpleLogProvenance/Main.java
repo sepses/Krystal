@@ -20,6 +20,7 @@ public class Main {
 	       String outputdir= s.get("output-dir").toString();
 	       String inputdir= s.get("input-dir").toString();
 	       String ruledir= s.get("rule-dir").toString();
+	       String osplatform= s.get("os-platform").toString();
 	       String triplestore= s.get("triple-store").toString();
 	       String backupfile= s.get("backup-file").toString();
 	       String livestore= s.get("live-store").toString();
@@ -49,19 +50,19 @@ public class Main {
 	      
 	  	//====== only for experiment in IDE, please uncomment this lines when you compile ========= 
 	      
-//	      type = "darpa";
-//	      filefolder = inputdir+"darpa/";
-//	  	  line = "10";
-//	      if(triplestore.equals("virtuoso")) {  	  
-//	  	     sparqlEp ="http://localhost:8890/sparql";
-//	      }else if(triplestore.equals("graphdb")){
-//	  	     sparqlEp = "http://localhost:7200/repositories/cadets100000";
-//	      }else {
-//	  	    //default: graphdb	 
-//	  	     sparqlEp = "http://localhost:7200/repositories/cadets100000";
-//	  	   }
-//	      namegraph = "http://w3id.org/sepses/graph/cadets10000";
-//	  	  startingLine = "0";
+	      type = "darpa";
+	      filefolder = inputdir+"darpa/";
+	  	  line = "10";
+	      if(triplestore.equals("virtuoso")) {  	  
+	  	     sparqlEp ="http://localhost:8890/sparql";
+	      }else if(triplestore.equals("graphdb")){
+	  	     sparqlEp = "http://localhost:7200/repositories/RDFSTAR";
+	      }else {
+	  	    //default: graphdb	 
+	  	     sparqlEp = "http://localhost:7200/repositories/cadets10000";
+	  	   }
+	      namegraph = "http://w3id.org/sepses/graph/cadets10000";
+	  	  startingLine = "0";
 
 	  	  //=======end of experiment in IDE=============
 	    
@@ -76,7 +77,7 @@ public class Main {
 	      
 	      JsonRDFReader.readJson(type, filefolder, line, sparqlEp, namegraph, startingLine, 
 	    		  outputdir, inputdir, triplestore, backupfile, fieldfilter,
-	    		  livestore, confidentialdir, tdbdir, ontology, ruledir);
+	    		  livestore, confidentialdir, tdbdir, ontology, ruledir, osplatform);
 	    		  
 	    
 	  	

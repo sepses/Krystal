@@ -1,88 +1,106 @@
-@prefix darpa: <http://ss.l/dp#> .
+@prefix : <http://w3id.org/sepses/ns/log#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .	
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix sigma: <http://w3id.org/sepses/vocab/rule/sigma#> .
 @prefix cat: <http://w3id.org/sepses/vocab/ref/cat#> .
-@base <http://ss.l/dp> .
+@base <http://w3id.org/sepses/ns/log> .
 
-<http://ss.l/dp> a owl:Ontology .
+<http://w3id.org/sepses/ns/log> a owl:Ontology .
 
-darpa:Process a rdfs:Class.
+:Process a rdfs:Class.
 
-darpa:File a rdfs:Class.
+:File a rdfs:Class.
 
-darpa:Executable a rdfs:Class.
+:Executable a rdfs:Class.
 
-darpa:Network a rdfs:Class.
+:Network a rdfs:Class.
 
-darpa:User a rdfs:Class.
+:User a rdfs:Class.
 
-darpa:Host a rdfs:Class.
+:Host a rdfs:Class.
+
+:RootUser a rdfs:Class;
+	rdfs:subClassOf :User.
+
+:LocalUser a rdfs:Class;
+      	rdfs:subClassOf :User.
+
+:SystemUser a rdfs:Class;
+	rdfs:subClassOf :User.
 
 
-darpa:forks a rdf:Property;
-    rdfs:subPropertyOf darpa:connects ;
-    rdfs:domain darpa:Process ;
-    rdfs:range darpa:Process.
+:forks a rdf:Property;
+    rdfs:subPropertyOf :connects ;
+    rdfs:domain :Process ;
+    rdfs:range :Process.
 
-darpa:isExecutedBy a rdf:Property;
-    rdfs:subPropertyOf darpa:connects ;
-    rdfs:domain darpa:File ;
-    rdfs:range darpa:Process .
+:isExecutedBy a rdf:Property;
+    rdfs:subPropertyOf :connects ;
+    rdfs:domain :File ;
+    rdfs:range :Process .
 
-darpa:isReadBy a rdf:Property;
-    rdfs:subPropertyOf darpa:connects ;
-    rdfs:domain darpa:File ;
-    rdfs:range darpa:Process .
+:isReadBy a rdf:Property;
+    rdfs:subPropertyOf :connects ;
+    rdfs:domain :File ;
+    rdfs:range :Process .
 
-darpa:writes a rdf:Property;
-    rdfs:subPropertyOf darpa:connects ;
-    rdfs:domain darpa:Process ;
-    rdfs:range darpa:File .    
+:writes a rdf:Property;
+    rdfs:subPropertyOf :connects ;
+    rdfs:domain :Process ;
+    rdfs:range :File .    
 
-darpa:isReceivedBy a rdf:Property;
-    rdfs:subPropertyOf darpa:connects ;
-    rdfs:domain darpa:Network ;
-    rdfs:range darpa:Process .
+:isReceivedBy a rdf:Property;
+    rdfs:subPropertyOf :connects ;
+    rdfs:domain :Network ;
+    rdfs:range :Process .
 
-darpa:sends a rdf:Property;
-    rdfs:subPropertyOf darpa:connects ;
-    rdfs:domain darpa:Process ;
-    rdfs:range darpa:Network .    
+:sends a rdf:Property;
+    rdfs:subPropertyOf :connects ;
+    rdfs:domain :Process ;
+    rdfs:range :Network .    
 
-darpa:hasCmd a rdf:Property;
-   rdfs:domain darpa:Process ;
+:hasCmd a rdf:Property;
+   rdfs:domain :Process ;
    rdfs:range xsd:string.
 
-darpa:hasExe a rdf:Property;
-   rdfs:domain darpa:Process ;
-   rdfs:range darpa:Executable.
+:hasExe a rdf:Property;
+   rdfs:domain :Process ;
+   rdfs:range :Executable.
 
-darpa:hasUser a rdf:Property;
-   rdfs:domain darpa:Process ;
-   rdfs:range darpa:User.
+:hasUser a rdf:Property;
+   rdfs:domain :Process ;
+   rdfs:range :User.
 
-darpa:userName a rdf:Property;
-   rdfs:domain darpa:User ;
+:userName a rdf:Property;
+   rdfs:domain :User ;
    rdfs:range xsd:string.
 
-darpa:hasHost a rdf:Property;
-   rdfs:domain darpa:Process ;
-   rdfs:range darpa:Host.
+:hasHost a rdf:Property;
+   rdfs:domain :Process ;
+   rdfs:range :Host.
 
-darpa:hostName a rdf:Property;
-   rdfs:domain darpa:Host ;
+:hostName a rdf:Property;
+   rdfs:domain :Host ;
    rdfs:range xsd:string.
 
-darpa:hostOS a rdf:Property;
-   rdfs:domain darpa:Host ;
+:hostOS a rdf:Property;
+   rdfs:domain :Host ;
    rdfs:range xsd:string.
 
-darpa:IPAddress a rdf:Property;
-   rdfs:domain darpa:Host ;
+:IPAddress a rdf:Property;
+   rdfs:domain :Host ;
    rdfs:range xsd:string.
+
+:hasIPAddress a rdf:Property;
+   rdfs:domain :Network ;
+   rdfs:range :IPAddress.
+
+:port a rdf:Property;
+   rdfs:domain :Network ;
+   rdfs:range xsd:integer.
+
 
 #==================additional ontology===============
 
@@ -90,10 +108,10 @@ cat:Technique a rdfs:Class.
 
 sigma:SigmaRule a rdfs:Class.
 
-darpa:hasPotentialAttackTechnique a rdf:Property;
-    rdfs:domain darpa:Process ;
+:hasPotentialAttackTechnique a rdf:Property;
+    rdfs:domain :Process ;
     rdfs:range cat:Technique .
 
-darpa:hasDetectedRule a rdf:Property;
-    rdfs:domain darpa:Process ;
+:hasDetectedRule a rdf:Property;
+    rdfs:domain :Process ;
     rdfs:range sigma:SigmaRule .

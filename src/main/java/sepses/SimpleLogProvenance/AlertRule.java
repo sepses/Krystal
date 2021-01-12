@@ -30,24 +30,25 @@ public class AlertRule {
 	public  String timestamp;
 	
 	public AlertRule(){
-		prefix = "PREFIX darpa: <http://ss.l/dp#>\r\n";
-		timestamp = "<http://ss.l/dp#timestamp>";
+		prefix = "PREFIX sepses: <http://w3id.org/sepses/ns/log#>\r\n"
+				+ "PREFIX rule: <http://w3id.org/sepses/ns/rule#>\r\n";
+		timestamp = "<http://w3id.org/sepses/ns/log#timestamp>";
 		
 	}
 	
 	public void execAlert(Model jsonModel, Model alertModel, String proc, String objectString, String ts) {
-		process = "<http://ss.r/dp/proc/"+proc+">";
-		file = "<http://ss.r/dp/obj#"+objectString+">";
-		String time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#dateTime>";
+		process = "<http://w3id.org/sepses/res/proc/"+proc+">";
+		file = "<http://w3id.org/sepses/res/obj#"+objectString+">";
+		String time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#timestamp>";
 		
-		String q ="CONSTRUCT { << "+file+" darpa:isExecutedBy "+process+" >> "
-					+ "darpa:hasAlert <http://ss.r/dp/alert#exec-alert>; \r\n"
-					+ "			             darpa:timestamp "+time+"."
+		String q ="CONSTRUCT { << "+file+" sepses:isExecutedBy "+process+" >> "
+					+ "rule:hasAlert <http://w3id.org/sepses/res/alert#exec-alert>; \r\n"
+					+ "			             sepses:timestamp "+time+"."
 						+ " \r\n}"+
 				   "WHERE { \r\n" + 
-				    file+" darpa:intTag  ?oit.\r\n"+
-					file+" darpa:isExecutedBy "+process+" .\r\n"
-					+process+" darpa:subjTag  ?sst.\r\n"
+				    file+" rule:intTag  ?oit.\r\n"+
+					file+" sepses:isExecutedBy "+process+" .\r\n"
+					+process+" rule:subjTag  ?sst.\r\n"
 					+"FILTER (?oit < 0.5).\r\n"
 					+"FILTER (?sst >= 0.5).\r\n"
 					+ "\r\n"+
@@ -62,19 +63,19 @@ public class AlertRule {
 	
 	public void dataLeakAlert(Model jsonModel, Model alertModel, String proc, String net, String ts) {
 		
-		process = "<http://ss.r/dp/proc/"+proc+">";
-		network = "<http://ss.r/dp/obj#"+net+">";
-		String time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#dateTime>";
+		process = "<http://w3id.org/sepses/res/proc/"+proc+">";
+		network = "<http://w3id.org/sepses/res/obj#"+net+">";
+		String time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#timestamp>";
 		
-		String q ="CONSTRUCT { << "+process+" darpa:sends "+network+" >> "
-								+ "darpa:hasAlert <http://ss.r/dp/alert#data-leak-alert>; \r\n"+
-								"darpa:timestamp "+time+"."+
+		String q ="CONSTRUCT { << "+process+" sepses:sends "+network+" >> "
+								+ "rule:hasAlert <http://w3id.org/sepses/res/alert#data-leak-alert>; \r\n"+
+								"sepses:timestamp "+time+"."+
 						   " \r\n}"+
 				"WHERE { \r\n" + 
-				    network+" darpa:confTag  ?oct.\r\n"+
-					process+" darpa:sends "+network+" .\r\n"
-					+process+" darpa:intTag  ?sit.\r\n"
-					+process+" darpa:confTag  ?sct.\r\n"
+				    network+" rule:confTag  ?oct.\r\n"+
+					process+" sepses:sends "+network+" .\r\n"
+					+process+" rule:intTag  ?sit.\r\n"
+					+process+" rule:confTag  ?sct.\r\n"
 					+"FILTER (?oct >= 0.5).\r\n"
 					+"FILTER (?sct < 0.5).\r\n"
 					+"FILTER (?sit < 0.5).\r\n"
@@ -88,18 +89,18 @@ public class AlertRule {
 	}
 	
 	public void corruptFileAlert(Model jsonModel, Model alertModel, String proc, String objectString, String ts) {
-		process = "<http://ss.r/dp/proc/"+proc+">";
-		file = "<http://ss.r/dp/obj#"+objectString+">";
-		String time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#dateTime>";
+		process = "<http://w3id.org/sepses/res/proc/"+proc+">";
+		file = "<http://w3id.org/sepses/res/obj#"+objectString+">";
+		String time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#timestamp>";
 		
-		String q ="CONSTRUCT { << "+process+" darpa:writes "+file+" >> "
-								+ "darpa:hasAlert <http://ss.r/dp/alert#corrupt-file-alert>;\r\n"+
-						  			"darpa:timestamp "+time+"."+
+		String q ="CONSTRUCT { << "+process+" sepses:writes "+file+" >> "
+								+ "rule:hasAlert <http://w3id.org/sepses/res/alert#corrupt-file-alert>;\r\n"+
+						  			"sepses:timestamp "+time+"."+
 						   " \r\n}"+
 				   "WHERE { \r\n" + 
-				    file+" darpa:intTag  ?oit.\r\n"+
-					process+" darpa:writes "+file+" .\r\n"
-					+process+" darpa:intTag  ?sit.\r\n"
+				    file+" rule:intTag  ?oit.\r\n"+
+					process+" sepses:writes "+file+" .\r\n"
+					+process+" rule:intTag  ?sit.\r\n"
 					+"FILTER (?oit >= 0.5).\r\n"
 					+"FILTER (?sit < 0.5).\r\n"
 					+ "\r\n"+
@@ -142,7 +143,7 @@ public class AlertRule {
 		         while (qres.hasNext()) {
 			            QuerySolution qs = qres.nextSolution();
 			            Resource res = qs.get("?s").asResource();
-			            Property detectedRule = ruleModel.createProperty("http://ss.l/dp#hasDetectedRule");
+			            Property detectedRule = ruleModel.createProperty("http://w3id.org/sepses/ns/rule#hasAlert");
 			            alertModel.add(res, detectedRule, subj);
 			    	  }
 		            }
