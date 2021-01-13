@@ -149,7 +149,7 @@ public  String networkMap(String netObject, String ip, String port) {
 	
 }
 
-public  String hostMap(String hostObject, String ip, String hostName, String hostOS) {
+public  String hostMap(String hostObject,String hostName, String hostOS, String ip) {
 	String host = "<http://w3id.org/sepses/resource/host#"+hostObject+">";
 	String hostip = "<http://w3id.org/sepses/resource/ip#"+ip+">";
 	String hostname = "\""+hostName+"\"^^<http://www.w3.org/2001/XMLSchema#string>";

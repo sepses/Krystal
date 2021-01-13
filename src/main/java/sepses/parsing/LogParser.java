@@ -323,7 +323,22 @@ public class LogParser {
 				jsonModel.read(targetReader, null, "N-TRIPLE");
 			
 		
-		}		
+		}else if(datumNode.get("com.bbn.tc.schema.avro.cdm18.Host").toBoolean()) {
+			String mapper="";
+			LogMapper lm = new LogMapper();	
+		    hostNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.Host");
+			hostId = hostNode.get("uuid").toString(); 
+			//String hostType = hostNode.get("hostType").toString();
+			String hostName = hostNode.get("hostName").toString();
+			String hostOS = hostNode.get("osDetails").toString();
+			String hostIP = hostNode.get("interfaces").get(1).get("ipAddresses").get(1).toString();
+			
+			mapper = lm.hostMap(hostId,hostName,hostOS,hostIP);	
+			Reader targetReader = new StringReader(mapper);
+			jsonModel.read(targetReader, null, "N-TRIPLE");
+		
+	
+	}				
 		return lastAccess;
 	
 	}
