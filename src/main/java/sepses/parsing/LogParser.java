@@ -242,7 +242,7 @@ public class LogParser {
 								alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, timestamp);
 								
 								PropagationRule prop = new PropagationRule();
-								prop.writeTag(jsonModel, subject, exec, IPAddress);
+								prop.sendTag(jsonModel, subject, exec, IPAddress);
 								
 								lastAccess=curSend;
 								
@@ -277,7 +277,7 @@ public class LogParser {
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 								
 								PropagationRule prop = new PropagationRule();
-								prop.readTag(jsonModel, subject, exec, IPAddress);
+								prop.receiveTag(jsonModel, subject, exec, IPAddress);
 								
 									lastAccess=curReceive;
 							}

@@ -1,0 +1,1035 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix ns1: <http://w3id.org/sepses/vocab/rule/sigma#> .
+@prefix ns2: <http://w3id.org/sepses/vocab/rule#>
+
+<http://w3id.org/sepses/resource/sigma/sigma-1543ae20-cbdf-4ec1-8d12-7664d667a825> a ns1:SigmaRule ;
+    dcterms:created "2017/12/12" ;
+    dcterms:creator "Florian Roth" ;
+    dcterms:description "Detects relevant commands often related to malware or hacking activity" ;
+    dcterms:id "1543ae20-cbdf-4ec1-8d12-7664d667a825" ;
+    dcterms:status "experimental" ;
+    dcterms:title "Suspicious Commands Linux" ;
+    ns1:detectionCondition "1 of them" ;
+    ns1:falsePositive "Admin activity" ;
+    ns2:hasAttackTechnique <http://w3id.org/sepses/resource/attack/technique/T1059.004> ;
+    ns1:hasDetection """prefix : <http://w3id.org/sepses/vocab/event/log#>\r
+SELECT ?s ?cmd WHERE {\r
+ ?s a :Process.\r
+ ?s :cmdLine ?cmd.\r
+FILTER (regex(str(?cmd),"chmod 777")\r
+|| regex(str(?cmd),"chmod u\\\\+s")\r
+|| regex(str(?cmd),"cp /bin/ksh")\r
+|| regex(str(?cmd),"cp /bin/sh")\r
+)\r
+}""";
+    ns1:level "medium" ;
+    ns1:logSourceProduct "linux" ;
+    ns1:logSourceService "auditd" ;
+    ns1:references "Internal Research - mostly derived from exploit code including code in MSF" ;
+    ns1:tags "attack.execution",
+        "attack.t1059.004" .
+
+<http://w3id.org/sepses/resource/sigma/sigma-1edd77db-0669-4fef-9598-165bda82826d> a ns1:SigmaRule ;
+    dcterms:created "2020/07/03" ;
+    dcterms:creator "Florian Roth" ;
+    dcterms:description "Detects suspicious session with two users present" ;
+    dcterms:id "1edd77db-0669-4fef-9598-165bda82826d" ;
+    dcterms:status "experimental" ;
+    dcterms:title "Guacamole Two Users Sharing Session Anomaly" ;
+    ns1:detectionCondition "selection" ;
+    ns1:falsePositive "Unknown" ;
+    ns1:hasDetection "" ;
+    ns1:level "high" ;
+    ns1:logSourceProduct "linux" ;
+    ns1:logSourceService "guacamole" ;
+    ns1:references "https://research.checkpoint.com/2020/apache-guacamole-rce/" .
+
+<http://w3id.org/sepses/resource/sigma/sigma-2625cc59-0634-40d0-821e-cb67382a3dd7> a ns1:SigmaRule ;
+    dcterms:created "2019/09/23" ;
+    dcterms:creator "Jakob Weinzettl, oscd.community" ;
+    dcterms:description "Detects a reload or a start of a service" ;
+    dcterms:id "2625cc59-0634-40d0-821e-cb67382a3dd7" ;
+    dcterms:status "experimental" ;
+    dcterms:title "Systemd Service Reload or Start" ;
+    ns1:detectionCondition "selection" ;
+    ns1:falsePositive "Installation of legitimate service",
+        "Legitimate reconfiguration of service" ;
+    ns2:hasAttackTechnique <http://w3id.org/sepses/resource/attack/technique/T1543.002> ;
+    ns1:hasDetection """prefix : <http://w3id.org/sepses/vocab/event/log#>\r
+SELECT ?s ?cmd WHERE {\r
+ ?s a :Process.\r
+ ?s :cmdLine ?cmd.\r
+    FILTER (regex(str(?cmd),"systemctl daemon-reload") || regex(str(?cmd),"daemon-reload"))\r
+}""";
+    ns1:level "low" ;
+    ns1:logSourceProduct "linux" ;
+    ns1:logSourceService "auditd" ;
+    ns1:references "https://attack.mitre.org/techniques/T1543/002/",
+        "https://github.com/redcanaryco/atomic-red-team/blob/master/atomics/T1543.002/T1543.002.yaml" ;
+    ns1:tags "attack.persistence",
+        "attack.t1543.002" .
+
+<http://w3id.org/sepses/resource/sigma/sigma-2aa1440c-9ae9-4d92-84a7-a9e5f5e31695> a ns1:SigmaRule ;
+    dcterms:created "2017/08/21" ;
+    dcterms:creator "Florian Roth" ;
+    dcterms:description "Detects suspicious shell commands used in various exploit codes (see references)" ;
+    dcterms:id "2aa1440c-9ae9-4d92-84a7-a9e5f5e31695" ;
+    dcterms:modified "2019/02/05" ;
+    dcterms:status "experimental" ;
+    dcterms:title "Suspicious Activity in Shell Commands" ;
+    ns1:detectionCondition "keywords" ;
+    ns1:falsePositive "Unknown" ;
+    ns2:hasAttackTechnique <http://w3id.org/sepses/resource/attack/technique/T1059.004> ;
+    ns1:hasDetection """PREFIX : <http://w3id.org/sepses/vocab/event/log#>\r
+SELECT ?s ?cmd WHERE {\r
+ ?s :cmdLine ?cmd. \r
+FILTER (regex(str(?cmd),"wget .* - http.* perl")\r
+|| regex(str(?cmd),"wget .* - http.* sh")\r
+|| regex(str(?cmd),"wget .* - http.* bash")\r
+|| regex(str(?cmd),"python -m SimpleHTTPServer")\r
+|| regex(str(?cmd),"-m http.server")\r
+|| regex(str(?cmd),"import pty; pty.spawn.*")\r
+|| regex(str(?cmd),"socat exec:.*")\r
+|| regex(str(?cmd),"socat -O /tmp/.*")\r
+|| regex(str(?cmd),"socat tcp-connect.*")\r
+|| regex(str(?cmd),"echo binary >>.*")\r
+|| regex(str(?cmd),"wget .*; chmod \\\\+x.*")\r
+|| regex(str(?cmd),"wget .*; chmod 777 .*")\r
+|| regex(str(?cmd),"cd /tmp OR cd /var/run OR cd /mnt.*")\r
+|| regex(str(?cmd),"stop;service iptables stop;.*")\r
+|| regex(str(?cmd),"stop;SuSEfirewall2 stop;.*")\r
+|| regex(str(?cmd),"chmod 777 2020.*")\r
+|| regex(str(?cmd),">>/etc/rc.local")\r
+|| regex(str(?cmd),"base64 -d /tmp/.*")\r
+|| regex(str(?cmd),"base64 -d .*")\r
+|| regex(str(?cmd),"/chmod u\\\\+s .*")\r
+|| regex(str(?cmd),"chmod \\\\+s /tmp/.*")\r
+|| regex(str(?cmd),"chmod u\\\\+s /tmp/.*")\r
+|| regex(str(?cmd),"/tmp/haxhax.*")\r
+|| regex(str(?cmd),"/tmp/ns_sploit.*")\r
+|| regex(str(?cmd),"nc -l -p .*")\r
+|| regex(str(?cmd),"cp /bin/ksh .*")\r
+|| regex(str(?cmd),"cp /bin/sh .*")\r
+|| regex(str(?cmd),"/tmp/.*.b64 .*")\r
+|| regex(str(?cmd),"/tmp/ysocereal.jar.*")\r
+|| regex(str(?cmd),"/tmp/x .*")\r
+|| regex(str(?cmd),"chmod \\\\+x /tmp/.*")\r
+|| regex(str(?cmd),"chmod \\\\+x /tmp/.*")\r
+)}\r
+""";
+    ns1:level "high" ;
+    ns1:logSourceProduct "linux" ;
+    ns1:references "http://pastebin.com/FtygZ1cg",
+        "http://www.threatgeek.com/2017/03/widespread-exploitation-attempts-using-cve-2017-5638.html",
+        "https://artkond.com/2017/03/23/pivoting-guide/",
+        "https://github.com/rapid7/metasploit-framework/blob/master/modules/exploits/multi/http/struts_code_exec_exception_delegator.rb#L121" ;
+    ns1:tags "attack.execution",
+        "attack.t1059.004" .
+
+<http://w3id.org/sepses/resource/sigma/sigma-36aa86ca-fd9d-4456-814e-d3b1b8e1e0bb> a ns1:SigmaRule ;
+    dcterms:created "2017/03/01" ;
+    dcterms:creator "Florian Roth" ;
+    dcterms:description "Detects relevant ClamAV messages" ;
+    dcterms:id "36aa86ca-fd9d-4456-814e-d3b1b8e1e0bb" ;
+    dcterms:status "stable" ;
+    dcterms:title "Relevant ClamAV Message" ;
+    ns1:detectionCondition "keywords" ;
+    ns1:falsePositive "Unknown" ;
+    ns1:hasDetection "" ;
+    ns1:level "high" ;
+    ns1:logSourceProduct "linux" ;
+    ns1:logSourceService "clamav" ;
+    ns1:references "https://github.com/ossec/ossec-hids/blob/master/etc/rules/clam_av_rules.xml" .
+
+<http://w3id.org/sepses/resource/sigma/sigma-37222991-11e9-4b6d-8bdf-60fbe48f753e> a ns1:SigmaRule ;
+    dcterms:created "2019/10/23" ;
+    dcterms:creator "Jakob Weinzettl, oscd.community" ;
+    dcterms:description "Detects overwriting (effectively wiping/deleting) the file" ;
+    dcterms:id "37222991-11e9-4b6d-8bdf-60fbe48f753e" ;
+    dcterms:status "stable" ;
+    dcterms:title "Overwriting the File with Dev Zero or Null" ;
+    ns1:detectionCondition "selection" ;
+    ns1:falsePositive "Appending null bytes to files",
+        "Legitimate overwrite of files" ;
+    ns2:hasAttackTechnique <http://w3id.org/sepses/resource/attack/technique/T1485> ;
+    ns1:hasDetection """prefix : <http://w3id.org/sepses/vocab/event/log#>\r
+SELECT ?s ?cmd WHERE {\r
+ ?s a :Process.\r
+ ?s :cmdLine ?cmd.\r
+    FILTER (regex(str(?cmd),"dd if=/dev/null") || regex(str(?cmd),"dd if=/dev/zero"))\r
+}""";
+    ns1:level "low" ;
+    ns1:logSourceProduct "linux" ;
+    ns1:logSourceService "auditd" ;
+    ns1:references "https://github.com/redcanaryco/atomic-red-team/blob/master/atomics/T1485/T1485.yaml" ;
+    ns1:tags "attack.impact",
+        "attack.t1485" .
+
+<http://w3id.org/sepses/resource/sigma/sigma-377f33a1-4b36-4ee1-acee-1dbe4b43cfbe> a ns1:SigmaRule ;
+    dcterms:created "2017/07/05" ;
+    dcterms:creator "Florian Roth" ;
+    dcterms:description "Detects suspicious VSFTPD error messages that indicate a fatal or suspicious error that could be caused by exploiting attempts" ;
+    dcterms:id "377f33a1-4b36-4ee1-acee-1dbe4b43cfbe" ;
+    dcterms:status "experimental" ;
+    dcterms:title "Suspicious VSFTPD Error Messages" ;
+    ns1:detectionCondition "keywords" ;
+    ns1:falsePositive "Unknown" ;
+    ns2:hasAttackTechnique <http://w3id.org/sepses/resource/attack/technique/T1190> ;
+    ns1:hasDetection "" ;
+    ns1:level "medium" ;
+    ns1:logSourceProduct "linux" ;
+    ns1:logSourceService "vsftpd" ;
+    ns1:references "https://github.com/dagwieers/vsftpd/" ;
+    ns1:tags "attack.initial_access",
+        "attack.t1190" .
+
+<http://w3id.org/sepses/resource/sigma/sigma-41e5c73d-9983-4b69-bd03-e13b67e9623c> a ns1:SigmaRule ;
+    dcterms:created "2017/04/09" ;
+    dcterms:creator "Florian Roth" ;
+    dcterms:description "Detects suspicious shell commands used in various Equation Group scripts and tools" ;
+    dcterms:id "41e5c73d-9983-4b69-bd03-e13b67e9623c" ;
+    dcterms:status "experimental" ;
+    dcterms:title "Equation Group Indicators" ;
+    ns1:detectionCondition "keywords" ;
+    ns1:falsePositive "Unknown" ;
+    ns2:hasAttackTechnique <http://w3id.org/sepses/resource/attack/technique/G0020>,
+        <http://w3id.org/sepses/resource/attack/technique/T1059.004> ;
+    ns1:hasDetection """PREFIX sepses: <http://w3id.org/sepses/vocab/event/log#>\r
+SELECT ?s ?cmd WHERE {\r
+ ?s sepses:cmdLine ?cmd. \r
+FILTER (regex(str(?cmd),"chown root.*chmod 4777 ")\r
+|| regex(str(?cmd),"cp /bin/sh .;chown")\r
+|| regex(str(?cmd),"chmod 4777 /tmp/.scsi/dev/bin/gsh")\r
+|| regex(str(?cmd),"chown root:root /tmp/.scsi/dev/bin/")\r
+|| regex(str(?cmd),"chown root:root x;")\r
+|| (str(?cmd)="/bin/telnet locip locport < /dev/console | /bin/sh")\r
+|| regex(str(?cmd),"/tmp/ratload")\r
+|| regex(str(?cmd),"ewok -t ")\r
+|| regex(str(?cmd),"xspy -display ")\r
+|| regex(str(?cmd),"cat > /dev/tcp/127.0.0.1/80 <<END")\r
+|| regex(str(?cmd),"rm -f /current/tmp/ftshell.latest")\r
+|| regex(str(?cmd),"ghost_.* -v ")\r
+|| regex(str(?cmd)," --wipe > /dev/null")\r
+|| regex(str(?cmd),"ping -c 2 .*; grep .* /proc/net/arp >/tmp/gx")\r
+|| regex(str(?cmd),"iptables .* OUTPUT -p tcp -d 127.0.0.1 --tcp-flags RST RST -j DROP;")\r
+|| regex(str(?cmd),"> /var/log/audit/audit.log; rm -f .")\r
+|| regex(str(?cmd),"cp /var/log/audit/audit.log .tmp")\r
+|| regex(str(?cmd),"sh >/dev/tcp/.* <&1 2>&1")\r
+|| regex(str(?cmd),"ncat -vv -l -p .* <")\r
+|| regex(str(?cmd),"nc -vv -l -p .* <")\r
+|| (str(?cmd)="< /dev/console | uudecode && uncompress")\r
+|| (str(?cmd)="sendmail -osendmail;chmod \\\\+x sendmail")\r
+|| regex(str(?cmd),"/usr/bin/wget -O /tmp/a http.* && chmod 755 /tmp/cron")\r
+|| regex(str(?cmd),"chmod 666 /var/run/utmp~")\r
+|| regex(str(?cmd),"chmod 700 nscd crond")\r
+|| regex(str(?cmd),"cp /etc/shadow /tmp/.")\r
+|| (str(?cmd)="</dev/console |uudecode > /dev/null 2>&1 && uncompress")\r
+|| (str(?cmd)="chmod 700 jp&&netstat -an|grep")\r
+|| regex(str(?cmd),"uudecode > /dev/null 2>&1 && uncompress -f .* && chmod 755")\r
+|| regex(str(?cmd),"chmod 700 crond")\r
+|| (str(?cmd)="wget http.*; chmod \\\\+x /tmp/sendmail")\r
+|| regex(str(?cmd),"chmod 700 fp sendmail pt")\r
+|| regex(str(?cmd),"chmod 755 /usr/vmsys/bin/pipe")\r
+|| regex(str(?cmd),"chmod -R 755 /usr/vmsys")\r
+|| regex(str(?cmd),"chmod 755 $opbin/.*tunnel")\r
+|| regex(str(?cmd),"chmod 700 sendmail")\r
+|| regex(str(?cmd),"chmod 0700 sendmail")\r
+|| (str(?cmd)="/usr/bin/wget http.*sendmail;chmod \\\\+x sendmail;")\r
+|| regex(str(?cmd),"&& telnet .* 2>&1 </dev/console")\r
+)}""";
+    ns1:level "high" ;
+    ns1:logSourceProduct "linux" ;
+    ns1:references "https://medium.com/@shadowbrokerss/dont-forget-your-base-867d304a94b1" ;
+    ns1:tags "attack.execution",
+        "attack.g0020",
+        "attack.t1059.004" .
+
+<http://w3id.org/sepses/resource/sigma/sigma-444ade84-c362-4260-b1f3-e45e20e1a905> a ns1:SigmaRule ;
+    dcterms:created "2019/04/05" ;
+    dcterms:creator "Patrick Bareiss" ;
+    dcterms:description "Detects suspicious shell commands indicating the information gathering phase as preparation for the Privilege Escalation." ;
+    dcterms:id "444ade84-c362-4260-b1f3-e45e20e1a905" ;
+    dcterms:status "experimental" ;
+    dcterms:title "Privilege Escalation Preparation" ;
+    ns1:detectionCondition "keywords | count() by host > 6" ;
+    ns1:falsePositive "Troubleshooting on Linux Machines" ;
+    ns2:hasAttackTechnique <http://w3id.org/sepses/resource/attack/technique/T1059.004> ;
+    ns1:hasDetection """prefix : <http://w3id.org/sepses/vocab/event/log#>\r
+SELECT ?s ?cmd WHERE {\r
+ ?s a :Process.\r
+ ?s :cmdLine ?cmd.\r
+FILTER (regex(str(?cmd),"cat /etc/issue")\r
+|| regex(str(?cmd),"cat /etc/.*-release")\r
+|| regex(str(?cmd),"cat /proc/version")\r
+|| regex(str(?cmd),"uname -a")\r
+|| regex(str(?cmd),"uname -mrs")\r
+|| regex(str(?cmd),"rpm -q kernel")\r
+|| (str(?cmd)="dmesg | grep Linux")\r
+|| (str(?cmd)="ls /boot | grep vmlinuz-")\r
+|| regex(str(?cmd),"cat /etc/profile")\r
+|| regex(str(?cmd),"cat /etc/bashrc")\r
+|| regex(str(?cmd),"cat ~/.bash_profile")\r
+|| regex(str(?cmd),"cat ~/.bashrc")\r
+|| regex(str(?cmd),"cat ~/.bash_logout")\r
+|| (str(?cmd)="ps -aux | grep root")\r
+|| (str(?cmd)="ps -ef | grep root")\r
+|| regex(str(?cmd),"crontab -l")\r
+|| regex(str(?cmd),"cat /etc/cron.*")\r
+|| regex(str(?cmd),"cat /etc/cron.allow")\r
+|| regex(str(?cmd),"cat /etc/cron.deny")\r
+|| regex(str(?cmd),"cat /etc/crontab")\r
+|| regex(str(?cmd),"grep -i user .*")\r
+|| regex(str(?cmd),"grep -i pass .*")\r
+|| regex(str(?cmd),"ifconfig")\r
+|| regex(str(?cmd),"cat /etc/network/interfaces")\r
+|| regex(str(?cmd),"cat /etc/sysconfig/network")\r
+|| regex(str(?cmd),"cat /etc/resolv.conf")\r
+|| regex(str(?cmd),"cat /etc/networks")\r
+|| regex(str(?cmd),"iptables -L")\r
+|| regex(str(?cmd),"lsof -i")\r
+|| regex(str(?cmd),"netstat -antup")\r
+|| regex(str(?cmd),"netstat -antpx")\r
+|| regex(str(?cmd),"netstat -tulpn")\r
+|| regex(str(?cmd),"arp -e")\r
+|| regex(str(?cmd),"route")\r
+|| regex(str(?cmd),"cat /etc/passwd")\r
+|| regex(str(?cmd),"cat /etc/group")\r
+|| regex(str(?cmd),"cat /etc/shadow")\r
+|| regex(str(?cmd),"find / -perm -u=s")\r
+|| regex(str(?cmd),"find / -perm -g=s")\r
+|| regex(str(?cmd),"find / -perm -4000")\r
+|| regex(str(?cmd),"find / -perm -2000")\r
+)\r
+}\r
+""";
+    ns1:level "medium" ;
+    ns1:logSourceProduct "linux" ;
+    ns1:references "https://blog.g0tmi1k.com/2011/08/basic-linux-privilege-escalation/",
+        "https://patrick-bareiss.com/detect-privilege-escalation-preparation-in-linux-with-sigma/" ;
+    ns1:tags "attack.execution",
+        "attack.t1059.004" .
+
+<http://w3id.org/sepses/resource/sigma/sigma-4b3cb710-5e83-4715-8c45-8b2b5b3e5751> a ns1:SigmaRule ;
+    dcterms:created "2019/10/24" ;
+    dcterms:creator "E.M. Anhaus (orignally from Atomic Blue Detections, Tony Lambert), oscd.community" ;
+    dcterms:description "Identifies modification of ld.so.preload for shared object injection. This technique is used by attackers to load arbitrary code into processes." ;
+    dcterms:id "4b3cb710-5e83-4715-8c45-8b2b5b3e5751" ;
+    dcterms:modified "2019/11/11" ;
+    dcterms:status "experimental" ;
+    dcterms:title "Modification of ld.so.preload" ;
+    ns1:detectionCondition "selection" ;
+    ns1:falsePositive "Unknown" ;
+    ns2:hasAttackTechnique <http://w3id.org/sepses/resource/attack/technique/T1574.006> ;
+    ns1:hasDetection """prefix : <http://w3id.org/sepses/vocab/event/log#>\r
+SELECT ?s ?cmd WHERE {\r
+ ?s a :Process.\r
+ ?s :cmdLine ?cmd.\r
+FILTER regex(str(?cmd),"/etc/ld.so.preload")\r
+}""";
+    ns1:level "high" ;
+    ns1:logSourceProduct "linux" ;
+    ns1:logSourceService "auditd" ;
+    ns1:references "https://eqllib.readthedocs.io/en/latest/analytics/fd9b987a-1101-4ed3-bda6-a70300eaf57e.html",
+        "https://github.com/redcanaryco/atomic-red-team/blob/master/atomics/T1574.006/T1574.006.yaml" ;
+    ns1:tags "attack.defense_evasion",
+        "attack.t1574.006" .
+
+<http://w3id.org/sepses/resource/sigma/sigma-4c9d903d-4939-4094-ade0-3cb748f4d7da> a ns1:SigmaRule ;
+    dcterms:created "2017/08/24" ;
+    dcterms:creator "Florian Roth" ;
+    dcterms:description "Detects exploitation attempt using public exploit code for CVE-2018-15473" ;
+    dcterms:id "4c9d903d-4939-4094-ade0-3cb748f4d7da" ;
+    dcterms:status "experimental" ;
+    dcterms:title "SSHD Error Message CVE-2018-15473" ;
+    ns1:detectionCondition "keywords" ;
+    ns1:falsePositive "Unknown" ;
+    ns1:hasDetection "" ;
+    ns1:level "medium" ;
+    ns1:logSourceProduct "linux" ;
+    ns1:logSourceService "sshd" ;
+    ns1:references "https://github.com/Rhynorater/CVE-2018-15473-Exploit" .
+
+<http://w3id.org/sepses/resource/sigma/sigma-72f4ab3f-787d-495d-a55d-68c2ff46cf4c> a ns1:SigmaRule ;
+    dcterms:created "2020/06/17" ;
+    dcterms:creator "Ömer Günal" ;
+    dcterms:description "Detects setting proxy" ;
+    dcterms:id "72f4ab3f-787d-495d-a55d-68c2ff46cf4c" ;
+    dcterms:status "experimental" ;
+    dcterms:title "Connection Proxy" ;
+    ns1:detectionCondition "keyword" ;
+    ns1:falsePositive "Legitimate administration activities" ;
+    ns1:hasDetection """PREFIX : <http://w3id.org/sepses/vocab/event/log#>\r
+SELECT ?s ?cmd WHERE {\r
+ ?s a :Process.\r
+ ?s :cmdLine ?cmd. \r
+FILTER (regex(str(?cmd),"http_proxy=.*")\r
+|| regex(str(?cmd),"https_proxy=.*")\r
+)}""";
+    ns1:level "low" ;
+    ns1:logSourceProduct "linux" ;
+    ns1:references "https://attack.mitre.org/techniques/T1090/" ;
+    ns1:tags "attack.defense_evasion" .
+
+<http://w3id.org/sepses/resource/sigma/sigma-738d9bcf-6999-4fdb-b4ac-3033037db8ab> a ns1:SigmaRule ;
+    dcterms:created "2019/04/02" ;
+    dcterms:creator "Florian Roth" ;
+    dcterms:description "Detects suspicious shell commands or program code that may be exected or used in command line to establish a reverse shell" ;
+    dcterms:id "738d9bcf-6999-4fdb-b4ac-3033037db8ab" ;
+    dcterms:status "experimental" ;
+    dcterms:title "Suspicious Reverse Shell Command Line" ;
+    ns1:detectionCondition "keywords" ;
+    ns1:falsePositive "Unknown" ;
+    ns2:hasAttackTechnique <http://w3id.org/sepses/resource/attack/technique/T1059.004> ;
+    ns1:hasDetection """prefix : <http://w3id.org/sepses/vocab/event/log#>\r
+SELECT ?s ?cmd WHERE {\r
+ ?s :cmdLine ?cmd. \r
+FILTER (regex(str(?cmd),"bash -i >& /dev/tcp/")\r
+|| regex(str(?cmd),"bash -i >& /dev/udp/")\r
+|| regex(str(?cmd),"sh -i >$ /dev/udp/")\r
+|| regex(str(?cmd),"sh -i >$ /dev/tcp/")\r
+|| regex(str(?cmd),"&& while read line 0<&5; do")\r
+|| regex(str(?cmd),"/bin/bash -c exec 5<>/dev/tcp/")\r
+|| regex(str(?cmd),"/bin/bash -c exec 5<>/dev/udp/")\r
+|| regex(str(?cmd),"nc -e /bin/sh ")\r
+|| (str(?cmd)="/bin/sh | nc")\r
+|| regex(str(?cmd),"rm -f backpipe; mknod /tmp/backpipe p && nc ")\r
+|| regex(str(?cmd),";STDIN->fdopen($c,r);$~->fdopen($c,w);system$_ while<>;")\r
+|| regex(str(?cmd),"/bin/sh -i <&3 >&3 2>&3")\r
+|| regex(str(?cmd),"uname -a; w; id; /bin/bash -i")\r
+|| regex(str(?cmd),"$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2); $stream.Write($sendbyte,0,$sendbyte.Length); $stream.Flush()};")\r
+|| regex(str(?cmd),";os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);os.putenv('HISTFILE','/dev/null');")\r
+|| regex(str(?cmd),"socat exec:'bash -li',pty,stderr,setsid,sigint,sane tcp:")\r
+|| regex(str(?cmd),"rm -f /tmp/p; mknod /tmp/p p &&")\r
+|| (str(?cmd)=" | /bin/bash | telnet ")\r
+|| regex(str(?cmd),",echo=0,raw tcp-listen:")\r
+|| regex(str(?cmd),"nc -lvvp ")\r
+|| regex(str(?cmd),"xterm -display 1")\r
+)}""";
+    ns1:level "high" ;
+    ns1:logSourceProduct "linux" ;
+    ns1:references "https://alamot.github.io/reverse_shells/" ;
+    ns1:tags "attack.execution",
+        "attack.t1059.004" .
+
+<http://w3id.org/sepses/resource/sigma/sigma-74c01ace-0152-4094-8ae2-6fd776dd43e5> a ns1:SigmaRule ;
+    dcterms:created "2019/09/23" ;
+    dcterms:creator "Jakob Weinzettl, oscd.community" ;
+    dcterms:description "Detects file and folder permission changes" ;
+    dcterms:id "74c01ace-0152-4094-8ae2-6fd776dd43e5" ;
+    dcterms:status "experimental" ;
+    dcterms:title "File or Folder Permissions Change" ;
+    ns1:detectionCondition "selection" ;
+    ns1:falsePositive "User interracting with files permissions (normal/daily behaviour)" ;
+    ns2:hasAttackTechnique <http://w3id.org/sepses/resource/attack/technique/T1222.002> ;
+    ns1:hasDetection """prefix : <http://w3id.org/sepses/vocab/event/log#>\r
+SELECT ?s ?cmd WHERE {\r
+ ?s a :Process.\r
+ ?s :cmdLine ?cmd.\r
+    FILTER (regex(str(?cmd),"chmod") || regex(str(?cmd),"chown"))\r
+}\r
+""";
+    ns1:level "low" ;
+    ns1:logSourceProduct "linux" ;
+    ns1:logSourceService "auditd" ;
+    ns1:references "https://github.com/redcanaryco/atomic-red-team/blob/master/atomics/T1222.002/T1222.002.yaml" ;
+    ns1:tags "attack.defense_evasion",
+        "attack.t1222.002" .
+
+<http://w3id.org/sepses/resource/sigma/sigma-759d0d51-bc99-4b5e-9add-8f5b2c8e7512> a ns1:SigmaRule ;
+    dcterms:created "2020/05/18" ;
+    dcterms:creator "Marie Euler" ;
+    dcterms:description "Detects the creation of a new user account. Such accounts may be used for persistence that do not require persistent remote access tools to be deployed on the system." ;
+    dcterms:id "759d0d51-bc99-4b5e-9add-8f5b2c8e7512" ;
+    dcterms:status "experimental" ;
+    dcterms:title "Creation Of An User Account" ;
+    ns1:detectionCondition "selection" ;
+    ns1:falsePositive "Admin activity" ;
+    ns2:hasAttackTechnique <http://w3id.org/sepses/resource/attack/technique/T1136>,
+        <http://w3id.org/sepses/resource/attack/technique/T1136.001> ;
+    ns1:hasDetection """prefix : <http://w3id.org/sepses/vocab/event/log#>\r
+SELECT ?s ?cmd WHERE {\r
+  ?s a :Process.\r
+  ?s :cmdLine ?cmd.\r
+  FILTER regex(str(?cmd),".*/useradd")\r
+}""";
+    ns1:level "medium" ;
+    ns1:logSourceProduct "linux" ;
+    ns1:logSourceService "auditd" ;
+    ns1:references "MITRE Attack technique T1136; Create Account " ;
+    ns1:tags "attack.persistence",
+        "attack.t1136",
+        "attack.t1136.001" .
+
+<http://w3id.org/sepses/resource/sigma/sigma-7a14080d-a048-4de8-ae58-604ce58a795b> a ns1:SigmaRule ;
+    dcterms:created "2020/06/18" ;
+    dcterms:creator "Ömer Günal" ;
+    dcterms:description "Detects the use of tools that copy files from or to remote systems" ;
+    dcterms:id "7a14080d-a048-4de8-ae58-604ce58a795b" ;
+    dcterms:status "stable" ;
+    dcterms:title "Remote File Copy" ;
+    ns1:detectionCondition "keywords" ;
+    ns1:falsePositive "Legitimate administration activities" ;
+    ns2:hasAttackTechnique <http://w3id.org/sepses/resource/attack/technique/T1105> ;
+    ns1:hasDetection """prefix : <http://w3id.org/sepses/vocab/event/log#>\r
+SELECT ?s ?cmd WHERE {\r
+  ?s a :Process.\r
+ ?s :cmdLine ?cmd.\r
+FILTER (regex(str(?cmd),"scp .* .*@.*:.*")\r
+      || regex(str(?cmd),"scp .*@.*:.* .*")\r
+        || regex(str(?cmd),"scp .*@.*:.* .*")\r
+        || regex(str(?cmd),"rsync -r .*@.*:.* .*")\r
+        || regex(str(?cmd),"rsync -r .* .*@.*:.*")\r
+        || regex(str(?cmd),"sftp .*@.*:.* .*")\r
+    )\r
+}""";
+    ns1:level "low" ;
+    ns1:logSourceProduct "linux" ;
+    ns1:references "https://attack.mitre.org/techniques/T1105/" ;
+    ns1:tags "attack.command_and_control",
+        "attack.lateral_movement",
+        "attack.t1105" .
+
+<http://w3id.org/sepses/resource/sigma/sigma-879c3015-c88b-4782-93d7-07adf92dbcb7> a ns1:SigmaRule ;
+    dcterms:created "2020/06/17" ;
+    dcterms:creator "Ömer Günal" ;
+    dcterms:description "Detects space after filename" ;
+    dcterms:id "879c3015-c88b-4782-93d7-07adf92dbcb7" ;
+    dcterms:status "experimental" ;
+    dcterms:title "Space After Filename" ;
+    ns1:detectionCondition "selection1 and selection2" ;
+    ns1:falsePositive "Typos" ;
+    ns1:hasDetection """PREFIX : <http://w3id.org/sepses/vocab/event/log#>\r
+SELECT ?s ?cmd WHERE {\r
+ ?s a :Process. \r
+ ?s :cmdLine ?cmd. \r
+FILTER (regex(str(?cmd),"echo .* > .* && chmod \\\\+x .*") && regex(str(?cmd),"mv .*")\r
+)}""";
+    ns1:level "low" ;
+    ns1:logSourceProduct "linux" ;
+    ns1:references "https://attack.mitre.org/techniques/T1064" ;
+    ns1:tags "attack.execution" .
+
+<http://w3id.org/sepses/resource/sigma/sigma-8ec2c8b4-557a-4121-b87c-5dfb3a602fae> a ns1:SigmaRule ;
+    dcterms:created "2017/08/24" ;
+    dcterms:creator "Florian Roth" ;
+    dcterms:description "Detects suspicious command sequence that JexBoss" ;
+    dcterms:id "8ec2c8b4-557a-4121-b87c-5dfb3a602fae" ;
+    dcterms:title "JexBoss Command Sequence" ;
+    ns1:detectionCondition "selection1 and selection2" ;
+    ns1:falsePositive "Unknown" ;
+    ns2:hasAttackTechnique <http://w3id.org/sepses/resource/attack/technique/T1059.004> ;
+    ns1:hasDetection """PREFIX : <http://w3id.org/sepses/vocab/event/log#>\r
+SELECT ?s ?cmd WHERE {\r
+ ?s a :Process.\r
+ ?s :cmdLine ?cmd. \r
+FILTER (regex(str(?cmd),"&/dev/tcp/")\r
+)}""";
+    ns1:level "high" ;
+    ns1:logSourceProduct "linux" ;
+    ns1:references "https://www.us-cert.gov/ncas/analysis-reports/AR18-312A" ;
+    ns1:tags "attack.execution",
+        "attack.t1059.004" .
+
+<http://w3id.org/sepses/resource/sigma/sigma-977ef627-4539-4875-adf4-ed8f780c4922> a ns1:SigmaRule ;
+    dcterms:created "2019/10/25" ;
+    dcterms:creator "Mikhail Larin, oscd.community" ;
+    dcterms:description "Detect changes in auditd configuration files" ;
+    dcterms:id "977ef627-4539-4875-adf4-ed8f780c4922" ;
+    dcterms:status "experimental" ;
+    dcterms:title "Auditing Configuration Changes on Linux Host" ;
+    ns1:detectionCondition "selection" ;
+    ns1:falsePositive "Legitimate administrative activity" ;
+    ns2:hasAttackTechnique <http://w3id.org/sepses/resource/attack/technique/T1054>,
+        <http://w3id.org/sepses/resource/attack/technique/T1562.006> ;
+    ns1:hasDetection """prefix : <http://w3id.org/sepses/vocab/event/log#>\r
+SELECT ?s ?cmd WHERE {\r
+ ?s a :Process.\r
+ ?s :cmdLine ?cmd.\r
+FILTER (regex(str(?cmd),"/etc/audit/*")\r
+|| regex(str(?cmd),"/etc/libaudit.conf")\r
+|| regex(str(?cmd),"/etc/audisp/*")\r
+)\r
+}""";
+    ns1:level "high" ;
+    ns1:logSourceProduct "linux" ;
+    ns1:logSourceService "auditd" ;
+    ns1:references "https://github.com/Neo23x0/auditd/blob/master/audit.rules",
+        "self experience" ;
+    ns1:tags "attack.defense_evasion",
+        "attack.t1054",
+        "attack.t1562.006" .
+
+<http://w3id.org/sepses/resource/sigma/sigma-9a0d8ca0-2385-4020-b6c6-cb6153ca56f3> a ns1:SigmaRule ;
+    dcterms:created "2019/10/21" ;
+    dcterms:creator "Timur Zinniatullin, oscd.community" ;
+    dcterms:description "Adversaries may use the information from System Owner/User Discovery during automated discovery to shape follow-on behaviors, including whether or not the adversary fully infects the target and/or attempts specific actions." ;
+    dcterms:id "9a0d8ca0-2385-4020-b6c6-cb6153ca56f3" ;
+    dcterms:status "experimental" ;
+    dcterms:title "System Owner or User Discovery" ;
+    ns1:detectionCondition "selection" ;
+    ns1:falsePositive "Admin activity" ;
+    ns2:hasAttackTechnique <http://w3id.org/sepses/resource/attack/technique/T1033> ;
+    ns1:hasDetection """prefix : <http://w3id.org/sepses/vocab/event/log#>\r
+SELECT ?s ?cmd WHERE {\r
+ ?s a :Process.\r
+ ?s :cmdLine ?cmd.\r
+    FILTER (regex(str(?cmd),"^users$") || regex(str(?cmd),"^who$") || regex(str(?cmd),"^w$"))\r
+}""";
+    ns1:level "low" ;
+    ns1:logSourceProduct "linux" ;
+    ns1:logSourceService "auditd" ;
+    ns1:references "https://github.com/redcanaryco/atomic-red-team/blob/master/atomics/T1033/T1033.yaml" ;
+    ns1:tags "attack.discovery",
+        "attack.t1033" .
+
+<http://w3id.org/sepses/resource/sigma/sigma-9d4548fa-bba0-4e88-bd66-5d5bf516cda0> a ns1:SigmaRule ;
+    dcterms:created "2019/10/21" ;
+    dcterms:creator "Timur Zinniatullin, oscd.community" ;
+    dcterms:description "Masquerading occurs when the name or location of an executable, legitimate or malicious, is manipulated or abused for the sake of evading defenses and observation. Several different variations of this technique have been observed." ;
+    dcterms:id "9d4548fa-bba0-4e88-bd66-5d5bf516cda0" ;
+    dcterms:status "experimental" ;
+    dcterms:title "Masquerading as Linux Crond Process" ;
+    ns1:detectionCondition "selection" ;
+    ns2:hasAttackTechnique <http://w3id.org/sepses/resource/attack/technique/T1036.003> ;
+    ns1:hasDetection """prefix : <http://w3id.org/sepses/vocab/event/log#>\r
+SELECT ?s ?cmd WHERE {\r
+ ?s a :Process.\r
+ ?s :cmdLine ?cmd.\r
+FILTER regex(str(?cmd),"cp -i /bin/sh .*/crond")\r
+}""";
+    ns1:level "medium" ;
+    ns1:logSourceProduct "linux" ;
+    ns1:logSourceService "auditd" ;
+    ns1:references "https://github.com/redcanaryco/atomic-red-team/blob/master/atomics/T1036.003/T1036.003.yaml" ;
+    ns1:tags "attack.defense_evasion",
+        "attack.t1036.003" .
+
+<http://w3id.org/sepses/resource/sigma/sigma-a06eea10-d932-4aa6-8ba9-186df72c8d23> a ns1:SigmaRule ;
+    dcterms:created "2017/02/28" ;
+    dcterms:creator "Florian Roth" ;
+    dcterms:description "Detects multiple blocks by the mod_security module (Web Application Firewall)" ;
+    dcterms:id "a06eea10-d932-4aa6-8ba9-186df72c8d23" ;
+    dcterms:status "stable" ;
+    dcterms:title "Multiple Modsecurity Blocks" ;
+    ns1:detectionCondition "selection | count() > 6" ;
+    ns1:falsePositive "Frequent attacks if system faces Internet",
+        "Vulnerability scanners" ;
+    ns1:hasDetection "" ;
+    ns1:level "medium" ;
+    ns1:logSourceProduct "linux" ;
+    ns1:logSourceService "modsecurity" .
+
+<http://w3id.org/sepses/resource/sigma/sigma-a39d7fa7-3fbd-4dc2-97e1-d87f546b1bbc> a ns1:SigmaRule ;
+    dcterms:created "2018/01/23" ;
+    dcterms:creator "Florian Roth" ;
+    dcterms:description "Detects program executions in suspicious non-program folders related to malware or hacking activity" ;
+    dcterms:id "a39d7fa7-3fbd-4dc2-97e1-d87f546b1bbc" ;
+    dcterms:status "experimental" ;
+    dcterms:title "Program Executions in Suspicious Folders" ;
+    ns1:detectionCondition "selection" ;
+    ns1:falsePositive "Admin activity (especially in /tmp folders)",
+        "Crazy web applications" ;
+    ns2:hasAttackTechnique <http://w3id.org/sepses/resource/attack/technique/T1204.002> ;
+    ns1:hasDetection """prefix : <http://w3id.org/sepses/vocab/event/log#>\r
+SELECT ?s ?cmd WHERE {\r
+ ?s a :Process.\r
+ ?s :cmdLine ?cmd.\r
+FILTER (regex(str(?cmd),"^/tmp/*")\r
+|| regex(str(?cmd),"^/var/www/*")\r
+|| regex(str(?cmd),"^/home/*/public_html/*")\r
+|| regex(str(?cmd),"^/usr/local/apache2/*")\r
+|| regex(str(?cmd),"^/usr/local/httpd/*")\r
+|| regex(str(?cmd),"^/var/apache/*")\r
+|| regex(str(?cmd),"^/srv/www/*")\r
+|| regex(str(?cmd),"^/home/httpd/html/*")\r
+|| regex(str(?cmd),"^/srv/http/*")\r
+|| regex(str(?cmd),"^/usr/share/nginx/html/*")\r
+|| regex(str(?cmd),"^/var/lib/pgsql/data/*")\r
+|| regex(str(?cmd),"^/usr/local/mysql/data/*")\r
+|| regex(str(?cmd),"^/var/lib/mysql/*")\r
+|| regex(str(?cmd),"^/var/vsftpd/*")\r
+|| regex(str(?cmd),"^/etc/bind/*")\r
+|| regex(str(?cmd),"^/var/named/*")\r
+)\r
+}""";
+    ns1:level "medium" ;
+    ns1:logSourceProduct "linux" ;
+    ns1:logSourceService "auditd" ;
+    ns1:references "Internal Research" .
+
+<http://w3id.org/sepses/resource/sigma/sigma-a3b5e3e9-1b49-4119-8b8e-0344a01f21ee> a ns1:SigmaRule ;
+    dcterms:created "2019/10/21" ;
+    dcterms:creator "Timur Zinniatullin, oscd.community" ;
+    dcterms:description "An adversary may compress data (e.g., sensitive documents) that is collected prior to exfiltration in order to make it portable and minimize the amount of data sent over the network" ;
+    dcterms:id "a3b5e3e9-1b49-4119-8b8e-0344a01f21ee" ;
+    dcterms:modified "2019/11/04" ;
+    dcterms:status "experimental" ;
+    dcterms:title "Data Compressed" ;
+    ns1:detectionCondition "1 of them" ;
+    ns1:falsePositive "Legitimate use of archiving tools by legitimate user" ;
+    ns2:hasAttackTechnique <http://w3id.org/sepses/resource/attack/technique/T1560.001> ;
+    ns1:hasDetection """prefix : <http://w3id.org/sepses/vocab/event/log#>\r
+SELECT ?s ?cmd WHERE {\r
+ ?s a :Process.\r
+ ?s :cmdLine ?cmd.\r
+FILTER (regex(str(?cmd),"zip")\r
+|| regex(str(?cmd),"gzip -f")\r
+|| regex(str(?cmd),"bzip2 -f")\r
+|| regex(str(?cmd),"tar -c")\r
+)\r
+}""";
+    ns1:level "low" ;
+    ns1:logSourceProduct "linux" ;
+    ns1:logSourceService "auditd" ;
+    ns1:references "https://github.com/redcanaryco/atomic-red-team/blob/master/atomics/T1560.001/T1560.001.yaml" ;
+    ns1:tags "attack.exfiltration",
+        "attack.t1560.001" .
+
+<http://w3id.org/sepses/resource/sigma/sigma-a5b977d6-8a81-4475-91b9-49dbfcd941f7> a ns1:SigmaRule ;
+    dcterms:created "2019/09/23" ;
+    dcterms:creator "Jakob Weinzettl, oscd.community" ;
+    dcterms:description "Detects removing immutable file attribute" ;
+    dcterms:id "a5b977d6-8a81-4475-91b9-49dbfcd941f7" ;
+    dcterms:status "experimental" ;
+    dcterms:title "Remove Immutable File Attribute" ;
+    ns1:detectionCondition "selection" ;
+    ns1:falsePositive "Administrator interacting with immutable files (for instance backups)" ;
+    ns2:hasAttackTechnique <http://w3id.org/sepses/resource/attack/technique/T1222.002> ;
+    ns1:hasDetection """prefix : <http://w3id.org/sepses/vocab/event/log#>\r
+SELECT ?s ?cmd WHERE {\r
+ ?s a :Process.\r
+ ?s :cmdLine ?cmd.\r
+FILTER regex(str(?cmd),"chattr -i")\r
+}""";
+    ns1:level "medium" ;
+    ns1:logSourceProduct "linux" ;
+    ns1:logSourceService "auditd" ;
+    ns1:references "https://github.com/redcanaryco/atomic-red-team/blob/master/atomics/T1222.002/T1222.002.yaml" ;
+    ns1:tags "attack.defense_evasion",
+        "attack.t1222.002" .
+
+<http://w3id.org/sepses/resource/sigma/sigma-c0d3734d-330f-4a03-aae2-65dacc6a8222> a ns1:SigmaRule ;
+    dcterms:created "2019/10/12" ;
+    dcterms:creator "Ilyas Ochkov, Beyu Denis, oscd.community" ;
+    dcterms:description "Detects posible command execution by web application/web shell" ;
+    dcterms:id "c0d3734d-330f-4a03-aae2-65dacc6a8222" ;
+    dcterms:modified "2019/11/04" ;
+    dcterms:status "experimental" ;
+    dcterms:title "Webshell Remote Command Execution" ;
+    ns1:detectionCondition "selection" ;
+    ns1:falsePositive "Admin activity",
+        "Crazy web applications" ;
+    ns2:hasAttackTechnique <http://w3id.org/sepses/resource/attack/technique/T1505.003> ;
+    ns1:hasDetection "" ;
+    ns1:level "critical" ;
+    ns1:logSourceProduct "linux" ;
+    ns1:logSourceService "auditd" ;
+    ns1:references "personal experience" ;
+    ns1:tags "attack.persistence",
+        "attack.t1505.003" .
+
+<http://w3id.org/sepses/resource/sigma/sigma-c21c4eaa-ba2e-419a-92b2-8371703cbe21> a ns1:SigmaRule ;
+    dcterms:created "2020/06/16" ;
+    dcterms:creator "Ömer Günal" ;
+    dcterms:description "Detects suspicious change of file privileges with chown and chmod commands" ;
+    dcterms:id "c21c4eaa-ba2e-419a-92b2-8371703cbe21" ;
+    dcterms:status "experimental" ;
+    dcterms:title "Setuid and Setgid" ;
+    ns1:detectionCondition "(selection1 and selection2) or (selection1 and selection3)" ;
+    ns1:falsePositive "Legitimate administration activities" ;
+    ns1:hasDetection """prefix : <http://w3id.org/sepses/vocab/event/log#>\r
+SELECT ?s ?cmd WHERE {\r
+ ?s a :Process.\r
+ ?s :cmdLine ?cmd.\r
+FILTER (regex(str(?cmd),"chown root.* chmod g\\\\+s.*")\r
+|| regex(str(?cmd),"chown root.* chmod u\\\\+s.*")\r
+)\r
+}""";
+    ns1:level "low" ;
+    ns1:logSourceProduct "linux" ;
+    ns1:references "https://attack.mitre.org/techniques/T1166/",
+        "https://github.com/redcanaryco/atomic-red-team/blob/master/atomics/T1166/T1166.md" ;
+    ns1:tags "attack.persistence" .
+
+<http://w3id.org/sepses/resource/sigma/sigma-c67e0c98-4d39-46ee-8f6b-437ebf6b950e> a ns1:SigmaRule ;
+    dcterms:created "2017/03/14" ;
+    dcterms:creator "Florian Roth" ;
+    dcterms:description "Detects shellshock expressions in log files" ;
+    dcterms:id "c67e0c98-4d39-46ee-8f6b-437ebf6b950e" ;
+    dcterms:status "experimental" ;
+    dcterms:title "Shellshock Expression" ;
+    ns1:detectionCondition "expression" ;
+    ns1:falsePositive "Unknown" ;
+    ns1:hasDetection """prefix : <http://w3id.org/sepses/vocab/event/log#>\r
+SELECT ?s ?cmd WHERE {\r
+ ?s :cmdLine ?cmd. \r
+FILTER (regex(str(?cmd),"/\\\\(\\\\)\\\\st\\\\{.*;\\\\s\\\\}\\\\s*;/")\r
+)}""";
+    ns1:level "high" ;
+    ns1:logSourceProduct "linux" ;
+    ns1:references "http://rubular.com/r/zxBfjWfFYs" .
+
+<http://w3id.org/sepses/resource/sigma/sigma-c830f15d-6f6e-430f-8074-6f73d6807841> a ns1:SigmaRule ;
+    dcterms:created "2019/10/25" ;
+    dcterms:creator "Mikhail Larin, oscd.community" ;
+    dcterms:description "Detect changes of syslog daemons configuration files" ;
+    dcterms:id "c830f15d-6f6e-430f-8074-6f73d6807841" ;
+    dcterms:status "experimental" ;
+    dcterms:title "Logging Configuration Changes on Linux Host" ;
+    ns1:detectionCondition "selection" ;
+    ns1:falsePositive "Legitimate administrative activity" ;
+    ns2:hasAttackTechnique <http://w3id.org/sepses/resource/attack/technique/T1054>,
+        <http://w3id.org/sepses/resource/attack/technique/T1562.006> ;
+    ns1:hasDetection """prefix : <http://w3id.org/sepses/vocab/event/log#>\r
+SELECT ?s ?cmd WHERE {\r
+ ?s a :Process.\r
+ ?s :cmdLine ?cmd.\r
+FILTER (regex(str(?cmd),"/etc/syslog.conf")\r
+|| regex(str(?cmd),"/etc/rsyslog.conf")\r
+|| regex(str(?cmd),"/etc/syslog-ng/syslog-ng.conf")\r
+)\r
+}""";
+    ns1:level "high" ;
+    ns1:logSourceProduct "linux" ;
+    ns1:logSourceService "auditd" ;
+    ns1:references "self experience" ;
+    ns1:tags "attack.defense_evasion",
+        "attack.t1054",
+        "attack.t1562.006" .
+
+<http://w3id.org/sepses/resource/sigma/sigma-c8e35e96-19ce-4f16-aeb6-fd5588dc5365> a ns1:SigmaRule ;
+    dcterms:created "2018/02/20" ;
+    dcterms:creator "Florian Roth" ;
+    dcterms:description "Detects suspicious DNS error messages that indicate a fatal or suspicious error that could be caused by exploiting attempts" ;
+    dcterms:id "c8e35e96-19ce-4f16-aeb6-fd5588dc5365" ;
+    dcterms:status "experimental" ;
+    dcterms:title "Suspicious Named Error" ;
+    ns1:detectionCondition "keywords" ;
+    ns1:falsePositive "Unknown" ;
+    ns2:hasAttackTechnique <http://w3id.org/sepses/resource/attack/technique/T1190> ;
+    ns1:hasDetection "" ;
+    ns1:level "high" ;
+    ns1:logSourceProduct "linux" ;
+    ns1:logSourceService "syslog" ;
+    ns1:references "https://github.com/ossec/ossec-hids/blob/master/etc/rules/named_rules.xml" ;
+    ns1:tags "attack.initial_access",
+        "attack.t1190" .
+
+<http://w3id.org/sepses/resource/sigma/sigma-e3a8a052-111f-4606-9aee-f28ebeb76776> a ns1:SigmaRule ;
+    dcterms:created "2020/06/17" ;
+    dcterms:creator "Ömer Günal" ;
+    dcterms:description "Detects disabling security tools" ;
+    dcterms:id "e3a8a052-111f-4606-9aee-f28ebeb76776" ;
+    dcterms:status "experimental" ;
+    dcterms:title "Disabling Security Tools" ;
+    ns1:detectionCondition "keywords" ;
+    ns1:falsePositive "Legitimate administration activities" ;
+    ns1:hasDetection """prefix : <http://w3id.org/sepses/vocab/event/log#>\r
+SELECT ?s ?cmd WHERE {\r
+ ?s a :Process.\r
+ ?s :cmdLine ?cmd.\r
+FILTER (regex(str(?cmd),"chkconfig off cbdaemon")\r
+        || regex(str(?cmd),"service iptables stop")\r
+        || regex(str(?cmd),"chkconfig off iptables")\r
+        || regex(str(?cmd),"service ip6tables stop")\r
+        || regex(str(?cmd),"chkconfig off ip6tables")\r
+        || regex(str(?cmd),"service cbdaemon stop")\r
+        || regex(str(?cmd),"systemctl stop cbdaemon")\r
+        || regex(str(?cmd),"systemctl disable cbdaemon")\r
+        || regex(str(?cmd),"setenforce 0")\r
+        || regex(str(?cmd),"systemctl stop falcon-sensor.service")\r
+        || regex(str(?cmd),"systemctl disable falcon-sensor.service")\r
+    )\r
+}\r
+""";
+    ns1:level "medium" ;
+    ns1:logSourceProduct "linux" ;
+    ns1:references "https://attack.mitre.org/techniques/T1089/",
+        "https://github.com/redcanaryco/atomic-red-team/blob/master/atomics/T1089/T1089.md" ;
+    ns1:tags "attack.defense_evasion" .
+
+<http://w3id.org/sepses/resource/sigma/sigma-e74e15cc-c4b6-4c80-b7eb-dfe49feb7fe9> a ns1:SigmaRule ;
+    dcterms:created "2019/05/12" ;
+    dcterms:creator "Peter Matkovski" ;
+    dcterms:description "Detects change of user environment. Adversaries can insert code into these files to gain persistence each time a user logs in or opens a new shell." ;
+    dcterms:id "e74e15cc-c4b6-4c80-b7eb-dfe49feb7fe9" ;
+    dcterms:status "experimental" ;
+    dcterms:title "Edit of .bash_profile and .bashrc" ;
+    ns1:detectionCondition "selection" ;
+    ns1:falsePositive "Admin or User activity" ;
+    ns2:hasAttackTechnique <http://w3id.org/sepses/resource/attack/technique/S0003>,
+        <http://w3id.org/sepses/resource/attack/technique/T1156>,
+        <http://w3id.org/sepses/resource/attack/technique/T1546.004> ;
+    ns1:hasDetection """prefix : <http://w3id.org/sepses/vocab/event/log#>\r
+SELECT ?s ?cmd WHERE {\r
+ ?s :cmdLine ?cmd.\r
+FILTER (regex(str(?cmd),"/home/.*/.bashrc")\r
+|| regex(str(?cmd),"/home/.*/.bash_profile")\r
+|| regex(str(?cmd),"/home/.*/.profile")\r
+|| regex(str(?cmd),"/etc/profile")\r
+|| regex(str(?cmd),"/etc/shells")\r
+|| regex(str(?cmd),"/etc/bashrc")\r
+|| regex(str(?cmd),"/etc/csh.cshrc")\r
+|| regex(str(?cmd),"/etc/csh.login")\r
+)\r
+}""";
+    ns1:level "medium" ;
+    ns1:logSourceProduct "linux" ;
+    ns1:logSourceService "auditd" ;
+    ns1:references "MITRE Attack technique T1156; .bash_profile and .bashrc. " ;
+    ns1:tags "attack.persistence",
+        "attack.s0003",
+        "attack.t1156",
+        "attack.t1546.004" .
+
+<http://w3id.org/sepses/resource/sigma/sigma-e76b413a-83d0-4b94-8e4c-85db4a5b8bdc> a ns1:SigmaRule ;
+    dcterms:created "2017/06/30" ;
+    dcterms:creator "Florian Roth" ;
+    dcterms:description "Detects suspicious SSH / SSHD error messages that indicate a fatal or suspicious error that could be caused by exploiting attempts" ;
+    dcterms:id "e76b413a-83d0-4b94-8e4c-85db4a5b8bdc" ;
+    dcterms:modified "2020/05/15" ;
+    dcterms:status "experimental" ;
+    dcterms:title "Suspicious OpenSSH Daemon Error" ;
+    ns1:detectionCondition "keywords" ;
+    ns1:falsePositive "Unknown" ;
+    ns2:hasAttackTechnique <http://w3id.org/sepses/resource/attack/technique/T1190> ;
+    ns1:hasDetection "" ;
+    ns1:level "medium" ;
+    ns1:logSourceProduct "linux" ;
+    ns1:logSourceService "sshd" ;
+    ns1:references "https://github.com/openssh/openssh-portable/blob/master/ssherr.c",
+        "https://github.com/ossec/ossec-hids/blob/master/etc/rules/sshd_rules.xml" ;
+    ns1:tags "attack.initial_access",
+        "attack.t1190" .
+
+<http://w3id.org/sepses/resource/sigma/sigma-f4d3748a-65d1-4806-bd23-e25728081d01> a ns1:SigmaRule ;
+    dcterms:created "2019/10/21" ;
+    dcterms:creator "Timur Zinniatullin, oscd.community" ;
+    dcterms:description "Network sniffing refers to using the network interface on a system to monitor or capture information sent over a wired or wireless connection. An adversary may place a network interface into promiscuous mode to passively access data in transit over the network, or use span ports to capture a larger amount of data." ;
+    dcterms:id "f4d3748a-65d1-4806-bd23-e25728081d01" ;
+    dcterms:modified "2019/11/04" ;
+    dcterms:status "experimental" ;
+    dcterms:title "Network Sniffing" ;
+    ns1:detectionCondition "selection1 or selection2" ;
+    ns1:falsePositive "Legitimate administrator or user uses network sniffing tool for legitimate reason" ;
+    ns2:hasAttackTechnique <http://w3id.org/sepses/resource/attack/technique/T1040> ;
+    ns1:hasDetection """prefix : <http://w3id.org/sepses/vocab/event/log#>\r
+SELECT ?s ?name WHERE {\r
+ ?s :cmdLine ?name.\r
+FILTER (regex(str(?name),"tcpdump -c -i")\r
+|| regex(str(?name),"tshark -c -i")\r
+)\r
+}""";
+    ns1:level "low" ;
+    ns1:logSourceProduct "linux" ;
+    ns1:logSourceService "auditd" ;
+    ns1:references "https://github.com/redcanaryco/atomic-red-team/blob/master/atomics/T1040/T1040.yaml" ;
+    ns1:tags "attack.credential_access",
+        "attack.discovery",
+        "attack.t1040" .
+
+<http://w3id.org/sepses/resource/sigma/sigma-f64b6e9a-5d9d-48a5-8289-e1dd2b3876e1> a ns1:SigmaRule ;
+    dcterms:created "2017/03/25" ;
+    dcterms:creator "Florian Roth" ;
+    dcterms:description "Detects suspicious log entries in Linux log files" ;
+    dcterms:id "f64b6e9a-5d9d-48a5-8289-e1dd2b3876e1" ;
+    dcterms:status "experimental" ;
+    dcterms:title "Suspicious Log Entries" ;
+    ns1:detectionCondition "keywords" ;
+    ns1:falsePositive "Unknown" ;
+    ns1:hasDetection "" ;
+    ns1:level "medium" ;
+    ns1:logSourceProduct "linux" .
+
+<http://w3id.org/sepses/resource/sigma/sigma-f7158a64-6204-4d6d-868a-6e6378b467e0> a ns1:SigmaRule ;
+    dcterms:created "2020/05/18" ;
+    dcterms:creator "Marie Euler" ;
+    dcterms:description "Detects suspicious activities as declared by Florian Roth in its 'Best Practice Auditd Configuration'. This includes the detection of the following commands; wget, curl, base64, nc, netcat, ncat, ssh, socat, wireshark, rawshark, rdesktop, nmap. These commands match a few techniques from the tactics \"Command and Control\", including not exhaustively the following; Application Layer Protocol (T1071), Non-Application Layer Protocol (T1095), Data Encoding (T1132)" ;
+    dcterms:id "f7158a64-6204-4d6d-868a-6e6378b467e0" ;
+    dcterms:status "experimental" ;
+    dcterms:title "Suspicious C2 Activities" ;
+    ns1:detectionCondition "selection" ;
+    ns1:falsePositive "Admin or User activity" ;
+    ns1:hasDetection "" ;
+    ns1:level "medium" ;
+    ns1:logSourceProduct "linux" ;
+    ns1:logSourceService "auditd" ;
+    ns1:references "https://github.com/Neo23x0/auditd" ;
+    ns1:tags "attack.command_and_control" .
+
+<http://w3id.org/sepses/resource/sigma/sigma-f74107df-b6c6-4e80-bf00-4170b658162b> a ns1:SigmaRule ;
+    dcterms:created "2019/10/15" ;
+    dcterms:creator "Florian Roth" ;
+    dcterms:description "Detects users trying to exploit sudo vulnerability reported in CVE-2019-14287" ;
+    dcterms:id "f74107df-b6c6-4e80-bf00-4170b658162b" ;
+    dcterms:modified "2019/10/20" ;
+    dcterms:status "experimental" ;
+    dcterms:title "Sudo Privilege Escalation CVE-2019-14287" ;
+    ns1:falsePositive "Unlikely" ;
+    ns2:hasAttackTechnique <http://w3id.org/sepses/resource/attack/technique/T1068>,
+        <http://w3id.org/sepses/resource/attack/technique/T1169> ;
+    ns1:hasDetection "" ;
+    ns1:level "critical" ;
+    ns1:logSourceProduct "linux" ;
+    ns1:references "https://access.redhat.com/security/cve/cve-2019-14287",
+        "https://twitter.com/matthieugarin/status/1183970598210412546",
+        "https://www.openwall.com/lists/oss-security/2019/10/14/1" ;
+    ns1:tags "attack.privilege_escalation",
+        "attack.t1068",
+        "attack.t1169" .
+
+<http://w3id.org/sepses/resource/sigma/sigma-fc947f8e-ea81-4b14-9a7b-13f888f94e18> a ns1:SigmaRule ;
+    dcterms:created "2017/02/16" ;
+    dcterms:creator "Florian Roth" ;
+    dcterms:description "Detects suspicious failed logins with different user accounts from a single source system" ;
+    dcterms:id "fc947f8e-ea81-4b14-9a7b-13f888f94e18" ;
+    dcterms:status "experimental" ;
+    dcterms:title "Failed Logins with Different Accounts from Single Source System" ;
+    ns1:detectionCondition "selection | count(pam_user) by pam_rhost > 3" ;
+    ns1:falsePositive "Jump servers",
+        "Terminal servers",
+        "Workstations with frequently changing users" ;
+    ns1:hasDetection "" ;
+    ns1:level "medium" ;
+    ns1:logSourceProduct "linux" ;
+    ns1:logSourceService "auth" .
+
+<http://w3id.org/sepses/resource/sigma/sigma-fdc88d25-96fb-4b7c-9633-c0e417fdbd4e> a ns1:SigmaRule ;
+    dcterms:created "2019/03/24" ;
+    dcterms:creator "Patrick Bareiss" ;
+    dcterms:description "Clear command history in linux which is used for defense evasion." ;
+    dcterms:id "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e" ;
+    dcterms:modified "2020/07/13" ;
+    dcterms:status "experimental" ;
+    dcterms:title "Clear Command History" ;
+    ns1:detectionCondition "keywords" ;
+    ns1:falsePositive "Unknown" ;
+    ns2:hasAttackTechnique <http://w3id.org/sepses/resource/attack/technique/T1070.003> ;
+    ns1:hasDetection """prefix : <http://w3id.org/sepses/vocab/event/log#>\r
+SELECT ?s ?cmd WHERE {\r
+ ?s a :Process.\r
+ ?s :cmdLine ?cmd. \r
+FILTER (regex(str(?cmd),"rm .*bash_history")\r
+|| regex(str(?cmd),"echo \\"\\" > .*bash_history")\r
+|| regex(str(?cmd),"cat /dev/null > .*bash_history")\r
+|| regex(str(?cmd),"ln -sf /dev/null .*bash_history")\r
+|| regex(str(?cmd),"truncate -s0 .*bash_history")\r
+|| regex(str(?cmd),"export HISTFILESIZE=0")\r
+|| regex(str(?cmd),"history -c")\r
+|| regex(str(?cmd),"history -w")\r
+|| regex(str(?cmd),"shred .*bash_history")\r
+|| regex(str(?cmd),"empty_bash_history")\r
+)}""";
+    ns1:level "high" ;
+    ns1:logSourceProduct "linux" ;
+    ns1:references "https://attack.mitre.org/techniques/T1070/003/",
+        "https://github.com/redcanaryco/atomic-red-team/blob/master/atomics/T1070.003/T1070.003.yaml",
+        "https://www.hackers-arise.com/single-post/2016/06/20/Covering-your-BASH-Shell-Tracks-AntiForensics" ;
+    ns1:tags "attack.defense_evasion",
+        "attack.t1070.003" .
+
+<http://w3id.org/sepses/resource/rule/exec-rule> a ns2:CustomRule ;
+                 ns2:hasAttackTechnique  <http://w3id.org/sepses/resource/attack/technique/T1203> .
+
+<http://w3id.org/sepses/resource/rule/data-leak-rule> a ns2:CustomRule ;
+                 ns2:hasAttackTechnique  <http://w3id.org/sepses/resource/attack/technique/T1020> .

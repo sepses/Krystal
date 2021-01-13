@@ -14,13 +14,14 @@ public class PropagationRule {
 	public  String prefix; 
 	public  String process; 
 	public String file;
+	public String net;
 	public Property confTag;
 	public Property intTag;
 	public Property subjTag;
 				
 	public PropagationRule() {
 		Model model = ModelFactory.createDefaultModel();		
-		prefRule = "http://w3id.org/sepses/ns/rule#";
+		prefRule = "http://w3id.org/sepses/vocab/rule#";
 		confTag = model.createProperty(prefRule+"confTag");
 		intTag = model.createProperty(prefRule+"intTag");
 		subjTag = model.createProperty(prefRule+"subjTag");
@@ -37,6 +38,16 @@ public class PropagationRule {
 		intWrite(jsonModel, subject, exec, objectString);
 	}
 	
+	public void receiveTag(Model jsonModel, String subject, String exec, String objectString) {
+		intReceive(jsonModel, subject, exec, objectString);
+		confReceive(jsonModel, subject, exec, objectString);
+	}
+	
+	public void sendTag(Model jsonModel, String subject, String exec, String objectString) {
+		confSend(jsonModel, subject, exec, objectString);
+		intSend(jsonModel, subject, exec, objectString);
+	}
+	
 	public void execTag(Model jsonModel, String subject, String exec, String objectString) {
 		subjExec(jsonModel, subject, exec, objectString);
 		intExec(jsonModel, subject, exec, objectString);
@@ -47,8 +58,8 @@ public class PropagationRule {
 	
 	public void confRead(Model jsonModel, String subject, String exec, String objectString) {
 		
-		process = "http://w3id.org/sepses/res/proc/"+subject+"#"+exec;
-		file = "http://w3id.org/sepses/res/obj#"+objectString;
+		process = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
+		file = "http://w3id.org/sepses/resource/file#"+objectString;
 		
 		Resource respro = jsonModel.createResource(process);
 		Resource resfile = jsonModel.createResource(file);
@@ -65,8 +76,8 @@ public class PropagationRule {
 		
 	public  void intRead(Model jsonModel,String subject, String exec, String objectString) {
 		
-		process = "http://w3id.org/sepses/res/proc/"+subject+"#"+exec;
-		file = "http://w3id.org/sepses/res/obj#"+objectString;
+		process = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
+		file = "http://w3id.org/sepses/resource/file#"+objectString;
 		Resource respro = jsonModel.createResource(process);
 		Resource resfile = jsonModel.createResource(file);
 		
@@ -80,76 +91,178 @@ public class PropagationRule {
 	    }
 		
 	}
-				  
-	//================WRITE===========================
-			
-	public  void confWrite(Model jsonModel, String subject, String exec, String objectString) {
-	    process = "http://w3id.org/sepses/res/proc/"+subject+"#"+exec;
-		file = "http://w3id.org/sepses/res/obj#"+objectString;
+	
+	//===================RECEIVE ==============================
+	
+	public void confReceive(Model jsonModel, String subject, String exec, String objectString) {
+		
+		process = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
+		net = "http://w3id.org/sepses/resource/net#"+objectString;
 		
 		Resource respro = jsonModel.createResource(process);
-		Resource resfile = jsonModel.createResource(file);
+		Resource resnet = jsonModel.createResource(net);
+		double rsct = getEntityTag(jsonModel, confTag, respro);
+		double roct = getEntityTag(jsonModel, confTag, resnet);		
+	    	
+		if(roct!=rsct) {
+	         double nct = min(roct,rsct);
+	         jsonModel.removeAll(respro, confTag, null);
+	         jsonModel.addLiteral(respro, confTag, nct);
+	    }
+	}
+	
+		
+	public  void intReceive(Model jsonModel,String subject, String exec, String objectString) {
+		
+		process = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
+		net = "http://w3id.org/sepses/resource/net#"+objectString;
+		Resource respro = jsonModel.createResource(process);
+		Resource resnet = jsonModel.createResource(net);
+		
+		double rsit = getEntityTag(jsonModel, intTag, respro);
+		double roit = getEntityTag(jsonModel, intTag, resnet);
+		
+		if(roit!=rsit) {
+	         double nit = min(roit,rsit);
+	         jsonModel.removeAll(respro, intTag, null);
+	         jsonModel.addLiteral(respro, intTag, nit);
+	    }
+		
+	}
+				  
+	//================SEND===========================
+			
+	public  void confSend(Model jsonModel, String subject, String exec, String objectString) {
+	    process = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
+		net = "http://w3id.org/sepses/resource/net#"+objectString;
+		
+		Resource respro = jsonModel.createResource(process);
+		Resource resnet = jsonModel.createResource(net);
 		
 		double rsst = getEntityTag(jsonModel, subjTag, respro);
 		double rsct = getEntityTag(jsonModel, confTag, respro);
-		double roct = getEntityTag(jsonModel, confTag, resfile);
+		double roct = getEntityTag(jsonModel, confTag, resnet);
 
 	    if(rsst >= 0.5) {
 	    	//benign
 	       if(roct!=rsct) {
 	         double noct = min(rsct+0.2,roct);
 	          if(noct!=roct) {
-	             jsonModel.removeAll(resfile, confTag, null);
-		         jsonModel.addLiteral(resfile, confTag, noct);
+	             jsonModel.removeAll(resnet, confTag, null);
+		         jsonModel.addLiteral(resnet, confTag, noct);
 		     }  
 	      }	      
 	    }else {
 	    	//suspect
 	    	 if(roct!=rsct) {
 	           double noct = min(rsct,roct);
-	           	 jsonModel.removeAll(resfile, confTag, null);
-	           	 jsonModel.addLiteral(resfile, confTag, noct);
+	           	 jsonModel.removeAll(resnet, confTag, null);
+	           	 jsonModel.addLiteral(resnet, confTag, noct);
 	    	 }
 	    }
 	}
 	
-	public  void intWrite(Model jsonModel, String subject, String exec, String objectString) {
-		process = "http://w3id.org/sepses/res/proc/"+subject+"#"+exec;
-		file = "http://w3id.org/sepses/res/obj#"+objectString;
+	public  void intSend(Model jsonModel, String subject, String exec, String objectString) {
+		process = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
+		net = "http://w3id.org/sepses/resource/net#"+objectString;
 		
 		Resource respro = jsonModel.createResource(process);
-		Resource resfile = jsonModel.createResource(file);
+		Resource resnet = jsonModel.createResource(net);
 		
 		double rsst = getEntityTag(jsonModel, subjTag, respro);
 		double rsit = getEntityTag(jsonModel, intTag, respro);
-		double roit = getEntityTag(jsonModel, intTag, resfile);
+		double roit = getEntityTag(jsonModel, intTag, resnet);
 			    
 	    if(rsst >= 0.5) {
 	      //benign
 	    	if(roit!=rsit) {
 	         double noit = min(rsit+0.2,roit);
 	         if(noit!=roit) {
-	        	 jsonModel.removeAll(resfile, intTag, null);
-		         jsonModel.addLiteral(resfile, intTag, noit);
+	        	 jsonModel.removeAll(resnet, intTag, null);
+		         jsonModel.addLiteral(resnet, intTag, noit);
 		     }  
 	     }   
 	    }else {
 	     //suspect
 	    	if(roit!=rsit) {
 	         double noit = min(rsit,roit);
-	         jsonModel.removeAll(resfile, intTag, null);
-	         jsonModel.addLiteral(resfile, intTag, noit);
+	         jsonModel.removeAll(resnet, intTag, null);
+	         jsonModel.addLiteral(resnet, intTag, noit);
 	    	}
 	    }
 	    	
 	  }
 	
+	//================WRITE===========================
+	
+		public  void confWrite(Model jsonModel, String subject, String exec, String objectString) {
+		    process = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
+			file = "http://w3id.org/sepses/resource/file#"+objectString;
+			
+			Resource respro = jsonModel.createResource(process);
+			Resource resfile = jsonModel.createResource(file);
+			
+			double rsst = getEntityTag(jsonModel, subjTag, respro);
+			double rsct = getEntityTag(jsonModel, confTag, respro);
+			double roct = getEntityTag(jsonModel, confTag, resfile);
+
+		    if(rsst >= 0.5) {
+		    	//benign
+		       if(roct!=rsct) {
+		         double noct = min(rsct+0.2,roct);
+		          if(noct!=roct) {
+		             jsonModel.removeAll(resfile, confTag, null);
+			         jsonModel.addLiteral(resfile, confTag, noct);
+			     }  
+		      }	      
+		    }else {
+		    	//suspect
+		    	 if(roct!=rsct) {
+		           double noct = min(rsct,roct);
+		           	 jsonModel.removeAll(resfile, confTag, null);
+		           	 jsonModel.addLiteral(resfile, confTag, noct);
+		    	 }
+		    }
+		}
+		
+		public  void intWrite(Model jsonModel, String subject, String exec, String objectString) {
+			process = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
+			file = "http://w3id.org/sepses/resource/file#"+objectString;
+			
+			Resource respro = jsonModel.createResource(process);
+			Resource resfile = jsonModel.createResource(file);
+			
+			double rsst = getEntityTag(jsonModel, subjTag, respro);
+			double rsit = getEntityTag(jsonModel, intTag, respro);
+			double roit = getEntityTag(jsonModel, intTag, resfile);
+				    
+		    if(rsst >= 0.5) {
+		      //benign
+		    	if(roit!=rsit) {
+		         double noit = min(rsit+0.2,roit);
+		         if(noit!=roit) {
+		        	 jsonModel.removeAll(resfile, intTag, null);
+			         jsonModel.addLiteral(resfile, intTag, noit);
+			     }  
+		     }   
+		    }else {
+		     //suspect
+		    	if(roit!=rsit) {
+		         double noit = min(rsit,roit);
+		         jsonModel.removeAll(resfile, intTag, null);
+		         jsonModel.addLiteral(resfile, intTag, noit);
+		    	}
+		    }
+		    	
+		  }
+
+	
 	//================EXEC===========================
 			
 	public  void subjExec(Model jsonModel, String subject, String exec, String objectString) {
 		
-		process = "http://w3id.org/sepses/res/proc/"+subject+"#"+exec;
-		file = "http://w3id.org/sepses/res/obj#"+objectString;
+		process = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
+		file = "http://w3id.org/sepses/resource/file#"+objectString;
 		
 		Resource respro = jsonModel.createResource(process);
 		Resource resfile = jsonModel.createResource(file);
@@ -177,8 +290,8 @@ public class PropagationRule {
 
 	public  void confExec(Model jsonModel, String subject, String exec, String objectString) {
 		
-		process = "http://w3id.org/sepses/res/proc/"+subject+"#"+exec;
-		file = "http://w3id.org/sepses/res/obj#"+objectString;
+		process = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
+		file = "http://w3id.org/sepses/resource/file#"+objectString;
 		
 		Resource respro = jsonModel.createResource(process);
 		Resource resfile = jsonModel.createResource(file);
@@ -205,8 +318,8 @@ public class PropagationRule {
 
 	public  void intExec(Model jsonModel, String subject, String exec, String objectString) {
 
-		process = "http://w3id.org/sepses/res/proc/"+subject+"#"+exec;
-		file = "http://w3id.org/sepses/res/obj#"+objectString;
+		process = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
+		file = "http://w3id.org/sepses/resource/file#"+objectString;
 		
 		Resource respro = jsonModel.createResource(process);
 		Resource resfile = jsonModel.createResource(file);
@@ -236,8 +349,8 @@ public class PropagationRule {
 	//================FORK============
 
 		public  void forkTag(Model jsonModel, String prevProcess, String process) {
-			String prevProc = "http://w3id.org/sepses/res/proc/"+prevProcess;
-			process = "http://w3id.org/sepses/res/proc/"+process;
+			String prevProc = "http://w3id.org/sepses/resource/proc"+prevProcess;
+			process = "http://w3id.org/sepses/resource/proc"+process;
 			
 			Resource resPrevPro = jsonModel.createResource(prevProc);
 			Resource respro = jsonModel.createResource(process);

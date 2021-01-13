@@ -30,15 +30,15 @@ public class AlertRule {
 	public  String timestamp;
 	
 	public AlertRule(){
-		prefix = "PREFIX sepses: <http://w3id.org/sepses/ns/log#>\r\n"
-				+ "PREFIX rule: <http://w3id.org/sepses/ns/rule#>\r\n";
-		timestamp = "<http://w3id.org/sepses/ns/log#timestamp>";
+		prefix = "PREFIX sepses: <http://w3id.org/sepses/vocab/event/log#>\r\n"
+				+ "PREFIX rule: <http://w3id.org/sepses/vocab/rule#>\r\n";
+		timestamp = "<http://w3id.org/sepses/vocab/event/log#timestamp>";
 		
 	}
 	
 	public void execAlert(Model jsonModel, Model alertModel, String proc, String objectString, String ts) {
-		process = "<http://w3id.org/sepses/res/proc/"+proc+">";
-		file = "<http://w3id.org/sepses/res/obj#"+objectString+">";
+		process = "<http://w3id.org/sepses/resource/proc"+proc+">";
+		file = "<http://w3id.org/sepses/resource/file#"+objectString+">";
 		String time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#timestamp>";
 		
 		String q ="CONSTRUCT { << "+file+" sepses:isExecutedBy "+process+" >> "
@@ -63,8 +63,8 @@ public class AlertRule {
 	
 	public void dataLeakAlert(Model jsonModel, Model alertModel, String proc, String net, String ts) {
 		
-		process = "<http://w3id.org/sepses/res/proc/"+proc+">";
-		network = "<http://w3id.org/sepses/res/obj#"+net+">";
+		process = "<http://w3id.org/sepses/resource/proc"+proc+">";
+		network = "<http://w3id.org/sepses/resource/net#"+net+">";
 		String time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#timestamp>";
 		
 		String q ="CONSTRUCT { << "+process+" sepses:sends "+network+" >> "
@@ -89,8 +89,8 @@ public class AlertRule {
 	}
 	
 	public void corruptFileAlert(Model jsonModel, Model alertModel, String proc, String objectString, String ts) {
-		process = "<http://w3id.org/sepses/res/proc/"+proc+">";
-		file = "<http://w3id.org/sepses/res/obj#"+objectString+">";
+		process = "<http://w3id.org/sepses/resource/proc"+proc+">";
+		file = "<http://w3id.org/sepses/resource/file#"+objectString+">";
 		String time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#timestamp>";
 		
 		String q ="CONSTRUCT { << "+process+" sepses:writes "+file+" >> "
@@ -143,7 +143,7 @@ public class AlertRule {
 		         while (qres.hasNext()) {
 			            QuerySolution qs = qres.nextSolution();
 			            Resource res = qs.get("?s").asResource();
-			            Property detectedRule = ruleModel.createProperty("http://w3id.org/sepses/ns/rule#hasDetectedRule");
+			            Property detectedRule = ruleModel.createProperty("http://w3id.org/sepses/vocab/rule#hasDetectedRule");
 			            alertModel.add(res, detectedRule, subj);
 			    	  }
 		            }
