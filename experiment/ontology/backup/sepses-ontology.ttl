@@ -9,13 +9,18 @@
 
 <http://w3id.org/sepses/ns/log> a owl:Ontology .
 
-:Process a rdfs:Class.
+:EventEntity a rdfs:Class.
 
-:File a rdfs:Class.
+:Process a rdfs:Class;
+	rdfs:subClassOf :EventEntity.
+
+:File a rdfs:Class;
+	rdfs:subClassOf :EventEntity.
+
+:Network a rdfs:Class;
+	rdfs:subClassOf :EventEntity.
 
 :Executable a rdfs:Class.
-
-:Network a rdfs:Class.
 
 :User a rdfs:Class.
 
@@ -30,6 +35,10 @@
 :SystemUser a rdfs:Class;
 	rdfs:subClassOf :User.
 
+
+:connects a rdf:Property;
+    rdfs:domain :EventEntity ;
+    rdfs:range :EventEntity.
 
 :forks a rdf:Property;
     rdfs:subPropertyOf :connects ;
@@ -61,7 +70,7 @@
     rdfs:domain :Process ;
     rdfs:range :Network .    
 
-:hasCmd a rdf:Property;
+:cmdLine a rdf:Property;
    rdfs:domain :Process ;
    rdfs:range xsd:string.
 
@@ -77,7 +86,7 @@
    rdfs:domain :User ;
    rdfs:range xsd:string.
 
-:hasHost a rdf:Property;
+:originatesFrom a rdf:Property;
    rdfs:domain :Process ;
    rdfs:range :Host.
 
@@ -100,18 +109,3 @@
 :port a rdf:Property;
    rdfs:domain :Network ;
    rdfs:range xsd:integer.
-
-
-#==================additional ontology===============
-
-cat:Technique a rdfs:Class.
-
-sigma:SigmaRule a rdfs:Class.
-
-:hasPotentialAttackTechnique a rdf:Property;
-    rdfs:domain :Process ;
-    rdfs:range cat:Technique .
-
-:hasDetectedRule a rdf:Property;
-    rdfs:domain :Process ;
-    rdfs:range sigma:SigmaRule .

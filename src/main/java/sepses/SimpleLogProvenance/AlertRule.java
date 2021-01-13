@@ -42,7 +42,7 @@ public class AlertRule {
 		String time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#timestamp>";
 		
 		String q ="CONSTRUCT { << "+file+" sepses:isExecutedBy "+process+" >> "
-					+ "rule:hasAlert <http://w3id.org/sepses/res/alert#exec-alert>; \r\n"
+					+ "rule:hasDetectedRule <http://w3id.org/sepses/resource/rule/exec-rule>; \r\n"
 					+ "			             sepses:timestamp "+time+"."
 						+ " \r\n}"+
 				   "WHERE { \r\n" + 
@@ -68,7 +68,7 @@ public class AlertRule {
 		String time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#timestamp>";
 		
 		String q ="CONSTRUCT { << "+process+" sepses:sends "+network+" >> "
-								+ "rule:hasAlert <http://w3id.org/sepses/res/alert#data-leak-alert>; \r\n"+
+								+ "rule:hasDetectedRule <http://w3id.org/sepses/resource/rule/data-leak-rule>; \r\n"+
 								"sepses:timestamp "+time+"."+
 						   " \r\n}"+
 				"WHERE { \r\n" + 
@@ -94,7 +94,7 @@ public class AlertRule {
 		String time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#timestamp>";
 		
 		String q ="CONSTRUCT { << "+process+" sepses:writes "+file+" >> "
-								+ "rule:hasAlert <http://w3id.org/sepses/res/alert#corrupt-file-alert>;\r\n"+
+								+ "rule:hasDetectedRule <http://w3id.org/sepses/resource/rule/corrupt-file-rule>;\r\n"+
 						  			"sepses:timestamp "+time+"."+
 						   " \r\n}"+
 				   "WHERE { \r\n" + 
@@ -143,7 +143,7 @@ public class AlertRule {
 		         while (qres.hasNext()) {
 			            QuerySolution qs = qres.nextSolution();
 			            Resource res = qs.get("?s").asResource();
-			            Property detectedRule = ruleModel.createProperty("http://w3id.org/sepses/ns/rule#hasAlert");
+			            Property detectedRule = ruleModel.createProperty("http://w3id.org/sepses/ns/rule#hasDetectedRule");
 			            alertModel.add(res, detectedRule, subj);
 			    	  }
 		            }

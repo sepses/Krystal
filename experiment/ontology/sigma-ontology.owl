@@ -1,0 +1,161 @@
+@prefix : <http://w3id.org/sepses/vocab/rule/sigma#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix attack: <http://w3id.org/sepses/vocab/ref/attack#> .
+@prefix dcterm: <http://purl.org/dc/terms/> .
+@base <http://w3id.org/sepses/vocab/rule/sigma> .
+
+<http://w3id.org/sepses/vocab/rule/sigma> rdf:type owl:Ontology ;
+                                           <http://purl.org/dc/elements/1.1/creator> "Elmar Kiesling" ;
+                                           <http://purl.org/vocab/vann/preferredNamespacePrefix> "sigma" ;
+                                           <http://purl.org/dc/elements/1.1/creator> "Kabul Kurniawan" ;
+                                           <http://purl.org/dc/elements/1.1/rights> "http://creativecommons.org/licenses/by/4.0/" ;
+                                           <http://purl.org/dc/elements/1.1/creator> "Andreas Ekelhart" ;
+                                           <http://purl.org/dc/elements/1.1/description> """An ontology to represent Sigma Rule model.
+This ontology is developed based on the Sigma rule specificaton model (https://github.com/Neo23x0/sigma/wiki/Specification) """@en ;
+                                           <http://purl.org/dc/elements/1.1/title> "" .
+
+#################################################################
+#    Annotation properties
+#################################################################
+
+###  http://purl.org/dc/elements/1.1/creator
+<http://purl.org/dc/elements/1.1/creator> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/dc/elements/1.1/description
+<http://purl.org/dc/elements/1.1/description> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/dc/elements/1.1/rights
+<http://purl.org/dc/elements/1.1/rights> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/dc/elements/1.1/title
+<http://purl.org/dc/elements/1.1/title> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/vocab/vann/preferredNamespacePrefix
+<http://purl.org/vocab/vann/preferredNamespacePrefix> rdf:type owl:AnnotationProperty .
+
+
+#################################################################
+#    Object Properties
+#################################################################
+
+###  http://w3id.org/sepses/vocab/rule/sigma#hasAttackTechnique
+:hasAttackTechnique rdf:type owl:ObjectProperty ;
+                    rdfs:domain :SigmaRule ;
+                    rdfs:range attack:Technique .
+
+
+#################################################################
+#    Data properties
+#################################################################
+
+###  http://purl.org/dc/terms/created
+dcterm:created rdf:type owl:DatatypeProperty ;
+               rdfs:domain :SigmaRule ;
+               rdfs:range xsd:string .
+
+
+###  http://purl.org/dc/terms/creator
+dcterm:creator rdf:type owl:DatatypeProperty ;
+               rdfs:domain :SigmaRule ;
+               rdfs:range xsd:string .
+
+
+###  http://purl.org/dc/terms/description
+dcterm:description rdf:type owl:DatatypeProperty ;
+                   rdfs:domain :SigmaRule ;
+                   rdfs:range xsd:string .
+
+
+###  http://purl.org/dc/terms/id
+dcterm:id rdf:type owl:DatatypeProperty ;
+          rdfs:domain :SigmaRule ;
+          rdfs:range xsd:string .
+
+
+###  http://purl.org/dc/terms/modified
+dcterm:modified rdf:type owl:DatatypeProperty ;
+                rdfs:domain :SigmaRule ;
+                rdfs:range xsd:string .
+
+
+###  http://purl.org/dc/terms/status
+dcterm:status rdf:type owl:DatatypeProperty ;
+              rdfs:domain :SigmaRule ;
+              rdfs:range xsd:string .
+
+
+###  http://purl.org/dc/terms/title
+dcterm:title rdf:type owl:DatatypeProperty ;
+             rdfs:domain :SigmaRule ;
+             rdfs:range xsd:string .
+
+
+###  http://w3id.org/sepses/vocab/rule/sigma#detectionCondition
+:detectionCondition rdf:type owl:DatatypeProperty ;
+                    rdfs:domain :SigmaRule ;
+                    rdfs:range xsd:string .
+
+
+###  http://w3id.org/sepses/vocab/rule/sigma#falsePositive
+:falsePositive rdf:type owl:DatatypeProperty ;
+               rdfs:domain :SigmaRule ;
+               rdfs:range xsd:string .
+
+
+###  http://w3id.org/sepses/vocab/rule/sigma#hasDetection
+:hasDetection rdf:type owl:DatatypeProperty ;
+              rdfs:domain :SigmaRule ;
+              rdfs:range xsd:string .
+
+
+###  http://w3id.org/sepses/vocab/rule/sigma#level
+:level rdf:type owl:DatatypeProperty ;
+       rdfs:domain :SigmaRule ;
+       rdfs:range xsd:string .
+
+
+###  http://w3id.org/sepses/vocab/rule/sigma#logSourceProduct
+:logSourceProduct rdf:type owl:DatatypeProperty ;
+                  rdfs:domain :SigmaRule ;
+                  rdfs:range xsd:string .
+
+
+###  http://w3id.org/sepses/vocab/rule/sigma#logSourceService
+:logSourceService rdf:type owl:DatatypeProperty ;
+                  rdfs:domain :SigmaRule ;
+                  rdfs:range xsd:string .
+
+
+###  http://w3id.org/sepses/vocab/rule/sigma#references
+:references rdf:type owl:DatatypeProperty ;
+            rdfs:domain :SigmaRule ;
+            rdfs:range xsd:string .
+
+
+###  http://w3id.org/sepses/vocab/rule/sigma#tags
+:tags rdf:type owl:DatatypeProperty ;
+      rdfs:domain :SigmaRule ;
+      rdfs:range xsd:string .
+
+
+#################################################################
+#    Classes
+#################################################################
+
+###  http://w3id.org/sepses/vocab/ref/attack#Technique
+attack:Technique rdf:type owl:Class .
+
+
+###  http://w3id.org/sepses/vocab/rule/sigma#SigmaRule
+:SigmaRule rdf:type owl:Class .
+
+
+###  Generated by the OWL API (version 4.2.8.20170104-2310) https://github.com/owlcs/owlapi
