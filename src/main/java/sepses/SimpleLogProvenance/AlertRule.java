@@ -64,7 +64,7 @@ public class AlertRule {
 	public void dataLeakAlert(Model jsonModel, Model alertModel, String proc, String net, String ts) {
 		
 		process = "<http://w3id.org/sepses/resource/proc"+proc+">";
-		network = "<http://w3id.org/sepses/resource/net#"+net+">";
+		network = "<http://w3id.org/sepses/resource/soc#"+net+">";
 		String time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#timestamp>";
 		
 		String q ="CONSTRUCT { << "+process+" sepses:sends "+network+" >> "

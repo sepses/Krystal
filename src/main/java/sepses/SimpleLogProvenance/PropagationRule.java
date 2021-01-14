@@ -97,7 +97,7 @@ public class PropagationRule {
 	public void confReceive(Model jsonModel, String subject, String exec, String objectString) {
 		
 		process = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
-		net = "http://w3id.org/sepses/resource/net#"+objectString;
+		net = "http://w3id.org/sepses/resource/soc#"+objectString;
 		
 		Resource respro = jsonModel.createResource(process);
 		Resource resnet = jsonModel.createResource(net);
@@ -115,7 +115,7 @@ public class PropagationRule {
 	public  void intReceive(Model jsonModel,String subject, String exec, String objectString) {
 		
 		process = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
-		net = "http://w3id.org/sepses/resource/net#"+objectString;
+		net = "http://w3id.org/sepses/resource/soc#"+objectString;
 		Resource respro = jsonModel.createResource(process);
 		Resource resnet = jsonModel.createResource(net);
 		
@@ -134,7 +134,7 @@ public class PropagationRule {
 			
 	public  void confSend(Model jsonModel, String subject, String exec, String objectString) {
 	    process = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
-		net = "http://w3id.org/sepses/resource/net#"+objectString;
+		net = "http://w3id.org/sepses/resource/soc#"+objectString;
 		
 		Resource respro = jsonModel.createResource(process);
 		Resource resnet = jsonModel.createResource(net);
@@ -164,7 +164,7 @@ public class PropagationRule {
 	
 	public  void intSend(Model jsonModel, String subject, String exec, String objectString) {
 		process = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
-		net = "http://w3id.org/sepses/resource/net#"+objectString;
+		net = "http://w3id.org/sepses/resource/soc#"+objectString;
 		
 		Resource respro = jsonModel.createResource(process);
 		Resource resnet = jsonModel.createResource(net);

@@ -1,6 +1,6 @@
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix ns1: <http://w3id.org/sepses/vocab/rule/sigma#> .
-@prefix ns2: <http://w3id.org/sepses/vocab/rule#>
+@prefix ns2: <http://w3id.org/sepses/vocab/rule#> .
 
 <http://w3id.org/sepses/resource/sigma/sigma-1543ae20-cbdf-4ec1-8d12-7664d667a825> a ns1:SigmaRule ;
     dcterms:created "2017/12/12" ;

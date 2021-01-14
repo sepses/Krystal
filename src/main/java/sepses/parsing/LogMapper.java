@@ -97,7 +97,7 @@ public class LogMapper {
 	public  String sendMap(String subject, String exec, String ip, String hostId, String userId, String ts) {
 		
 		process = "<http://w3id.org/sepses/resource/proc"+subject+"#"+exec+">";
-		String ipAddress = "<http://w3id.org/sepses/resource/net#"+ip+">";
+		String ipAddress = "<http://w3id.org/sepses/resource/soc#"+ip+">";
 		//time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#dateTime>";
 		
 		return process +s+ sends +s+ ipAddress +dot
@@ -108,7 +108,7 @@ public class LogMapper {
 	
 	public  String receiveMap(String subject, String exec, String ip, String hostId, String userId, String ts) {
 		process = "<http://w3id.org/sepses/resource/proc"+subject+"#"+exec+">";
-		String ipAddress = "<http://w3id.org/sepses/resource/net#"+ip+">";
+		String ipAddress = "<http://w3id.org/sepses/resource/soc#"+ip+">";
 		//time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#dateTime>";
 		
 		return  ipAddress +s+ isReceivedBy +s+ process +dot 
@@ -139,12 +139,12 @@ public  String userMap(String userId, String userType, String userName) {
 	}
 
 public  String networkMap(String netObject, String ip, String port) {
-	String network = "<http://w3id.org/sepses/resource/net#"+netObject+">";
+	String network = "<http://w3id.org/sepses/resource/soc#"+netObject+">";
 	String netip = "<http://w3id.org/sepses/resource/ip#"+ip+">";
 	String netport = "\""+port+"\"^^<http://www.w3.org/2001/XMLSchema#integer>";
-	String originalIPAddress = "<http://w3id.org/sepses/vocab/event/log#originalIPAddress>";
+	String hasSocketIP = "<http://w3id.org/sepses/vocab/event/log#hasSocketIP>";
 	String pport = "<http://w3id.org/sepses/vocab/event/log#port>";
-	return network +s+ originalIPAddress +s+ netip +s+ dot+
+	return network +s+ hasSocketIP +s+ netip +s+ dot+
 			network +s+ pport +s+ netport +dot;
 	
 }
@@ -154,10 +154,10 @@ public  String hostMap(String hostObject,String hostName, String hostOS, String 
 	String hostip = "<http://w3id.org/sepses/resource/ip#"+ip+">";
 	String hostname = "\""+hostName+"\"^^<http://www.w3.org/2001/XMLSchema#string>";
 	String hostos = "\""+hostOS+"\"^^<http://www.w3.org/2001/XMLSchema#string>";
-	String hasIPAddress = "<http://w3id.org/sepses/vocab/event/log#hasIPAddress>";
+	String hasHostIP = "<http://w3id.org/sepses/vocab/event/log#hasHostIP>";
 	String phostname = "<http://w3id.org/sepses/vocab/event/log#hostName>";
 	String phostos = "<http://w3id.org/sepses/vocab/event/log#hostOS>";
-	return host +s+ hasIPAddress +s+ hostip +s+ dot+
+	return host +s+ hasHostIP +s+ hostip +s+ dot+
 			host +s+ phostname +s+ hostname +dot+
 			host +s+ phostos +s+ hostos +dot;
 	
@@ -186,7 +186,7 @@ public  String hostMap(String hostObject,String hostName, String hostOS, String 
 		return initialFileTagMap;
 	}
 	public  String initialNetworkTagMap(String network) {
-		String n = "<http://w3id.org/sepses/resource/net#"+network+">";
+		String n = "<http://w3id.org/sepses/resource/soc#"+network+">";
 		String initialNetworkTagMap = n +s+ confTag +s+ highTag +dot+
 								   n +s+ intTag +s+ lowTag +dot;         
 		return initialNetworkTagMap;
