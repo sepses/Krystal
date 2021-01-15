@@ -62,6 +62,7 @@ public class JsonRDFReader {
 		HashMap<String, String> NetworkObject = new HashMap<String, String>();
 		HashMap<String, String> ForkObject = new HashMap<String, String>();
 		HashMap<String, String> UserObject = new HashMap<String, String>();
+		HashMap<String, String> SubjExecObject = new HashMap<String, String>();
 		HashMap<String, String> RegistryObject = new HashMap<String, String>();
 		String lastAccess = "";
 		
@@ -91,10 +92,10 @@ public class JsonRDFReader {
 							//skip strange character inside line
 							try {	
 									if(os.equals("windows")) {
-										line = line.substring(0, line.length() - 1);
+										//line = line.substring(0, line.length() - 1);
 										LogParserWin lp = new LogParserWin(line);
 										lastAccess = lp.parseJSONtoRDF(jsonModel,alertModel,fieldfilter, confidentialdir, uuIndex, Process, File, 
-								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, Registry, RegistryObject);
+								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, Registry, RegistryObject, SubjExecObject);
 									}
 //									else if (os.equals("linux")){
 //										LogParserLinux lp = new LogParserLinux(line);

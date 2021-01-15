@@ -28,6 +28,12 @@ public class PropagationRule {
 		
 	}
 	
+	public void loadTag(Model jsonModel, String subject, String exec, String objectString) {
+		subjLoad(jsonModel, subject, exec, objectString);
+		intRead(jsonModel, subject, exec, objectString);
+		confRead(jsonModel, subject, exec, objectString);
+	}
+	
 	public void readTag(Model jsonModel, String subject, String exec, String objectString) {
 		intRead(jsonModel, subject, exec, objectString);
 		confRead(jsonModel, subject, exec, objectString);
@@ -54,7 +60,7 @@ public class PropagationRule {
 		confExec(jsonModel, subject, exec, objectString);
 	}
 
-	//===================READ ==============================
+	//===================READ / LOAD ==============================
 	
 	public void confRead(Model jsonModel, String subject, String exec, String objectString) {
 		
@@ -91,6 +97,30 @@ public class PropagationRule {
 	    }
 		
 	}
+	
+	//===================ONLY LOAD ==============================
+public  void subjLoad(Model jsonModel, String subject, String exec, String objectString) {
+		
+		process = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
+		file = "http://w3id.org/sepses/resource/file#"+objectString;
+		
+		Resource respro = jsonModel.createResource(process);
+		Resource resfile = jsonModel.createResource(file);
+		double rsst = getEntityTag(jsonModel, subjTag, respro);
+		double rost = getEntityTag(jsonModel, subjTag, resfile);		
+	    
+	    
+	    	if(rost!=rsst) {
+	    		 double nsst = min(rsst,rost);
+		         jsonModel.removeAll(respro, subjTag, null);
+		         jsonModel.addLiteral(respro, subjTag, nsst);
+		
+	    }
+	}
+	
+	
+	
+
 	
 	//===================RECEIVE ==============================
 	

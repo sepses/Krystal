@@ -6,6 +6,7 @@ public class LogMapper {
 	public  String writes;
 	public  String sends;
 	public  String isExecutedBy;
+	public  String isLoadBy;
 	public  String isReceivedBy;
 	public  String isReadBy;
 	public  String forks;
@@ -36,6 +37,7 @@ public class LogMapper {
 		hasUser = "<http://w3id.org/sepses/vocab/event/log#hasUser>";
 		sends = "<http://w3id.org/sepses/vocab/event/log#sends>";
 		isExecutedBy = "<http://w3id.org/sepses/vocab/event/log#isExecutedBy>";
+		isLoadBy = "<http://w3id.org/sepses/vocab/event/log#isLoadBy>";
 		isReceivedBy = "<http://w3id.org/sepses/vocab/event/log#isReceivedBy>";
 		isReadBy = "<http://w3id.org/sepses/vocab/event/log#isReadBy>";
 		forks = "<http://w3id.org/sepses/vocab/event/log#forks>";
@@ -203,18 +205,18 @@ public  String hostMap(String hostObject,String hostName, String hostOS, String 
 	}
 	
 	//========Windows Only!===========================
-	public  String registryMap(String regId, String regKey, String regValType, String regValSize) {
+	public  String registryMap(String regId, String regKey, String regValType, String regValName) {
 		String registry = "<http://w3id.org/sepses/resource/reg#"+regId+">";
 		String registryKey = "\""+regKey+"\"^^<http://www.w3.org/2001/XMLSchema#string>";
 		String registryValueType = "\""+regValType+"\"^^<http://www.w3.org/2001/XMLSchema#string>";
-		String registryValueSize = "\""+regValSize+"\"^^<http://www.w3.org/2001/XMLSchema#integer>";
+		String registryValueName = "\""+regValName+"\"^^<http://www.w3.org/2001/XMLSchema#integer>";
 		String registrykey = "<http://w3id.org/sepses/vocab/event/log#registryKey>";
 		String registryvaluetype = "<http://w3id.org/sepses/vocab/event/log#registryValueType>";
-		String registryvaluesize = "<http://w3id.org/sepses/vocab/event/log#registryValueSize>";
+		String registryvaluename = "<http://w3id.org/sepses/vocab/event/log#registryValueName>";
 		
 		return registry +s+ registrykey +s+ registryKey +dot+
 				registry +s+ registryvaluetype +s+ registryValueType +dot+
-				registry +s+ registryvaluesize +s+ registryValueSize +dot;
+				registry +s+ registryvaluename +s+ registryValueName +dot;
 		
 	}
 
@@ -230,6 +232,45 @@ public  String hostMap(String hostObject,String hostName, String hostOS, String 
 		String initialRegistryTagMap = n +s+ confTag +s+ highTag +dot+
 								   n +s+ intTag +s+ highTag +dot;         
 		return initialRegistryTagMap;
+	}
+	
+	public  String subjectMap(String subject, String cmd) {
+		process = "<http://w3id.org/sepses/resource/proc"+subject+"#>";
+		//String cmdline = cmd+"^^<http://www.w3.org/2001/XMLSchema#string>";
+		String subjMap = process +s+ cmdLine +s+ "\""+cmd+"\"" +dot;     
+		return subjMap;
+	}
+	
+	public  String executeWinMap(String subject, String exec, String objectString, String hostId, String userId, String ts) {
+
+		file = "<http://w3id.org/sepses/resource/file#"+objectString+">";
+		String process = "<http://w3id.org/sepses/resource/proc"+subject+"#"+exec+">";
+		//time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#dateTime>";
+
+		
+		String executeMap =  
+				   file +s+ isExecutedBy +s+ process +dot+ 
+				   //"<<" +s+ file +s+ isExecutedBy +s+ process2 +s+ ">>"+s+ timestamp +s+ time +dot
+				   addTriple(process, exec, hostId, userId);
+		
+		return executeMap;
+		
+	}
+	
+	public  String loadLibraryMap(String subject, String exec, String objectString, String hostId, String userId, String ts) {
+
+		file = "<http://w3id.org/sepses/resource/file#"+objectString+">";
+		String process = "<http://w3id.org/sepses/resource/proc"+subject+"#"+exec+">";
+		//time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#dateTime>";
+
+		
+		String loadMap =  
+				   file +s+ isLoadBy +s+ process +dot+ 
+				   //"<<" +s+ file +s+ isExecutedBy +s+ process2 +s+ ">>"+s+ timestamp +s+ time +dot
+				   addTriple(process, exec, hostId, userId);
+		
+		return loadMap;
+		
 	}
 
 	//================end windows only!==============

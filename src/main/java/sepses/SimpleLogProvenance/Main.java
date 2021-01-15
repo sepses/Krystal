@@ -52,16 +52,16 @@ public class Main {
 	      
 	      type = "darpa";
 	      filefolder = inputdir+"darpa/";
-	  	  line = "10";
+	  	  line = "100000";
 	      if(triplestore.equals("virtuoso")) {  	  
 	  	     sparqlEp ="http://localhost:8890/sparql";
 	      }else if(triplestore.equals("graphdb")){
 	  	     sparqlEp = "http://localhost:7200/repositories/RDFSTAR";
 	      }else {
 	  	    //default: graphdb	 
-	  	     sparqlEp = "http://localhost:7200/repositories/cadets10000";
+	  	     sparqlEp = "http://localhost:7200/repositories/fd10000";
 	  	   }
-	      namegraph = "http://w3id.org/sepses/graph/cadets10000";
+	      namegraph = "http://w3id.org/sepses/graph/fd10000";
 	  	  startingLine = "0";
 
 	  	  //=======end of experiment in IDE=============
