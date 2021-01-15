@@ -42,7 +42,7 @@ public class LogParserWin {
 			datumNode = jsonNode.get("datum");
 	}
 	
-	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject,  Set<String> Registry, HashMap<String, String> RegistryObject, HashMap<String, String> SubjExecObject ) throws IOException{	
+	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject,  Set<String> Registry, HashMap<String, String> RegistryObject, HashMap<String, String> SubjExecObject, String file ) throws IOException{	
 		//filter is the line is an event or not
 		eventNode = datumNode.get("Event");
 		if(eventNode.toBoolean()) {
@@ -370,7 +370,7 @@ public class LogParserWin {
 				String mapper="";
 				LogMapper lm = new LogMapper();	
 			    
-				mapper = lm.subjectMap(subject,exec);	
+				mapper = lm.subjectMap(subject,file+"_"+exec);	
 				
 				Reader targetReader = new StringReader(mapper);
 				jsonModel.read(targetReader, null, "N-TRIPLE");
