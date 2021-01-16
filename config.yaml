@@ -20,6 +20,7 @@ confidential-dir:
  - /etc/passwd
  - /var/log
  - /etc/shadow
+ - /Documents/
 
 
 field-filter:

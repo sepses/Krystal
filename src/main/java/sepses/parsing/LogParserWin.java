@@ -370,7 +370,7 @@ public class LogParserWin {
 				String mapper="";
 				LogMapper lm = new LogMapper();	
 			    
-				mapper = lm.subjectMap(subject,file+"_"+exec);	
+				mapper = lm.subjectMap(subject,exec);	
 				
 				Reader targetReader = new StringReader(mapper);
 				jsonModel.read(targetReader, null, "N-TRIPLE");
@@ -571,8 +571,8 @@ public class LogParserWin {
 		line = line.replaceAll("[#{}%\\]\\[\\s\\n$=()]", "");
 		line = line.replace("C:", "\\Device\\HarddiskVolume2");
 		line = line.replace("\\SystemRoot", "\\Device\\HarddiskVolume2");
-		line = line.replace("\\", "_");
-		line = line.toLowerCase();
+		line = line.replace("\\", "/");
+		//line = line.toLowerCase();
 		
 		return line;
 	}

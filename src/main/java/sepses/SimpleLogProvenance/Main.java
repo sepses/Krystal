@@ -52,14 +52,14 @@ public class Main {
 	      
 //	      type = "darpa";
 //	      filefolder = inputdir+"darpa/";
-//	  	  line = "10000";
+//	  	  line = "100000";
 //	      if(triplestore.equals("virtuoso")) {  	  
 //	  	     sparqlEp ="http://localhost:8890/sparql";
 //	      }else if(triplestore.equals("graphdb")){
-//	  	     sparqlEp = "http://localhost:7200/repositories/RDFSTAR";
+//	  	     sparqlEp = "http://localhost:4000/repositories/RDFSTAR";
 //	      }else {
 //	  	    //default: graphdb	 
-//	  	     sparqlEp = "http://localhost:7200/repositories/fd10000";
+//	  	     sparqlEp = "http://localhost:4000/repositories/fd10000";
 //	  	   }
 //	      namegraph = "http://w3id.org/sepses/graph/fd10000";
 //	  	  startingLine = "0";
