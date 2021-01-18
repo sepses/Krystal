@@ -279,6 +279,7 @@ public class LogParserLinux {
 		}else if(datumNode.get("com.bbn.tc.schema.avro.cdm18.Subject").toBoolean()) {
 		    subjectNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.Subject");
 			subject = shortenUUID(subjectNode.get("uuid").toString(),uuIndex);
+			
 			String cmdLine = subjectNode.get("cmdLine").get("string").toString();
 			String exec = getExecFromCmdLine(cmdLine);
 			putNewSubjExecObject(subject, exec, SubjExecObject);
@@ -287,10 +288,17 @@ public class LogParserLinux {
 			String mapper="";
 			LogMapper lm = new LogMapper();	
 		    
-			mapper = lm.subjectMap(subject,exec,file+":"+cmdLine);	
+			mapper = lm.subjectMap(subject,exec,cmdLine);	
+			
 			
 			Reader targetReader = new StringReader(mapper);
 			jsonModel.read(targetReader, null, "N-TRIPLE");
+			
+			//add fork event from parentObject
+			String parentSubject = shortenUUID(subjectNode.get("parentSubject").get("com.bbn.tc.schema.avro.cdm18.UUID").toString(),uuIndex);
+			String parentExec = getProcessExec(parentSubject, SubjExecObject);
+			//System.out.println(parentExec);
+			forkEvent(lm, parentSubject+"#"+parentExec, subject+"#"+exec, "", jsonModel);
 	
 		}else if(datumNode.get("com.bbn.tc.schema.avro.cdm18.FileObject").toBoolean()) {
 		    fileNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.FileObject");
