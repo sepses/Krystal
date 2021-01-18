@@ -158,29 +158,24 @@ public class LogParserLinux {
 								}
 							}
 							
-							String cmd = eventNode.get("properties").get("map").get("cmdLine").toString();
-							String newExec = getExecFromCmdLine(cmd);
 							
 							
-							forkEvent(lm, subject+"#"+exec, subject+"#"+newExec, timestamp, jsonModel);
-							 
-							
-							 mapper = lm.executeMap(subject,newExec, fileName, cmdline, hostId, userId, timestamp)+fileMap+processMap;
+							 mapper = lm.executeMap(subject,exec, fileName, cmdline, hostId, userId, timestamp)+fileMap+processMap;
 							 
 							 storeEntity(fileName, File);
 							 storeEntity(subject+"#"+exec, Process);
-							 storeEntity(subject+"#"+newExec, Process);
+							 storeEntity(subject+"#"+exec, Process);
 							 
 							// System.out.print("execute");
 							 Reader targetReader2 = new StringReader(mapper);
 							 jsonModel.read(targetReader2, null, "N-TRIPLE");
 							 
 							 AlertRule alert = new AlertRule();
-							 alert.execAlert(jsonModel,alertModel, subject+"#"+newExec, fileName, timestamp);
+							 alert.execAlert(jsonModel,alertModel, subject+"#"+exec, fileName, timestamp);
 							 
 							 
 							 PropagationRule prop = new PropagationRule();
-							 prop.execTag(jsonModel, subject, newExec, fileName);		
+							 prop.execTag(jsonModel, subject, exec, fileName);		
 					
 						}
 					
