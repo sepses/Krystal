@@ -103,7 +103,7 @@ public class JsonRDFReader {
 									}else if (os.equals("linux")){
 										LogParserLinux lp = new LogParserLinux(line); //ubuntu
 										lastAccess = lp.parseJSONtoRDF(jsonModel,alertModel,fieldfilter, confidentialdir, uuIndex, Process, File, 
-								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, FileObject, SubjExecObject);
+								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, FileObject, SubjExecObject, file);
 									}else {
 										LogParser lp = new LogParser(line); //freebsd
 										lastAccess = lp.parseJSONtoRDF(jsonModel,alertModel,fieldfilter, confidentialdir, uuIndex, Process, File, 

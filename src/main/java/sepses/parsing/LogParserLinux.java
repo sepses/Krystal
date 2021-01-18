@@ -41,7 +41,7 @@ public class LogParserLinux {
 			datumNode = jsonNode.get("datum");
 	}
 	
-	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject, HashMap<String, String> FileObject, HashMap<String, String> SubjExecObject ) throws IOException{	
+	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject, HashMap<String, String> FileObject, HashMap<String, String> SubjExecObject, String file ) throws IOException{	
 		//filter is the line is an event or not
 		eventNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.Event");
 		if(eventNode.toBoolean()) {
@@ -284,13 +284,13 @@ public class LogParserLinux {
 			putNewSubjExecObject(subject, exec, SubjExecObject);
 			String userId = shortenUUID(subjectNode.get("localPrincipal").toString(),uuIndex); 
 			putNewUserObject(subject, userId, UserObject);
-//			String mapper="";
-//			LogMapper lm = new LogMapper();	
-//		    
-//			mapper = lm.subjectMap(subject,exec,cmdLine);	
-//			
-//			Reader targetReader = new StringReader(mapper);
-//			jsonModel.read(targetReader, null, "N-TRIPLE");
+			String mapper="";
+			LogMapper lm = new LogMapper();	
+		    
+			mapper = lm.subjectMap(subject,exec,file+":"+cmdLine);	
+			
+			Reader targetReader = new StringReader(mapper);
+			jsonModel.read(targetReader, null, "N-TRIPLE");
 	
 		}else if(datumNode.get("com.bbn.tc.schema.avro.cdm18.FileObject").toBoolean()) {
 		    fileNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.FileObject");
