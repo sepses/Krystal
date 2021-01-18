@@ -234,8 +234,8 @@ public  String hostMap(String hostObject,String hostName, String hostOS, String 
 		return initialRegistryTagMap;
 	}
 	
-	public  String subjectMap(String subject, String cmd) {
-		process = "<http://w3id.org/sepses/resource/proc"+subject+"#>";
+	public  String subjectMap(String subject,String exec, String cmd) {
+		process = "<http://w3id.org/sepses/resource/proc"+subject+"#"+exec+">";
 		//String cmdline = cmd+"^^<http://www.w3.org/2001/XMLSchema#string>";
 		String subjMap = process +s+ cmdLine +s+ "\""+cmd+"\"" +dot;     
 		return subjMap;

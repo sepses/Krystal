@@ -13,22 +13,19 @@ import com.jsoniter.any.Any;
 import sepses.SimpleLogProvenance.AlertRule;
 import sepses.SimpleLogProvenance.PropagationRule;
 
-public class LogParserWin2 {
+public class LogParserLinux {
 	public String eventType;
 	public Any eventNode;
 	public Any networkNode;
+	public Any fileNode;
 	public Any subjectNode;
 	public Any userNode;
-	public Any registryNode;
-	public Any memoryNode;
 	public Any hostNode;
 	public Any datumNode;
 	public String objectString;
 	public String exec;
 	public String hostId;
 	public String userId;
-	public String registryId;
-	public String memoryId;
 	public String timestamp; 
 	public String subject;
 	public String object;
@@ -39,77 +36,61 @@ public class LogParserWin2 {
 	public ArrayList<String> fieldfilter;
 	public ArrayList<String> confidentialdir;
 	
-	public LogParserWin2(String line) {
-		
+	public LogParserLinux(String line) {
 			Any jsonNode=JsonIterator.deserialize(line);
 			datumNode = jsonNode.get("datum");
 	}
 	
-	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject, Set<String> Registry, HashMap<String, String> RegistryObject ) throws IOException{	
+	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject, HashMap<String, String> FileObject, HashMap<String, String> SubjExecObject ) throws IOException{	
 		//filter is the line is an event or not
-		eventNode = datumNode.get("Event");
+		eventNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.Event");
 		if(eventNode.toBoolean()) {
 			eventType = eventNode.toString();
 			if(!filterLine(eventType, fieldfilter)){
 				String mapper = "";
 				LogMapper lm = new LogMapper();	
-				subject = shortenUUID(eventNode.get("subject").get("UUID").toString(),uuIndex);
-				exec = eventNode.get("properties").get("map").get("exec").toString();
+				subject = shortenUUID(eventNode.get("subject").get("com.bbn.tc.schema.avro.cdm18.UUID").toString(),uuIndex);
 				hostId = eventNode.get("hostId").toString();
+			    exec = getProcessExec(subject, SubjExecObject);			
 				long timestampNanos = eventNode.get("timestampNanos").toLong();
 				timestamp = new Timestamp(timestampNanos/1000000).toString();
 				userId = getUserId(subject, UserObject);
-				objectString = cleanLine(eventNode.get("predicateObjectPath").get("string").toString());
-				
-				object = shortenUUID(eventNode.get("predicateObject").get("UUID").toString(),uuIndex);
+				object = shortenUUID(eventNode.get("predicateObject").get("com.bbn.tc.schema.avro.cdm18.UUID").toString(),uuIndex);
 				String processMap = "";
 				String fileMap = "";
 				String prevProcess="";
 				String networkMap="";
-				String registryMap="";
-				
-				//is file new
-				if(isEntityNew(objectString, File)) {
-					
-					//is file confidential
-					if(isConfidentialFile(objectString, confidentialdir)) {
-						fileMap = lm.initialConfFileTagMap(objectString);	
-					}else {
-					    fileMap = lm.initialFileTagMap(objectString);
-					}
-					
-				}
-				
+							
 				
 				//is process new
 				if(isEntityNew(subject+"#"+exec, Process)) {
 					
-					//is it forked by another previous process? 
-					prevProcess = getPreviousForkProcess(subject, ForkObject);
-						//if yes create fork Event
-						if(!prevProcess.isEmpty()) {
-							if(!eventType.contains("EVENT_EXECUTE")) {
-  							    forkEvent(lm, prevProcess, subject+"#"+exec,timestamp, jsonModel);
-							}
-						}else {
-	                       //tag new process
+				          //tag new process
 							processMap = lm.initialProcessTagMap(subject+"#"+exec);
-						}
 					
 				}
 				
 				
 				  if(eventType.contains("EVENT_WRITE")) {
-					  
-						if(objectString!="" && !objectString.contains("<unknown>")) {
-							String curWrite = subject+exec+objectString+"write";
+					 
+					  String fileName = getFileName(object, FileObject);
+						
+						if(!fileName.isEmpty()) {						
+							if(isEntityNew(fileName, File)) {
+								if(isConfidentialFile(fileName, confidentialdir)) {
+									fileMap = lm.initialConfFileTagMap(fileName);	
+								}else {
+								    fileMap = lm.initialFileTagMap(fileName);
+								}
+							}
+							
+						
+							String curWrite = subject+exec+fileName+"write";
 							if	(!lastAccess.contains(curWrite)) {				
 								
+								mapper = lm.writeMap(subject,exec,fileName,hostId,userId, timestamp)+fileMap+processMap;
 								
-								
-								mapper = lm.writeMap(subject,exec,objectString,hostId,userId, timestamp)+fileMap+processMap;
-								
-								storeEntity(objectString, File);
+								storeEntity(fileName, File);
 								storeEntity(subject+"#"+exec, Process);
 						
 								
@@ -120,7 +101,7 @@ public class LogParserWin2 {
 								//alert.corruptFileAlert(jsonModel, subject+"#"+exec, objectString, timestamp);
 								
 								PropagationRule prop = new PropagationRule();
-								prop.writeTag(jsonModel, subject, exec, objectString);
+								prop.writeTag(jsonModel, subject, exec, fileName);
 								
 								lastAccess = curWrite;
 								
@@ -128,122 +109,80 @@ public class LogParserWin2 {
 								
 								
 							}
-					  }else {
-						  //could be registry
-						  System.out.println(eventNode);
-					  }
+						}
 					  
 					}else if(eventType.contains("EVENT_READ")) {
-					
-						//check last read to reduce unnecessary duplicate event processing			
-						String curRead = subject+exec+objectString+"read";
-							if(objectString!="" && !objectString.contains("<unknown>")) {
-								if	(!lastAccess.contains(curRead)) {
-									mapper = lm.readMap(subject,exec,objectString,hostId,userId,timestamp)+fileMap+processMap;
 						
-									storeEntity(objectString, File);
+						  String fileName = getFileName(object, FileObject);
+						  					  
+							if(!fileName.isEmpty()) {						
+								if(isEntityNew(fileName, File)) {
+									if(isConfidentialFile(fileName, confidentialdir)) {
+										fileMap = lm.initialConfFileTagMap(fileName);	
+									}else {
+									    fileMap = lm.initialFileTagMap(fileName);
+									}
+								}
+								String curRead = subject+exec+fileName+"read";
+					
+								if	(!lastAccess.contains(curRead)) {				
+									
+									mapper = lm.readMap(subject,exec,fileName,hostId,userId,timestamp)+fileMap+processMap;
+									
+									storeEntity(fileName, File);
 									storeEntity(subject+"#"+exec, Process);
 									
 									Reader targetReader = new StringReader(mapper);
 									jsonModel.read(targetReader, null, "N-TRIPLE");
 																
 									PropagationRule prop = new PropagationRule();
-									prop.readTag(jsonModel, subject, exec, objectString);										
+									prop.readTag(jsonModel, subject, exec, fileName);										
 									
 									lastAccess = curRead;
+						
 									
-									//System.out.println("read: "+curRead);
 								}
-							}else {
-								//couldbe registry
-								String registryKey = getRegistryKey(object, RegistryObject);
-								
-								
-								if(!registryKey.isEmpty()) {
-									
-									if(isEntityNew(registryKey, Registry)) {
-										registryMap = lm.initialRegistryTagMap(registryKey);
-									}
-									
-									 curRead = subject+exec+registryKey+"read";
-									if	(!lastAccess.contains(curRead)) {
-										
-										mapper = lm.readMap(subject,exec,registryKey,hostId,userId, timestamp) + registryMap+processMap;
-										
-										storeEntity(registryKey, Registry);
-										storeEntity(subject+"#"+exec, Process);
-										
-										Reader targetReader = new StringReader(mapper);
-										jsonModel.read(targetReader, null, "N-TRIPLE");
-										
-										PropagationRule prop = new PropagationRule();
-										prop.readTag(jsonModel, subject, exec, registryKey);
-										
-											lastAccess=curRead;
-									}
-																 
-								}
-								
 							}
+						
 					
 					}else if(eventType.contains("EVENT_EXECUTE")) {	
 						
+						String fileName = getFileName(object, FileObject);
 						
-					
-						 cmdline = eventNode.get("properties").get("map").get("cmdLine").toString();
-						 cmdline = cleanCmd(cmdline);
-						 
-						 String process2 = "";
-						 
-						 if(!cmdline.isEmpty() || cmdline!=null) {
-							    if(cmdline.contains(" ")) {
-									String newproc = cmdline.substring(0,cmdline.indexOf(" "));
-										String[] nnewproc = newproc.split("/"); //incase there is full path e.g. "/tmp/vUgefal"
-										if(nnewproc.length>1) {
-											process2 = nnewproc[nnewproc.length-1];
-										}else {
-											process2 = newproc;
-										}
-									}else {
-										process2 = cmdline;
-									}
+						if(!fileName.isEmpty()) {						
+							if(isEntityNew(fileName, File)) {
+								if(isConfidentialFile(fileName, confidentialdir)) {
+									fileMap = lm.initialConfFileTagMap(fileName);	
+								}else {
+								    fileMap = lm.initialFileTagMap(fileName);
+								}
 							}
-
-						 if(!process2.isEmpty()) {
 							
-							 //if prevProcess not empty => entity is new
-							 //if prevProcess is empty => entity can be new or not
+							String cmd = eventNode.get("properties").get("map").get("cmdLine").toString();
+							String newExec = getExecFromCmdLine(cmd);
+							
+							
+							forkEvent(lm, subject+"#"+exec, subject+"#"+newExec, timestamp, jsonModel);
 							 
-							 if(prevProcess.isEmpty()) {
-								 putNewForkObject(subject+"#"+exec, subject, ForkObject);
-								 prevProcess = getPreviousForkProcess(subject, ForkObject);
-							 }
+							
+							 mapper = lm.executeMap(subject,newExec, fileName, cmdline, hostId, userId, timestamp)+fileMap+processMap;
 							 
-							    Reader targetReader = new StringReader(processMap);
-							 	jsonModel.read(targetReader, null, "N-TRIPLE");
-							 	
-							 	
-								forkEvent(lm, prevProcess, subject+"#"+process2, timestamp, jsonModel);
+							 storeEntity(fileName, File);
+							 storeEntity(subject+"#"+exec, Process);
+							 storeEntity(subject+"#"+newExec, Process);
 							 
-								
-								 mapper = lm.executeMap(subject,process2, objectString, cmdline, hostId, userId, timestamp)+fileMap;
-								 
-								 storeEntity(objectString, File);
-								 storeEntity(subject+"#"+exec, Process);
-								 storeEntity(subject+"#"+process2, Process);
-								 
-								// System.out.print("execute");
-								 Reader targetReader2 = new StringReader(mapper);
-								 jsonModel.read(targetReader2, null, "N-TRIPLE");
-								 
-								 AlertRule alert = new AlertRule();
-								 alert.execAlert(jsonModel,alertModel, subject+"#"+process2, objectString, timestamp);
-								 
-								 
-								 PropagationRule prop = new PropagationRule();
-								 prop.execTag(jsonModel, subject, process2, objectString);
-						}	 
-						 
+							// System.out.print("execute");
+							 Reader targetReader2 = new StringReader(mapper);
+							 jsonModel.read(targetReader2, null, "N-TRIPLE");
+							 
+							 AlertRule alert = new AlertRule();
+							 alert.execAlert(jsonModel,alertModel, subject+"#"+newExec, fileName, timestamp);
+							 
+							 
+							 PropagationRule prop = new PropagationRule();
+							 prop.execTag(jsonModel, subject, newExec, fileName);		
+					
+						}
 					
 					}else if(eventType.contains("EVENT_FORK")) {
 					
@@ -283,7 +222,7 @@ public class LogParserWin2 {
 								alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, timestamp);
 								
 								PropagationRule prop = new PropagationRule();
-								prop.writeTag(jsonModel, subject, exec, IPAddress);
+								prop.sendTag(jsonModel, subject, exec, IPAddress);
 								
 								lastAccess=curSend;
 								
@@ -318,7 +257,7 @@ public class LogParserWin2 {
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 								
 								PropagationRule prop = new PropagationRule();
-								prop.readTag(jsonModel, subject, exec, IPAddress);
+								prop.receiveTag(jsonModel, subject, exec, IPAddress);
 								
 									lastAccess=curReceive;
 							}
@@ -327,61 +266,75 @@ public class LogParserWin2 {
 					}
 				}
 			 
-		}else if(datumNode.get("NetFlowObject").toBoolean()) {
-			    networkNode = datumNode.get("NetFlowObject");
+		}else if(datumNode.get("com.bbn.tc.schema.avro.cdm18.NetFlowObject").toBoolean()) {
+			    networkNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.NetFlowObject");
 				netObject = shortenUUID(networkNode.get("uuid").toString(),uuIndex); 
-				netAddress = networkNode.get("remoteAddress").toString()+":"+networkNode.get("remotePort").toString();
+				String ip = networkNode.get("remoteAddress").toString();
+				String port =networkNode.get("remotePort").toString();
+				netAddress = ip+":"+port;
 				putNewNetworkObject(netObject, netAddress, NetworkObject);
+				String mapper="";
+				LogMapper lm = new LogMapper();	
+			    
+				mapper = lm.networkMap(netAddress,ip,port);	
+				
+				Reader targetReader = new StringReader(mapper);
+				jsonModel.read(targetReader, null, "N-TRIPLE");
 
-
-		}else if(datumNode.get("Subject").toBoolean()) {
-		    subjectNode = datumNode.get("Subject");
-			subject = shortenUUID(subjectNode.get("uuid").toString(),uuIndex); 
+		}else if(datumNode.get("com.bbn.tc.schema.avro.cdm18.Subject").toBoolean()) {
+		    subjectNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.Subject");
+			subject = shortenUUID(subjectNode.get("uuid").toString(),uuIndex);
+			String cmdLine = subjectNode.get("cmdLine").get("string").toString();
+			String exec = getExecFromCmdLine(cmdLine);
+			putNewSubjExecObject(subject, exec, SubjExecObject);
 			String userId = shortenUUID(subjectNode.get("localPrincipal").toString(),uuIndex); 
 			putNewUserObject(subject, userId, UserObject);
+//			String mapper="";
+//			LogMapper lm = new LogMapper();	
+//		    
+//			mapper = lm.subjectMap(subject,exec,cmdLine);	
+//			
+//			Reader targetReader = new StringReader(mapper);
+//			jsonModel.read(targetReader, null, "N-TRIPLE");
+	
+		}else if(datumNode.get("com.bbn.tc.schema.avro.cdm18.FileObject").toBoolean()) {
+		    fileNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.FileObject");
+			String fileObject = shortenUUID(fileNode.get("uuid").toString(),uuIndex); 
+			String fileName = cleanLine(fileNode.get("baseObject").get("properties").get("map").get("filename").toString()); 
+			putNewFileObject(fileObject, fileName, FileObject);
 			
 			
-		}else if(datumNode.get("Principal").toBoolean()) {
+		}else if(datumNode.get("com.bbn.tc.schema.avro.cdm18.Principal").toBoolean()) {
 			
 				String mapper="";
 				LogMapper lm = new LogMapper();	
-			    userNode = datumNode.get("Principal");
+			    userNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.Principal");
 				userId = shortenUUID(userNode.get("uuid").toString(),uuIndex); 
 				String userType = getUserType(userNode.get("userId").toInt());
 				String userName = userNode.get("username").get("string").toString(); 
 				
-				
 				mapper = lm.userMap(userId,userType,userName);	
-				//System.out.print(mapper);
-				
+		
 				Reader targetReader = new StringReader(mapper);
 				jsonModel.read(targetReader, null, "N-TRIPLE");
 			
 		
-		}else if(datumNode.get("RegistryKeyObject").toBoolean()) {
-		    registryNode = datumNode.get("RegistryKeyObject");
-			registryId = shortenUUID(registryNode.get("uuid").toString(),uuIndex); 
-			String registryKey = cleanLine(registryNode.get("key").toString());
-			putNewRegistryObject(registryId, registryKey, RegistryObject);
-	}/*
-		else if(datumNode.get("MemoryObject").toBoolean()) {
+		}else if(datumNode.get("com.bbn.tc.schema.avro.cdm18.Host").toBoolean()) {
+			String mapper="";
+			LogMapper lm = new LogMapper();	
+		    hostNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.Host");
+			hostId = hostNode.get("uuid").toString(); 
+			//String hostType = hostNode.get("hostType").toString();
+			String hostName = hostNode.get("hostName").toString();
+			String hostOS = hostNode.get("osDetails").toString();
+			String hostIP = hostNode.get("interfaces").get(1).get("ipAddresses").get(1).toString();
+			
+			mapper = lm.hostMap(hostId,hostName,hostOS,hostIP);	
+			Reader targetReader = new StringReader(mapper);
+			jsonModel.read(targetReader, null, "N-TRIPLE");
 		
-		String mapper="";
-		LogMapper lm = new LogMapper();	
-	    memoryNode = datumNode.get("MemoryObject");
-		memoryId = shortenUUID(memoryNode.get("uuid").toString(),uuIndex); 
-		String memoryAddress = cleanLine(memoryNode.get("memoryAddress").toString());
-		
-		
-		mapper = lm.memoryMap(memoryId,memoryAddress);	
-		//System.out.print(mapper);
-		
-		Reader targetReader = new StringReader(mapper);
-		jsonModel.read(targetReader, null, "N-TRIPLE");
 	
-
-		}*/
-		
+	}				
 		return lastAccess;
 	
 	}
@@ -449,19 +402,29 @@ public class LogParserWin2 {
 	
 		 return ipAddress;	
 	}
-	
-	private  static String getRegistryKey(String registryObject, HashMap<String, String> RegistryObject) {
-		//process
-		String registryKey="";
-		if(!registryObject.isEmpty()) {
-			if(RegistryObject.containsKey(registryObject)) {
-				registryKey = RegistryObject.get(registryObject);
+	private  static String getFileName(String fileObject, HashMap<String, String> FileObject) {
+		//file
+		String fileName="";
+		if(!fileObject.isEmpty()) {
+			if(FileObject.containsKey(fileObject)) {
+				fileName = FileObject.get(fileObject);
 			}
 		}
 	
-		 return registryKey;	
+		 return fileName;	
 	}
 	
+	private  static String getProcessExec(String subject, HashMap<String, String> SubjExectObject) {
+		//process
+		String exec="";
+		if(!subject.isEmpty()) {
+			if(SubjExectObject.containsKey(subject)) {
+				exec = SubjExectObject.get(subject);
+			}
+		}
+	
+		 return exec;	
+	}
 	private  static void putNewNetworkObject(String netObject, String netAddress, HashMap<String, String> NetworkObject) {
 		//process
 		if(!netObject.isEmpty() && !netAddress.isEmpty()) {
@@ -473,11 +436,22 @@ public class LogParserWin2 {
 		 
 	}
 	
-	private  static void putNewRegistryObject(String registryId, String registryKey, HashMap<String, String> RegistryObject) {
+	private  static void putNewSubjExecObject(String subject, String cmdLine, HashMap<String, String> SubjExecObject) {
 		//process
-		if(!registryId.isEmpty() && !registryKey.isEmpty()) {
-			if(!RegistryObject.containsKey(registryId)) {
-				RegistryObject.put(registryId, registryKey);
+		if(!subject.isEmpty() && !cmdLine.isEmpty()) {
+			if(!SubjExecObject.containsKey(subject)) {
+				SubjExecObject.put(subject, cmdLine);
+				
+			}
+		}
+		 
+	}
+	
+	private  static void putNewFileObject(String fileObject, String fileName, HashMap<String, String> FileObject) {
+		//process
+		if(!fileObject.isEmpty() && !fileName.isEmpty()) {
+			if(!FileObject.containsKey(fileObject)) {
+				FileObject.put(fileObject, fileName);
 				
 			}
 		}
@@ -535,7 +509,6 @@ public class LogParserWin2 {
 			
 		}
 		
-		
 		return prevProcess;
 		 
 	}
@@ -566,16 +539,16 @@ public class LogParserWin2 {
 	}
 	
 	private static String cleanLine(String line) {
-		line = line.replaceAll("[#{}%\\]\\[\\s\\n$=()]", "");
-		line = line.replace("\\", "\\\\");
+		line = line.replaceAll("[#{}%\\]\\[\\s\\n:$=()]", "");
+		
 		return line;
 	}
 	
 	private static String cleanCmd(String line) {
 		line = line.replaceAll("[\\n\\t]", "");
-		
 		return line;
 	}
+	
 	private String getUserType(Integer userType) {
 		if(userType==0) {
 			return "RootUser";
@@ -585,7 +558,31 @@ public class LogParserWin2 {
 			return "SystemUser";
 		}
 		
-	}	
+	}
 	
+	private String getExecFromCmdLine(String cmdLine) {
+		 cmdline = cleanCmd(cmdLine);
+		 String exec = "";
+		 if(!cmdline.isEmpty() || cmdline!=null) {
+			    if(cmdline.contains(" ")) {
+					String newproc = cmdline.substring(0,cmdline.indexOf(" "));
+						String[] nnewproc = newproc.split("/"); //incase there is full path e.g. "/tmp/vUgefal"
+						if(nnewproc.length>1) {
+							exec = nnewproc[nnewproc.length-1];
+						}else {
+							exec = newproc;
+						}
+					}else {
+						String[] nnewproc = cmdline.split("/"); //incase there is full path e.g. "/tmp/vUgefal"
+						if(nnewproc.length>1) {
+							exec = nnewproc[nnewproc.length-1];
+						}else {
+							exec = cmdline;
+						}
+					}
+			}
+		return exec;
+
+	}
 	
 }

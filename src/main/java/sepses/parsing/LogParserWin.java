@@ -370,7 +370,7 @@ public class LogParserWin {
 				String mapper="";
 				LogMapper lm = new LogMapper();	
 			    
-				mapper = lm.subjectMap(subject,exec);	
+				mapper = lm.subjectMap(subject,"",exec);	
 				
 				Reader targetReader = new StringReader(mapper);
 				jsonModel.read(targetReader, null, "N-TRIPLE");

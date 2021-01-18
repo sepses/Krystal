@@ -20,7 +20,7 @@ import org.apache.jena.tdb.TDBFactory;
 import helper.Utility;
 import sepses.parsing.LogParser;
 import sepses.parsing.LogParserWin;
-//import sepses.parsing.LogParserLinux;
+import sepses.parsing.LogParserLinux;
 
 public class JsonRDFReader {
 	public static void readJson(String t, String filefolder, String l, String se, String ng, String sl, String outputdir, 
@@ -60,6 +60,7 @@ public class JsonRDFReader {
 
 		HashMap<String, String> uuIndex = new HashMap<String, String>();
 		HashMap<String, String> NetworkObject = new HashMap<String, String>();
+		HashMap<String, String> FileObject = new HashMap<String, String>();
 		HashMap<String, String> ForkObject = new HashMap<String, String>();
 		HashMap<String, String> UserObject = new HashMap<String, String>();
 		HashMap<String, String> SubjExecObject = new HashMap<String, String>();
@@ -96,11 +97,15 @@ public class JsonRDFReader {
 										if(line.substring(lastChar, line.length()).equals(",")) {
 											line = line.substring(0, line.length() - 1);
 										}	
-										LogParserWin lp = new LogParserWin(line);
+										LogParserWin lp = new LogParserWin(line); //fivedirection
 										lastAccess = lp.parseJSONtoRDF(jsonModel,alertModel,fieldfilter, confidentialdir, uuIndex, Process, File, 
 								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, Registry, RegistryObject, SubjExecObject, file);
-									}else{
-										LogParser lp = new LogParser(line);
+									}else if (os.equals("linux")){
+										LogParserLinux lp = new LogParserLinux(line); //ubuntu
+										lastAccess = lp.parseJSONtoRDF(jsonModel,alertModel,fieldfilter, confidentialdir, uuIndex, Process, File, 
+								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, FileObject, SubjExecObject);
+									}else {
+										LogParser lp = new LogParser(line); //freebsd
 										lastAccess = lp.parseJSONtoRDF(jsonModel,alertModel,fieldfilter, confidentialdir, uuIndex, Process, File, 
 								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject);
 									}
