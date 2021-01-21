@@ -16,6 +16,9 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.tdb.TDBFactory;
+import org.apache.jena.update.UpdateAction;
+import org.apache.jena.update.UpdateFactory;
+import org.apache.jena.update.UpdateRequest;
 
 import helper.Utility;
 import sepses.parsing.LogParser;
@@ -23,6 +26,10 @@ import sepses.parsing.LogParserWin;
 import sepses.parsing.LogParserLinux;
 
 public class JsonRDFReader {
+	
+	public static long timer;
+	public static long duration;
+	
 	public static void readJson(String t, String filefolder, String l, String se, String ng, String sl, String outputdir, 
 									String inputdir, String triplestore, String backupfile,  ArrayList<String> fieldfilter,
 										String livestore, ArrayList<String> confidentialdir, String tdbdir, String ontology, 
@@ -63,7 +70,8 @@ public class JsonRDFReader {
 		HashMap<String, String> FileObject = new HashMap<String, String>();
 		HashMap<String, String> ForkObject = new HashMap<String, String>();
 		HashMap<String, String> UserObject = new HashMap<String, String>();
-		HashMap<String, String> SubjExecObject = new HashMap<String, String>();
+		HashMap<String, String> SubjectCmd = new HashMap<String, String>();
+		HashMap<String, String> CloneObject = new HashMap<String, String>();
 		HashMap<String, String> RegistryObject = new HashMap<String, String>();
 		String lastAccess = "";
 		
@@ -84,6 +92,7 @@ public class JsonRDFReader {
 					while (in.ready()) {
 						String line = in.readLine();
 						//System.out.println(countLine);
+						
 						if (countLine.equals(startingLine)) {
 							System.out.println("reading from line : "+ startingLine);
 								group=((int) Math.ceil((startingLine-1)/lineNumber));
@@ -99,11 +108,26 @@ public class JsonRDFReader {
 										}	
 										LogParserWin lp = new LogParserWin(line); //fivedirection
 										lastAccess = lp.parseJSONtoRDF(jsonModel,alertModel,fieldfilter, confidentialdir, uuIndex, Process, File, 
-								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, Registry, RegistryObject, SubjExecObject, file);
+								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, Registry, RegistryObject, SubjectCmd, file);
 									}else if (os.equals("linux")){
 										LogParserLinux lp = new LogParserLinux(line); //ubuntu
+										if(lp.logTimer!=0) {
+											if(timer==0) {
+												timer=lp.logTimer;
+											}
+										long curDuration = lp.logTimer-timer;
+										
+										//System.out.println(lp.logTimer+"-"+timer+"="+curDuration);
+										duration = duration + curDuration;
+										timer = lp.logTimer;
+										//System.out.println(lp.logTimer-timer);
+										//System.out.println(duration);
+										}
+										
+										//System.out.println(timer);
 										lastAccess = lp.parseJSONtoRDF(jsonModel,alertModel,fieldfilter, confidentialdir, uuIndex, Process, File, 
-								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, FileObject, SubjExecObject, file);
+								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, FileObject, SubjectCmd, file, CloneObject);
+										
 									}else {
 										LogParser lp = new LogParser(line); //freebsd
 										lastAccess = lp.parseJSONtoRDF(jsonModel,alertModel,fieldfilter, confidentialdir, uuIndex, Process, File, 
@@ -121,9 +145,10 @@ public class JsonRDFReader {
 							if(templ.equals(lineNumber)) {
 								
 								group++;
-								System.out.print("parsing "+group+" of "+lineNumber+" finished in "+(System.currentTimeMillis() - time1));
-								System.out.println(" triple: "+jsonModel.size());
+								System.out.println("parsing "+group+" of "+lineNumber+" finished in "+(System.currentTimeMillis() - time1));
 								
+								System.out.println(duration);
+															
 								if(livestore!="false") {
 									//add rdfs reasoner first
 									InfModel infModel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), jsonModel);
@@ -144,7 +169,7 @@ public class JsonRDFReader {
 		if(templ!=0) {
 			
 			System.out.println("the rest is less than "+lineNumber+" which is "+templ);
-			
+			System.out.println(duration);
 			if(livestore!="false") {
 				
 				    InfModel infModel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), jsonModel);
@@ -166,7 +191,7 @@ public class JsonRDFReader {
 			
 	     if(backupfile!="false") {
 			 	String rdfFile = Utility.saveToRDF(infModel, outputdir, namegraph);
-				Utility.exportHDT(rdfFile, outputdir, namegraph);
+				//Utility.exportHDT(rdfFile, outputdir, namegraph);
 				//detect alert from rule dir (i.e. sigma rule)
 				AlertRule.generateAlertFromRuleDir(infModel,alertModel, ruledir);
 				String alertFile = Utility.saveToRDF(alertModel, outputdir, namegraph+"_alert");
@@ -187,6 +212,7 @@ public class JsonRDFReader {
 	}
 
 	
+
 
 
 

@@ -83,8 +83,5 @@ public class Main {
 	  	
     }
 	
-	public static void generateAlertUsingRule(InfModel infModel, String ruledir) {
-		// TODO Auto-generated method stub
-		
-	}
+	
 }

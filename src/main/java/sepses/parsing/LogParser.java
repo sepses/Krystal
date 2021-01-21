@@ -51,8 +51,9 @@ public class LogParser {
 				subject = shortenUUID(eventNode.get("subject").get("com.bbn.tc.schema.avro.cdm18.UUID").toString(),uuIndex);
 				exec = eventNode.get("properties").get("map").get("exec").toString();
 				hostId = eventNode.get("hostId").toString();
-				long timestampNanos = eventNode.get("timestampNanos").toLong();
-				timestamp = new Timestamp(timestampNanos/1000000).toString();
+				int ts = eventNode.get("timestampNanos").toInt();
+				String strTime = new Timestamp(ts/1000000).toString();
+				String timestamp = eventNode.get("timestampNanos").toString();
 				userId = getUserId(subject, UserObject);
 				objectString = cleanLine(eventNode.get("predicateObjectPath").get("string").toString());	
 				object = shortenUUID(eventNode.get("predicateObject").get("com.bbn.tc.schema.avro.cdm18.UUID").toString(),uuIndex);
@@ -196,7 +197,7 @@ public class LogParser {
 								 jsonModel.read(targetReader2, null, "N-TRIPLE");
 								 
 								 AlertRule alert = new AlertRule();
-								 alert.execAlert(jsonModel,alertModel, subject+"#"+process2, objectString, timestamp);
+								 alert.execAlert(jsonModel,alertModel, subject+"#"+process2, objectString, strTime);
 								 
 								 
 								 PropagationRule prop = new PropagationRule();
@@ -239,7 +240,7 @@ public class LogParser {
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 								
 								AlertRule alert = new AlertRule();
-								alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, timestamp);
+								alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, strTime);
 								
 								PropagationRule prop = new PropagationRule();
 								prop.sendTag(jsonModel, subject, exec, IPAddress);

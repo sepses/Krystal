@@ -53,7 +53,7 @@
 
 ###  http://w3id.org/sepses/vocab/event/log#forks
 :forks rdf:type owl:ObjectProperty ;
-       rdfs:subPropertyOf :provRel ;
+	rdfs:subPropertyOf :provRel ;
        rdfs:domain :Process ;
        rdfs:range :Process ;
        rdfs:comment "This property represents fork connection between Processes , e.g. \"sh\" process forks \"sudo\" process." .

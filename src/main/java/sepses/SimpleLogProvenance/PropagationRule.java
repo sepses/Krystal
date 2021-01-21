@@ -6,6 +6,9 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
+import org.apache.jena.update.UpdateAction;
+import org.apache.jena.update.UpdateFactory;
+import org.apache.jena.update.UpdateRequest;
 
 
 public class PropagationRule {
@@ -34,6 +37,8 @@ public class PropagationRule {
 		confRead(jsonModel, subject, exec, objectString);
 	}
 	
+	
+	
 	public void readTag(Model jsonModel, String subject, String exec, String objectString) {
 		intRead(jsonModel, subject, exec, objectString);
 		confRead(jsonModel, subject, exec, objectString);
@@ -58,6 +63,25 @@ public class PropagationRule {
 		subjExec(jsonModel, subject, exec, objectString);
 		intExec(jsonModel, subject, exec, objectString);
 		confExec(jsonModel, subject, exec, objectString);
+	}
+	
+	public void changeSubjToObj(Model jsonModel, String subject, String exec,String object, String execObj) {
+		String procSubj = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
+		String procObj = "http://w3id.org/sepses/resource/proc"+object+"#"+execObj;
+		
+		String execQuery = " " + 
+        		  "DELETE { <"+procSubj+"> ?p ?o. ?s ?p2 <"+procSubj+">}\r\n"
+        		+ "INSERT {<"+procObj+"> ?p ?o. ?s ?p2 <"+procObj+"> }\r\n" +
+        		"\r\n" + 
+        		"WHERE { \r\n" + 
+        		"    <"+procSubj+"> ?p ?o. ?s ?p2 <"+procSubj+">.\r\n" + 
+        		"}";
+		
+//		System.out.print(execQuery);
+//		System.exit(0);
+        
+        UpdateRequest execRequest = UpdateFactory.create(execQuery);
+        UpdateAction.execute(execRequest,jsonModel) ;
 	}
 
 	//===================READ / LOAD ==============================

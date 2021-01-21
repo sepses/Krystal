@@ -56,8 +56,9 @@ public class LogParserWin {
 				exec = eventNode.get("properties").get("map").get("exec").toString();
 				
 				hostId = eventNode.get("hostId").toString();
-				long timestampNanos = eventNode.get("timestampNanos").toLong();
-				timestamp = new Timestamp(timestampNanos/1000000).toString();
+				int ts = eventNode.get("timestampNanos").toInt();
+				String strTime = new Timestamp(ts/1000000).toString();
+				String timestamp = eventNode.get("timestampNanos").toString();
 				userId = getUserId(subject, UserObject);
 				objectString = cleanLine(eventNode.get("predicateObjectPath").get("string").toString());	
 				object = shortenUUID(eventNode.get("predicateObject").get("UUID").toString(),uuIndex);
@@ -219,7 +220,7 @@ public class LogParserWin {
 									 jsonModel.read(targetReader2, null, "N-TRIPLE");
 									 
 									AlertRule alert = new AlertRule();
-									 alert.execAlert(jsonModel,alertModel, subject+"#"+exec, objectString, timestamp);
+									 alert.execAlert(jsonModel,alertModel, subject+"#"+exec, objectString, strTime);
 									 
 									 
 									 PropagationRule prop = new PropagationRule();
@@ -248,7 +249,7 @@ public class LogParserWin {
 									 jsonModel.read(targetReader2, null, "N-TRIPLE");
 									 
 									AlertRule alert = new AlertRule();
-									alert.execAlert(jsonModel,alertModel, subject+"#"+exec, objectString, timestamp);
+									alert.execAlert(jsonModel,alertModel, subject+"#"+exec, objectString, strTime);
 									 
 									 
 									 PropagationRule prop = new PropagationRule();
@@ -295,7 +296,7 @@ public class LogParserWin {
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 								
 								AlertRule alert = new AlertRule();
-								alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, timestamp);
+								alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, strTime);
 								
 								PropagationRule prop = new PropagationRule();
 								prop.sendTag(jsonModel, subject, exec, IPAddress);
