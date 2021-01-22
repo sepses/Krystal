@@ -1,4 +1,12 @@
 package sepses.SimpleLogProvenance;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
@@ -6,9 +14,6 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
-import org.apache.jena.update.UpdateAction;
-import org.apache.jena.update.UpdateFactory;
-import org.apache.jena.update.UpdateRequest;
 
 
 public class PropagationRule {
@@ -21,13 +26,18 @@ public class PropagationRule {
 	public Property confTag;
 	public Property intTag;
 	public Property subjTag;
+	public Property timestamp;
+	public Property counter;
 				
 	public PropagationRule() {
 		Model model = ModelFactory.createDefaultModel();		
 		prefRule = "http://w3id.org/sepses/vocab/rule#";
+		prefix = "http://w3id.org/sepses/vocab/event/log#";
 		confTag = model.createProperty(prefRule+"confTag");
 		intTag = model.createProperty(prefRule+"intTag");
 		subjTag = model.createProperty(prefRule+"subjTag");
+		timestamp = model.createProperty(prefix+"timestamp");
+		counter = model.createProperty(prefRule+"counter");
 		
 	}
 	
@@ -65,26 +75,7 @@ public class PropagationRule {
 		confExec(jsonModel, subject, exec, objectString);
 	}
 	
-	public void changeSubjToObj(Model jsonModel, String subject, String exec,String object, String execObj) {
-		String procSubj = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
-		String procObj = "http://w3id.org/sepses/resource/proc"+object+"#"+execObj;
-		
-		String execQuery = " " + 
-        		  "DELETE { <"+procSubj+"> ?p ?o. ?s ?p2 <"+procSubj+">}\r\n"
-        		+ "INSERT {<"+procObj+"> ?p ?o. ?s ?p2 <"+procObj+"> }\r\n" +
-        		"\r\n" + 
-        		"WHERE { \r\n" + 
-        		"    <"+procSubj+"> ?p ?o. ?s ?p2 <"+procSubj+">.\r\n" + 
-        		"}";
-		
-//		System.out.print(execQuery);
-//		System.exit(0);
-        
-        UpdateRequest execRequest = UpdateFactory.create(execQuery);
-        UpdateAction.execute(execRequest,jsonModel) ;
-	}
-
-	//===================READ / LOAD ==============================
+		//===================READ / LOAD ==============================
 	
 	public void confRead(Model jsonModel, String subject, String exec, String objectString) {
 		
@@ -442,5 +433,97 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 		  return ptag;
 	}
 	
+	public int getCounter(Model jsonModel, Property prop, Resource entity) {
+		int counter = 0;
+		StmtIterator iter = jsonModel.listStatements(entity, prop,(RDFNode) null);
+		  while (iter.hasNext()) {
+			  Statement s = iter.next();
+			  counter = s.getObject().asLiteral().getInt();
+		  }
+		  return counter;
+	}
+	
+	public long getTimer(Model jsonModel, Property prop, Resource entity) {
+		long timer = 0;
+		StmtIterator iter = jsonModel.listStatements(entity, prop,(RDFNode) null);
+		  while (iter.hasNext()) {
+			  Statement s = iter.next();
+			  timer = s.getObject().asLiteral().getLong();
+		  }
+		  return timer;
+	}
+	
+	//=============add time for subject======================
+	public void putProcessTime(Model jsonModel, String subject, String exec, long ts) {
+		process = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
+		
+		
+		Resource respro = jsonModel.createResource(process);		
+	    jsonModel.removeAll(respro, timestamp, null);
+	    jsonModel.addLiteral(respro, timestamp, ts);
+		
+	}
+	
+	public void putCounter(Model jsonModel, String subject, String exec) {
+		process = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
+		
+		Resource respro = jsonModel.createResource(process);	
+		int prevCounter = getCounter(jsonModel, counter, respro);
+				
+	    jsonModel.removeAll(respro, counter, null);
+	    jsonModel.addLiteral(respro, counter, prevCounter+1);
+		
+	}
+	//=================decay=========================
+	
+	public void decayProcess(Model jsonModel, long timer, double period, double T) {
+		
+		String execQuery = "PREFIX : <http://w3id.org/sepses/vocab/rule#>\r\n" + 
+				"PREFIX log: <http://w3id.org/sepses/vocab/event/log#>\r\n" + 
+				"SELECT ?s ?it \r\n"
+				+ "WHERE {\r\n" + 
+				" ?s :intTag ?it.\r\n" +
+				" ?s :subjTag ?st.\r\n" + 
+				" FILTER (?st >= 0.5) \r\n" +
+				" FILTER (?it < 0.5) \r\n" +
+				"}";
+		
+		 QueryExecution qexec = QueryExecutionFactory.create(execQuery, jsonModel);
+		 ArrayList<HashMap<String, RDFNode>> list = new ArrayList<HashMap<String, RDFNode>>();
+		 
+		 ResultSet result = qexec.execSelect();
+		 
+		 while (result.hasNext()) {
+			 HashMap<String, RDFNode> eachres = new HashMap<String, RDFNode>();
+	         QuerySolution soln = result.nextSolution() ;         
+	         eachres.put("s", soln.get("s"));
+	         eachres.put("it",soln.get("it"));
+	         list.add(eachres);
+	        }
+		 //System.out.println(list.size());
+		  for(int i=0;i<list.size();i++) {
+			  Resource s = list.get(i).get("s").asResource();
+			  int c = getCounter(jsonModel, counter, s);
+			  long t = getTimer(jsonModel, timestamp, s);
+			  long age = timer - t;
+			  //System.out.println(c+" : "+age);
+	          double periodNano = period*1000000000;
+	          //System.out.println(c+" "+age+" : "+(c*periodNano));
+	 		if(age >= (c*periodNano)) {
+	 			//System.out.println("yes, adult!");
+	 			jsonModel.removeAll(s, counter, null);
+		 	    jsonModel.addLiteral(s, counter, c+1);	
+	 			double it = list.get(i).get("it").asLiteral().getDouble();
+	 			double decayRateIntTag = (it*period)+((1-period)*T);	
+	 			double nit = 0;	 		
+	 			//System.out.println(s+"=>"+it+" => "+decayRateIntTag);
+	 			if(it<decayRateIntTag) {
+	 			 	 nit = decayRateIntTag;
+	 				 jsonModel.removeAll(s, intTag, null);
+		 			 jsonModel.addLiteral(s, intTag, nit);
+	 			}
+	 		}
+		 }
+	}	
 	
 }

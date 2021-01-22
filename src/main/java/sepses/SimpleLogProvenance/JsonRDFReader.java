@@ -16,9 +16,6 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.tdb.TDBFactory;
-import org.apache.jena.update.UpdateAction;
-import org.apache.jena.update.UpdateFactory;
-import org.apache.jena.update.UpdateRequest;
 
 import helper.Utility;
 import sepses.parsing.LogParser;
@@ -91,8 +88,6 @@ public class JsonRDFReader {
 		
 					while (in.ready()) {
 						String line = in.readLine();
-						//System.out.println(countLine);
-						
 						if (countLine.equals(startingLine)) {
 							System.out.println("reading from line : "+ startingLine);
 								group=((int) Math.ceil((startingLine-1)/lineNumber));
@@ -111,20 +106,6 @@ public class JsonRDFReader {
 								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, Registry, RegistryObject, SubjectCmd, file);
 									}else if (os.equals("linux")){
 										LogParserLinux lp = new LogParserLinux(line); //ubuntu
-										if(lp.logTimer!=0) {
-											if(timer==0) {
-												timer=lp.logTimer;
-											}
-										long curDuration = lp.logTimer-timer;
-										
-										//System.out.println(lp.logTimer+"-"+timer+"="+curDuration);
-										duration = duration + curDuration;
-										timer = lp.logTimer;
-										//System.out.println(lp.logTimer-timer);
-										//System.out.println(duration);
-										}
-										
-										//System.out.println(timer);
 										lastAccess = lp.parseJSONtoRDF(jsonModel,alertModel,fieldfilter, confidentialdir, uuIndex, Process, File, 
 								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, FileObject, SubjectCmd, file, CloneObject);
 										
@@ -134,7 +115,6 @@ public class JsonRDFReader {
 								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject);
 									}
 									
-									//System.out.println(lastAccess);
 							} catch (Exception e) {
 								System.out.print("strange character skipped => ");
 								System.out.println(line);
@@ -147,8 +127,7 @@ public class JsonRDFReader {
 								group++;
 								System.out.println("parsing "+group+" of "+lineNumber+" finished in "+(System.currentTimeMillis() - time1));
 								
-								System.out.println(duration);
-															
+														
 								if(livestore!="false") {
 									//add rdfs reasoner first
 									InfModel infModel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), jsonModel);

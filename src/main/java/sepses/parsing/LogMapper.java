@@ -10,6 +10,9 @@ public class LogMapper {
 	public  String isLoadBy;
 	public  String isReceivedBy;
 	public  String isReadBy;
+	public  String reads;
+	public  String receives;
+	public  String executes;
 	public  String forks;
 	public  String confTag;
 	public  String intTag;
@@ -38,9 +41,12 @@ public class LogMapper {
 		hasUser = "<http://w3id.org/sepses/vocab/event/log#hasUser>";
 		sends = "<http://w3id.org/sepses/vocab/event/log#sends>";
 		isExecutedBy = "<http://w3id.org/sepses/vocab/event/log#isExecutedBy>";
+		executes = "<http://w3id.org/sepses/vocab/event/log#executes>";
 		isLoadBy = "<http://w3id.org/sepses/vocab/event/log#isLoadBy>";
 		isReceivedBy = "<http://w3id.org/sepses/vocab/event/log#isReceivedBy>";
+		receives = "<http://w3id.org/sepses/vocab/event/log#receives>";
 		isReadBy = "<http://w3id.org/sepses/vocab/event/log#isReadBy>";
+		reads = "<http://w3id.org/sepses/vocab/event/log#reads>";
 		forks = "<http://w3id.org/sepses/vocab/event/log#forks>";
 		cmdLine = "<http://w3id.org/sepses/vocab/event/log#cmdLine>";
 		timestamp = "<http://w3id.org/sepses/vocab/event/log#timestamp>";
@@ -63,9 +69,8 @@ public class LogMapper {
 		file = "<http://w3id.org/sepses/resource/file#"+objectString+">";
 		
 		return  process +s+ writes +s+ file +dot 
-				+ addTriple(process, exec, hostId, userId)
-				+ addTime(process,writes,file,ts);
-	}
+				+ addTriple(process, exec, hostId, userId);
+		}
 	
 	
 
@@ -74,8 +79,7 @@ public class LogMapper {
 		file = "<http://w3id.org/sepses/resource/file#"+objectString+">";
 		
 		return	file +s+ isReadBy +s+ process +dot
-				+ addTriple(process, exec, hostId, userId)
-				+ addTime(file,isReadBy,process,ts);			         
+				+ addTriple(process, exec, hostId, userId);		         
 		
 	}
 
@@ -88,8 +92,7 @@ public class LogMapper {
 		String executeMap =  
 				   file +s+ isExecutedBy +s+ process2 +dot 
 				   +process2 +s+ cmdLine +s+ cmdline + dot 
-				   + addTriple(process2, newproc, hostId, userId)
-				   + addTime(file,isExecutedBy,process2,ts);		
+				   + addTriple(process2, newproc, hostId, userId);	
 		
 		return executeMap;
 		
@@ -101,9 +104,7 @@ public class LogMapper {
 		String ipAddress = "<http://w3id.org/sepses/resource/soc#"+ip+">";
 		
 		return process +s+ sends +s+ ipAddress +dot
-				+ addTriple(process, exec, hostId, userId)
-				+ addTime(process, sends, ipAddress, ts);
-		
+				+ addTriple(process, exec, hostId, userId);
 	}
 	
 	public  String receiveMap(String subject, String exec, String ip, String hostId, String userId, String ts) {
@@ -111,8 +112,8 @@ public class LogMapper {
 		String ipAddress = "<http://w3id.org/sepses/resource/soc#"+ip+">";
 		
 		return  ipAddress +s+ isReceivedBy +s+ process +dot 
-				+ addTriple(process, exec, hostId, userId)
-				+ addTime(ipAddress,isReceivedBy,process,ts);
+				+ addTriple(process, exec, hostId, userId);
+		
 		
 	}
 	
@@ -121,8 +122,7 @@ public class LogMapper {
 		String prevProc = "<http://w3id.org/sepses/resource/proc"+prevProcess+">";
 		String proc = "<http://w3id.org/sepses/resource/proc"+process+">";
 		
-		return prevProc +s+ forks +s+ proc +dot
-				+ addTime(prevProc,forks,proc,ts);
+		return prevProc +s+ forks +s+ proc +dot;
 				
 	}
 	
@@ -199,13 +199,6 @@ public  String hostMap(String hostObject,String hostName, String hostOS, String 
 				+ proc +s+ hasUser +s+ user +dot;
 	}
 	
-	private String addTime(String subject, String predicate,String object, String time) {
-		String strTime = "\""+time+"\"^^<http://www.w3.org/2001/XMLSchema#integer>";
-		String initCounter = "\"0\"^^<http://www.w3.org/2001/XMLSchema#integer>";
-		String addTimeTriple = "<<" +s+ subject +s+ predicate +s+ object +s+ ">>"+s+ timestamp +s+ strTime +dot;
-		String addCounter = "<<" +s+ subject +s+ predicate +s+ object +s+ ">>"+s+ counter +s+ initCounter +dot;
-		return addTimeTriple+addCounter;
-	}
 	
 	//========Windows Only!===========================
 	public  String registryMap(String regId, String regKey, String regValType, String regValName) {
@@ -239,8 +232,7 @@ public  String hostMap(String hostObject,String hostName, String hostOS, String 
 	
 	public  String subjectMap(String subject,String exec, String cmd) {
 		process = "<http://w3id.org/sepses/resource/proc"+subject+"#"+exec+">";
-		//String cmdline = cmd+"^^<http://www.w3.org/2001/XMLSchema#string>";
-		String subjMap = process +s+ cmdLine +s+ "\""+cmd+"\"" +dot;     
+		String subjMap = process +s+ cmdLine +s+ "\""+cmd+"\"" +dot;    	
 		return subjMap;
 	}
 	
@@ -248,12 +240,10 @@ public  String hostMap(String hostObject,String hostName, String hostOS, String 
 
 		file = "<http://w3id.org/sepses/resource/file#"+objectString+">";
 		String process = "<http://w3id.org/sepses/resource/proc"+subject+"#"+exec+">";
-		//time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#dateTime>";
 
 		
 		String executeMap =  
 				   file +s+ isExecutedBy +s+ process +dot+ 
-				   //"<<" +s+ file +s+ isExecutedBy +s+ process2 +s+ ">>"+s+ timestamp +s+ time +dot
 				   addTriple(process, exec, hostId, userId);
 		
 		return executeMap;
@@ -264,12 +254,9 @@ public  String hostMap(String hostObject,String hostName, String hostOS, String 
 
 		file = "<http://w3id.org/sepses/resource/file#"+objectString+">";
 		String process = "<http://w3id.org/sepses/resource/proc"+subject+"#"+exec+">";
-		//time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#dateTime>";
-
-		
+				
 		String loadMap =  
 				   file +s+ isLoadBy +s+ process +dot+ 
-				   //"<<" +s+ file +s+ isExecutedBy +s+ process2 +s+ ">>"+s+ timestamp +s+ time +dot
 				   addTriple(process, exec, hostId, userId);
 		
 		return loadMap;

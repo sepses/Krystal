@@ -6,7 +6,8 @@ import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
 
 public class DecayRule {
-	private static void decayModel(Model jsonModel) {
+	
+	public  void decayModel(Model jsonModel) {
 		// TODO Auto-generated method stub
 		System.out.print("run decay..");
 		String execQuery = "prefix xsd:<http://www.w3.org/2001/XMLSchema#>\r\n"
@@ -43,60 +44,34 @@ public class DecayRule {
 		
 	}
 
-	private static void subjectDecay(Model jsonModel, long now, long period) {
+	public static void subjectDecay(Model jsonModel, long now, double period) {
 		
-		long nanoDevide = 1000000000;
-		float periodSec = period/nanoDevide;
-		
-		String execQuery = "PREFIX : <http://w3id.org/sepses/vocab/ref/rule#>\r\n" + 
+		double periodNano = period*1000000000;
+		double T = 0.75;
+		String execQuery = "PREFIX : <http://w3id.org/sepses/vocab/rule#>\r\n" + 
 				"PREFIX log: <http://w3id.org/sepses/vocab/event/log#>\r\n" + 
 				"\r\n" + 
 				"DELETE { ?s :intTag ?it.\r\n" + 
-				"	<<?s ?p ?o>> :counter ?c.}\r\n" + 
+				"	?s :counter ?c.}\r\n" + 
 				"INSERT  {?s :intTag ?max.\r\n" + 
-				"    <<?s ?p ?o>> :counter ?nc.}\r\n" + 
+				"    ?s :counter ?nc.}\r\n" + 
 				"WHERE {\r\n" + 
-				" <<?s ?p ?o>> log:timestamp ?t;\r\n" + 
+				" ?s log:timestamp ?t;\r\n" + 
 				"            :counter ?c.\r\n" + 
-				" ?s :intTag ?it.\r\n" + 
+				" ?s :intTag ?it.\r\n" +  
 				" ?s :subjTag ?st.\r\n" + 
 				" FILTER (?st >= 0.5) \r\n" + //benign
 				" BIND (("+now+" - ?t) as ?age). \r\n" + //age for now 
-				" BIND ((?c + 1) as ?c). \r\n" +  //increase the counter
-				" FILTER (?age >= (?c * "+period+"))  \r\n" + //chose age > 0.25 sec and it's multiply
-				" BIND (((?it*"+periodSec+") + (1 - ?it) * "+periodSec+") as ?nit) \r\n" + //bind to a new intTag value 
-				" BIND (IF(?it>?nit, ?sit, ?nit ) AS ?max) \r\n" + //compare with the old it, take the maximum one 
+				" BIND ((?c + 1) as ?nc). \r\n" +  //increase the counter
+				" FILTER (?age >= (?c * "+periodNano+"))  \r\n" + //chose age > 0.25 sec and it's multiply
+				" BIND (((?it*"+period+") + (1 - "+period+") * "+T+") as ?nit) \r\n" + //bind to a new intTag value 
+				" BIND (IF(?it>?nit, ?it, ?nit ) AS ?max) \r\n" + //compare with the old it, take the maximum one 
 				"}";
-
-        UpdateRequest execRequest = UpdateFactory.create(execQuery);
-        UpdateAction.execute(execRequest,jsonModel) ;
-        		
-	}
-
-	private static void objectDecay(Model jsonModel, long now, long period) {
-		long nanoDevide = 1000000000;
-		float periodSec = period/nanoDevide;
 		
-		String execQuery = "PREFIX : <http://w3id.org/sepses/vocab/ref/rule#>\r\n" + 
-				"PREFIX log: <http://w3id.org/sepses/vocab/event/log#>\r\n" + 
-				"\r\n" + 
-				"DELETE { ?o :intTag ?it.\r\n" + 
-				"	<<?s ?p ?o>> :counter ?c.}\r\n" + 
-				"INSERT  {?o :intTag ?max.\r\n" + 
-				"    <<?s ?p ?o>> :counter ?nc.}\r\n" + 
-				"WHERE {\r\n" + 
-				" <<?s ?p ?o>> log:timestamp ?t;\r\n" + 
-				"            :counter ?c.\r\n" + 
-				" ?o :intTag ?it.\r\n" + 
-				" ?o :subjTag ?st.\r\n" + 
-				" FILTER (?st >= 0.5)\r\n" +  //benign
-				" BIND (("+now+" - ?t) as ?age). \r\n" + //age for now 
-				" BIND ((?c + 1) as ?c).  \r\n" + //increase the counter
-				" FILTER (?age >= (?c * "+period+"))  \r\n" +  // chose age > 0.25 sec and it's multiply 
-				" BIND (((?it*"+periodSec+")+(1 - ?it) * "+periodSec+") as ?nit) \r\n" + //bind to a new intTag value 
-				" BIND (IF(?it>?nit, ?sit, ?nit ) AS ?max)\r\n" +  //compare with the old it, take the maximum one 
-				"}";
-
+		//System.out.println(execQuery);
+//		System.exit(0);
+		
+		
         UpdateRequest execRequest = UpdateFactory.create(execQuery);
         UpdateAction.execute(execRequest,jsonModel) ;
         		

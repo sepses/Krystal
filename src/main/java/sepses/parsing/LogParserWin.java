@@ -361,7 +361,7 @@ public class LogParserWin {
 		}else if(datumNode.get("Subject").toBoolean()) {
 		    subjectNode = datumNode.get("Subject");
 			subject = shortenUUID(subjectNode.get("uuid").toString(),uuIndex); 
-			
+			long time = subjectNode.get("startTimestampNanos").toLong();
 			String exec = subjectNode.get("cmdLine").get("string").toString(); 
 			exec = exec.replace("\\", "\\\\");
 			exec = exec.replace("\"", "\\\"");

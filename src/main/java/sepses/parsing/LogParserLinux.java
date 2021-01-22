@@ -40,7 +40,10 @@ public class LogParserLinux {
 	public LogParserLinux(String line) {
 			Any jsonNode=JsonIterator.deserialize(line);
 			datumNode = jsonNode.get("datum");
-			this.logTimer = datumNode.get("com.bbn.tc.schema.avro.cdm18.Event").get("timestampNanos").toLong();
+			long timer  = datumNode.get("com.bbn.tc.schema.avro.cdm18.Event").get("timestampNanos").toLong();
+			if(timer > 0) {
+				this.logTimer = timer;
+			}
 	}
 	
 	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject, HashMap<String, String> FileObject, HashMap<String, String> SubjectCmd, String file, HashMap<String, String> CloneObject) throws IOException{	
@@ -62,39 +65,16 @@ public class LogParserLinux {
 			    exec = getExecFromCmdLine(subjCmd);
 				long ts = eventNode.get("timestampNanos").toLong();
 				String strTime = new Timestamp(ts/1000000).toString();
-				String timestamp = eventNode.get("timestampNanos").toString();
 				userId = getUserId(subject, UserObject);
 				object = shortenUUID(eventNode.get("predicateObject").get("com.bbn.tc.schema.avro.cdm18.UUID").toString(),uuIndex);
-				
-				
-				//subject = "";
-				String processMap = "";
 				String fileMap = "";
-				String prevProcess="";
 				String networkMap="";
-							
+		
+				double period = 	0.25;
+				double T = 0.75;
 				
-				//is process new
 				
 				
-				if(isEntityNew(subject+"#"+exec, Process)) {
-
-					//is it forked by another previous process? 
-					//prevProcess = getPreviousForkProcess(subject, ForkObject);
-						//if yes create fork Event
-						//if(!prevProcess.isEmpty()) {
-							//System.out.print(prevProcess);
-							//System.exit(0);
-							//if(!eventType.contains("EVENT_EXECUTE")) {
-  						//	    forkEvent(lm, prevProcess, subject+"#"+exec,timestamp, jsonModel);
-						//	}
-						//}else {
-	                       //tag new process
-							processMap = lm.initialProcessTagMap(subject+"#"+exec);
-						//}
-					
-					
-				}
 				
 				
 				  if(eventType.contains("EVENT_WRITE")) {
@@ -114,10 +94,10 @@ public class LogParserLinux {
 							String curWrite = subject+exec+fileName+"write";
 							if	(!lastAccess.contains(curWrite)) {				
 								
-								mapper = lm.writeMap(subject,exec,fileName,hostId,userId, timestamp)+fileMap+processMap;
+								mapper = lm.writeMap(subject,exec,fileName,hostId,userId, timestamp)+fileMap;
 								
 								storeEntity(fileName, File);
-								storeEntity(subject+"#"+exec, Process);
+								
 						
 								
 								Reader targetReader = new StringReader(mapper);
@@ -126,14 +106,11 @@ public class LogParserLinux {
 								//AlertRule alert = new AlertRule();
 								//alert.corruptFileAlert(jsonModel, subject+"#"+exec, objectString, timestamp);
 								
+								
 								PropagationRule prop = new PropagationRule();
+								prop.decayProcess(jsonModel, ts, period, T);
 								prop.writeTag(jsonModel, subject, exec, fileName);
-								
-								
-								
 								lastAccess = curWrite;
-								
-								//System.out.println("write: "+curWrite);
 								
 								
 							}
@@ -155,15 +132,16 @@ public class LogParserLinux {
 					
 								if	(!lastAccess.contains(curRead)) {				
 									
-									mapper = lm.readMap(subject,exec,fileName,hostId,userId,timestamp)+fileMap+processMap;
+									mapper = lm.readMap(subject,exec,fileName,hostId,userId,timestamp)+fileMap;
 									
 									storeEntity(fileName, File);
-									storeEntity(subject+"#"+exec, Process);
+									
 									
 									Reader targetReader = new StringReader(mapper);
 									jsonModel.read(targetReader, null, "N-TRIPLE");
 																
 									PropagationRule prop = new PropagationRule();
+									//prop.decayProcess(jsonModel, ts, period, T);
 									prop.readTag(jsonModel, subject, exec, fileName);										
 									
 									lastAccess = curRead;
@@ -176,13 +154,10 @@ public class LogParserLinux {
 					}else if(eventType.contains("EVENT_EXECUTE")) {	
 						
 						String fileName = getFileName(object, FileObject);
-						String newSubjCmd = eventNode.get("properties").get("map").get("cmdLine").toString();
-						putNewSubjectCmd(subject, newSubjCmd, SubjectCmd); //update subject cmd
-						exec = getExecFromCmdLine(newSubjCmd);
-						cmdline = newSubjCmd;
-						
-						
-						
+						//String newSubjCmd = eventNode.get("properties").get("map").get("cmdLine").toString();
+						//putNewSubjectCmd(subject, newSubjCmd, SubjectCmd); //update subject cmd
+						//exec = getExecFromCmdLine(newSubjCmd);
+						//cmdline = newSubjCmd;
 						
 						if(!fileName.isEmpty()) {						
 							if(isEntityNew(fileName, File)) {
@@ -193,19 +168,9 @@ public class LogParserLinux {
 								}
 							}
 							
-														 
-							 							 	
-							//prevProcess = getPreviousForkProcess(subject, ForkObject); 
-//							if(!prevProcess.isEmpty()) {
-//								forkEvent(lm, prevProcess, subject+"#"+exec, timestamp, jsonModel);
-//							}
-							
-							
-							
-							 mapper = lm.executeMap(subject,exec, fileName, cmdline, hostId, userId, timestamp)+fileMap+processMap;
+							mapper = lm.executeMap(subject,exec, fileName, cmdline, hostId, userId, timestamp)+fileMap;
 							 
 							 storeEntity(fileName, File);
-							 storeEntity(subject+"#"+exec, Process);
 							 
 							 
 							// System.out.print("execute");
@@ -217,12 +182,16 @@ public class LogParserLinux {
 							 
 							 
 							 PropagationRule prop = new PropagationRule();
-							 prop.execTag(jsonModel, subject, exec, fileName);		
+							 prop.decayProcess(jsonModel, ts, period, T);
+							 prop.execTag(jsonModel, subject, exec, fileName);	
 					
 						}
 					
 					}else if(eventType.contains("EVENT_CLONE")) {
 						 
+						
+						
+						
 						String objCmd = getSubjectCmd(object, SubjectCmd);
 						String objExec = getExecFromCmdLine(objCmd);
 						if(objCmd.equals(subjCmd)) {
@@ -232,13 +201,10 @@ public class LogParserLinux {
 
 							//putNewForkObject(subject+"#"+exec, object, ForkObject);
 							forkEvent(lm, subject+"#"+exec, object+"#"+objExec, timestamp, jsonModel);
-							storeEntity(subject+"#"+exec, Process);
 							
-							//storeEntity(object, Process);
-							// System.out.println("fork");
-							Reader targetReader = new StringReader(processMap);
-							jsonModel.read(targetReader, null, "N-TRIPLE");
-				
+							
+							PropagationRule prop = new PropagationRule();
+							prop.decayProcess(jsonModel, ts, period, T);
 						}
 						
 					}else if(eventType.contains("EVENT_SENDTO")) {
@@ -258,11 +224,9 @@ public class LogParserLinux {
 							String curSend = subject+exec+IPAddress+"send";
 							if	(!lastAccess.contains(curSend)) {
 								
-								mapper = lm.sendMap(subject,exec,IPAddress,hostId,userId, timestamp) + networkMap+processMap;	
+								mapper = lm.sendMap(subject,exec,IPAddress,hostId,userId, timestamp) + networkMap;	
 								
 								storeEntity(IPAddress, Network);
-								storeEntity(subject+"#"+exec, Process);
-								
 								// System.out.println("sendto"+subject+"#"+exec+IPAddress);
 								 
 								Reader targetReader = new StringReader(mapper);
@@ -272,7 +236,9 @@ public class LogParserLinux {
 								alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, strTime);
 								
 								PropagationRule prop = new PropagationRule();
+								prop.decayProcess(jsonModel, ts, period, T);
 								prop.sendTag(jsonModel, subject, exec, IPAddress);
+								
 								
 								lastAccess=curSend;
 								
@@ -299,18 +265,18 @@ public class LogParserLinux {
 							String curReceive = subject+exec+IPAddress+"receive";
 							if	(!lastAccess.contains(curReceive)) {
 								
-								mapper = lm.receiveMap(subject,exec,IPAddress,hostId,userId, timestamp) + networkMap+processMap;
+								mapper = lm.receiveMap(subject,exec,IPAddress,hostId,userId, timestamp) + networkMap;
 								
 								storeEntity(IPAddress, Network);
-								storeEntity(subject+"#"+exec, Process);
+								
 								//System.out.println("receivefrom"+subject+"#"+exec+IPAddress);
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 								
 								PropagationRule prop = new PropagationRule();
+								prop.decayProcess(jsonModel, ts, period, T);
 								prop.receiveTag(jsonModel, subject, exec, IPAddress);
-								
-									lastAccess=curReceive;
+								lastAccess=curReceive;
 							}
 														 
 						}
@@ -333,23 +299,34 @@ public class LogParserLinux {
 				jsonModel.read(targetReader, null, "N-TRIPLE");
 
 		}else if(datumNode.get("com.bbn.tc.schema.avro.cdm18.Subject").toBoolean()) {
+
 		    subjectNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.Subject");
 			subject = shortenUUID(subjectNode.get("uuid").toString(),uuIndex);
 			
 			String cmdLine = subjectNode.get("cmdLine").get("string").toString();
 			exec = getExecFromCmdLine(cmdLine);
+			
+			
+			
 			//System.out.println(cmdLine);
 			putNewSubjectCmd(subject, cmdLine, SubjectCmd);
 			String userId = shortenUUID(subjectNode.get("localPrincipal").toString(),uuIndex); 
 			putNewUserObject(subject, userId, UserObject);
+			long time = subjectNode.get("startTimestampNanos").toLong();
 			String mapper="";
-			LogMapper lm = new LogMapper();	
-		    
-			mapper = lm.subjectMap(subject,exec,cmdLine);	
 			
-			Reader targetReader = new StringReader(mapper);
+			LogMapper lm = new LogMapper();	
+			
+			String processMap = lm.initialProcessTagMap(subject+"#"+exec);
+			
+		    mapper = lm.subjectMap(subject,exec,cmdLine);	
+			
+			Reader targetReader = new StringReader(mapper+processMap);
 			jsonModel.read(targetReader, null, "N-TRIPLE");
 			
+			PropagationRule prop = new PropagationRule();
+			prop.putProcessTime(jsonModel, subject, exec, time);	
+			prop.putCounter(jsonModel, subject, exec);
 	
 		}else if(datumNode.get("com.bbn.tc.schema.avro.cdm18.FileObject").toBoolean()) {
 		    fileNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.FileObject");
@@ -496,9 +473,6 @@ public class LogParserLinux {
 			if(!SubjectCmd.containsKey(subject)) {
 				SubjectCmd.put(subject, cmdLine);
 				
-			}else { //update
-				SubjectCmd.remove(subject);
-				SubjectCmd.put(subject, cmdLine);
 			}
 		}
 		 
@@ -561,41 +535,6 @@ public class LogParserLinux {
 	
 		 return subject;	
 	}
-	private  static void putNewForkObject(String process, String object, HashMap<String, String> ForkObject) {
-		//process
-		if(!process.isEmpty() && !object.isEmpty()) {
-			if(!ForkObject.containsKey(object)) {
-				ForkObject.put(object, process);
-			}else {
-				//update
-				ForkObject.remove(object);
-				ForkObject.put(object, process);
-				//System.out.println("udah ada");
-			}
-		}
-		 
-	}
-	
-
-	
-	private  static String getPreviousForkProcess(String subject,HashMap<String, String> ForkObject) {
-		//process
-		String prevProcess ="";
-		if(!subject.isEmpty()) {
-			
-			if(ForkObject.containsKey(subject)) {
-				
-				prevProcess = ForkObject.get(subject);
-				
-			}
-			
-			
-		}
-		
-		return prevProcess;
-		 
-	}
-		
 
 	private static Boolean filterLine(String eventType, ArrayList<String> fieldfilter) {
 		Boolean result = false;
