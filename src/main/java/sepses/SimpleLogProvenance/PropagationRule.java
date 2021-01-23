@@ -70,9 +70,10 @@ public class PropagationRule {
 	}
 	
 	public void execTag(Model jsonModel, String subject, String exec, String objectString, boolean env) {
-		subjExec(jsonModel, subject, exec, objectString, env);
 		intExec(jsonModel, subject, exec, objectString);
 		confExec(jsonModel, subject, exec, objectString);
+		subjExec(jsonModel, subject, exec, objectString, env);
+
 	}
 	
 		//===================READ / LOAD ==============================
@@ -435,9 +436,8 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 				}
 			}else {
 			//benign
-				double nrsit = 1.0;	
 			    jsonModel.removeAll(respro, intTag, null);
-			    jsonModel.addLiteral(respro, intTag, nrsit);
+			    jsonModel.addLiteral(respro, intTag, roit);
 			
 			}
 		
