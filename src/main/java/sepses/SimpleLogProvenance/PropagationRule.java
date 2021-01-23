@@ -601,54 +601,78 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 		 }
 	}	
 
-public void decayIndividualProcess(Model jsonModel, long timer, double period, double T) {
-		
-		String execQuery = "PREFIX : <http://w3id.org/sepses/vocab/rule#>\r\n" + 
-				"PREFIX log: <http://w3id.org/sepses/vocab/event/log#>\r\n" + 
-				"SELECT ?s ?it \r\n"
-				+ "WHERE {\r\n" + 
-				" ?s :intTag ?it.\r\n" +
-				" ?s :subjTag ?st.\r\n" + 
-				" FILTER (?st >= 0.5) \r\n" +
-				" FILTER (?it < 0.5) \r\n" +
-				"}";
-		
-		 QueryExecution qexec = QueryExecutionFactory.create(execQuery, jsonModel);
-		 ArrayList<HashMap<String, RDFNode>> list = new ArrayList<HashMap<String, RDFNode>>();
-		 
-		 ResultSet result = qexec.execSelect();
-		 
-		 while (result.hasNext()) {
-			 HashMap<String, RDFNode> eachres = new HashMap<String, RDFNode>();
-	         QuerySolution soln = result.nextSolution() ;         
-	         eachres.put("s", soln.get("s"));
-	         eachres.put("it",soln.get("it"));
-	         list.add(eachres);
-	        }
-		 //System.out.println(list.size());
-		  for(int i=0;i<list.size();i++) {
-			  Resource s = list.get(i).get("s").asResource();
-			  int c = getCounter(jsonModel, counter, s);
-			  long t = getTimer(jsonModel, timestamp, s);
-			  long age = timer - t;
+public void decayIndividualProcess(Model jsonModel, String subject, String exec,long timer, double period, double Tb, double Te) {
+
+	process = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
+	Resource s = jsonModel.createResource(process);
+	
+	double rsst = getEntityTag(jsonModel, subjTag, s);
+	
+	boolean rsEnv = getSuspEnvTag(jsonModel, suspEnv, s);
+  if(rsst>=0.5) {
+	double rsit = getEntityTag(jsonModel, intTag, s);
+	double rsct = getEntityTag(jsonModel, confTag, s);
+	long t = getTimer(jsonModel, timestamp, s);
+	int c = getCounter(jsonModel, counter, s);	
+	long age = timer - t;
 			  //System.out.println(c+" : "+age);
 	          double periodNano = period*1000000000;
-	          //System.out.println(c+" "+age+" : "+(c*periodNano));
-	 		if(age >= (c*periodNano)) {
-	 			//System.out.println("yes, adult!");
-	 			jsonModel.removeAll(s, counter, null);
-		 	    jsonModel.addLiteral(s, counter, c+1);	
-	 			double it = list.get(i).get("it").asLiteral().getDouble();
-	 			double decayRateIntTag = (it*period)+((1-period)*T);	
-	 			double nit = 0;	 		
-	 			//System.out.println(s+"=>"+it+" => "+decayRateIntTag);
-	 			if(it<decayRateIntTag) {
-	 			 	 nit = decayRateIntTag;
-	 				 jsonModel.removeAll(s, intTag, null);
-		 			 jsonModel.addLiteral(s, intTag, nit);
-	 			}
-	 		}
-		 }
-	}	
-
+		          //System.out.println(c+" "+age+" : "+(c*periodNano));
+		 		if(age >= (c*periodNano)) {
+		 			//System.out.println("yes, adult!");
+		 			jsonModel.removeAll(s, counter, null);
+			 	    jsonModel.addLiteral(s, counter, c+1);	
+		 			double decayRateIntTag = (rsit*period)+((1-period)*Tb);
+		 			double decayRateConfTag = (rsct*period)+((1-period)*Tb);
+		 			
+		 			double nit = 0;	 		
+		 			double nct = 0;	 		
+		 			//System.out.println(s+"=>"+it+" => "+decayRateIntTag);
+		 			if(rsit<decayRateIntTag) {
+		 			 	 nit = decayRateIntTag;
+		 				 jsonModel.removeAll(s, intTag, null);
+			 			 jsonModel.addLiteral(s, intTag, nit);
+		 			}
+		 			if(rsct<decayRateConfTag) {
+		 			 	 nct = decayRateConfTag;
+		 				 jsonModel.removeAll(s, confTag, null);
+			 			 jsonModel.addLiteral(s, confTag, nct);
+		 			}
+		 		}
+	    
+	} else {
+		if(rsEnv) {
+			double rsit = getEntityTag(jsonModel, intTag, s);
+			double rsct = getEntityTag(jsonModel, confTag, s);
+			long t = getTimer(jsonModel, timestamp, s);
+			int c = getCounter(jsonModel, counter, s);	
+			long age = timer - t;
+					  //System.out.println(c+" : "+age);
+			          double periodNano = period*1000000000;
+				          //System.out.println(c+" "+age+" : "+(c*periodNano));
+				 		if(age >= (c*periodNano)) {
+				 			//System.out.println("yes, adult!");
+				 			jsonModel.removeAll(s, counter, null);
+					 	    jsonModel.addLiteral(s, counter, c+1);	
+					 	    double decayRateIntTag = (rsit*period)+((1-period)*Te);
+				 			double decayRateConfTag = (rsct*period)+((1-period)*Te);
+				 			
+				 			double nit = 0;	 		
+				 			double nct = 0;	 		
+				 			//System.out.println(s+"=>"+it+" => "+decayRateIntTag);
+				 			if(rsit<decayRateIntTag) {
+				 			 	 nit = decayRateIntTag;
+				 				 jsonModel.removeAll(s, intTag, null);
+					 			 jsonModel.addLiteral(s, intTag, nit);
+				 			}
+				 			if(rsct<decayRateConfTag) {
+				 			 	 nct = decayRateConfTag;
+				 				 jsonModel.removeAll(s, confTag, null);
+					 			 jsonModel.addLiteral(s, confTag, nct);
+				 			}
+				 		}
+			    
+		}
+	  } 
+	}
 }

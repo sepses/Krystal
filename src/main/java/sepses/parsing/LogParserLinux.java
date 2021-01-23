@@ -70,8 +70,9 @@ public class LogParserLinux {
 				String networkMap="";
 				
 				//initial value for tag decay
-				//double period = 	0.25;
-				//double T = 0.75;
+				double period = 	2;
+				double Tb = 0.75;
+				double Te = 0.45;
 				
 				  if(eventType.contains("EVENT_WRITE")) {
 					 
@@ -88,8 +89,7 @@ public class LogParserLinux {
 								//alert.corruptFileAlert(jsonModel, subject+"#"+exec, objectString, timestamp);
 
 								PropagationRule prop = new PropagationRule();
-								//prop.decayProcess(jsonModel, ts, period, T);
-								
+								prop.decayIndividualProcess(jsonModel,  subject, exec, ts, period, Tb, Te);
 								prop.writeTag(jsonModel, subject, exec, fileName);
 								
 								lastAccess = curWrite;									
@@ -107,7 +107,7 @@ public class LogParserLinux {
 									jsonModel.read(targetReader, null, "N-TRIPLE");
 																
 									PropagationRule prop = new PropagationRule();
-									//prop.decayProcess(jsonModel, ts, period, T);
+									prop.decayIndividualProcess(jsonModel,  subject, exec, ts, period, Tb, Te);
 									prop.readTag(jsonModel, subject, exec, fileName);										
 									lastAccess = curRead;
 								}
@@ -131,8 +131,7 @@ public class LogParserLinux {
 							alert.execAlert(jsonModel,alertModel, subject+"#"+exec, fileName, strTime);
 							 
 							PropagationRule prop = new PropagationRule();
-							//prop.decayProcess(jsonModel, ts, period, T);
-							
+							prop.decayIndividualProcess(jsonModel,  subject, exec, ts, period, Tb, Te);
 							prop.execTag(jsonModel, subject, exec, fileName);	
 						}
 					
@@ -146,8 +145,8 @@ public class LogParserLinux {
 							//putNewForkObject(subject+"#"+exec, object, ForkObject);
 							forkEvent(lm, subject+"#"+exec, object+"#"+objExec, timestamp, jsonModel);
 							
-							//PropagationRule prop = new PropagationRule();
-							//prop.decayProcess(jsonModel, ts, period, T);
+							PropagationRule prop = new PropagationRule();
+							prop.decayIndividualProcess(jsonModel,  subject, exec, ts, period, Tb, Te);
 						}
 						
 					}else if(eventType.contains("EVENT_SENDTO")) {
@@ -169,8 +168,7 @@ public class LogParserLinux {
 								alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, strTime);
 								
 								PropagationRule prop = new PropagationRule();
-								//prop.decayProcess(jsonModel, ts, period, T);
-								
+								prop.decayIndividualProcess(jsonModel,  subject, exec, ts, period, Tb, Te);
 								prop.sendTag(jsonModel, subject, exec, IPAddress);
 								lastAccess=curSend;
 								
@@ -194,7 +192,7 @@ public class LogParserLinux {
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 								
 								PropagationRule prop = new PropagationRule();
-								//prop.decayProcess(jsonModel, ts, period, T);
+								prop.decayIndividualProcess(jsonModel,  subject, exec, ts, period, Tb, Te);
 								prop.receiveTag(jsonModel, subject, exec, IPAddress);
 								lastAccess=curReceive;
 							}													 
