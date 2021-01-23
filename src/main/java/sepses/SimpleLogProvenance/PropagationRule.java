@@ -26,6 +26,7 @@ public class PropagationRule {
 	public Property confTag;
 	public Property intTag;
 	public Property subjTag;
+	public Property suspEnv;
 	public Property timestamp;
 	public Property counter;
 				
@@ -36,6 +37,7 @@ public class PropagationRule {
 		confTag = model.createProperty(prefRule+"confTag");
 		intTag = model.createProperty(prefRule+"intTag");
 		subjTag = model.createProperty(prefRule+"subjTag");
+		suspEnv = model.createProperty(prefRule+"suspEnv");
 		timestamp = model.createProperty(prefix+"timestamp");
 		counter = model.createProperty(prefRule+"counter");
 		
@@ -54,9 +56,9 @@ public class PropagationRule {
 		confRead(jsonModel, subject, exec, objectString);
 	}
 	
-	public void writeTag(Model jsonModel, String subject, String exec, String objectString, boolean env) {
-		confWrite(jsonModel, subject, exec, objectString, env);
-		intWrite(jsonModel, subject, exec, objectString, env);
+	public void writeTag(Model jsonModel, String subject, String exec, String objectString) {
+		confWrite(jsonModel, subject, exec, objectString);
+		intWrite(jsonModel, subject, exec, objectString);
 	}
 	
 	public void receiveTag(Model jsonModel, String subject, String exec, String objectString) {
@@ -64,15 +66,15 @@ public class PropagationRule {
 		confReceive(jsonModel, subject, exec, objectString);
 	}
 	
-	public void sendTag(Model jsonModel, String subject, String exec, String objectString, boolean env) {
-		confSend(jsonModel, subject, exec, objectString, env);
-		intSend(jsonModel, subject, exec, objectString, env);
+	public void sendTag(Model jsonModel, String subject, String exec, String objectString) {
+		confSend(jsonModel, subject, exec, objectString);
+		intSend(jsonModel, subject, exec, objectString);
 	}
 	
-	public void execTag(Model jsonModel, String subject, String exec, String objectString, boolean env) {
+	public void execTag(Model jsonModel, String subject, String exec, String objectString) {
 		intExec(jsonModel, subject, exec, objectString);
 		confExec(jsonModel, subject, exec, objectString);
-		subjExec(jsonModel, subject, exec, objectString, env);
+		subjExec(jsonModel, subject, exec, objectString);
 
 	}
 	
@@ -178,7 +180,7 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 				  
 	//================SEND===========================
 			
-	public  void confSend(Model jsonModel, String subject, String exec, String objectString, boolean env) {
+	public  void confSend(Model jsonModel, String subject, String exec, String objectString) {
 	    process = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
 		net = "http://w3id.org/sepses/resource/soc#"+objectString;
 		
@@ -188,6 +190,7 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 		double rsst = getEntityTag(jsonModel, subjTag, respro);
 		double rsct = getEntityTag(jsonModel, confTag, respro);
 		double roct = getEntityTag(jsonModel, confTag, resnet);
+		boolean rsenv = getSuspEnvTag(jsonModel, suspEnv, respro);
 
 	    if(rsst >= 0.5) {
 	    	//benign
@@ -199,7 +202,7 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 		     }  
 	      }	      
 	    }else {
-	    	if(!env) {
+	    	if(!rsenv) {
 	    	//suspect
 	    	 if(roct!=rsct) {
 	           double noct = min(rsct,roct);
@@ -219,7 +222,7 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 	    }
 	}
 	
-	public  void intSend(Model jsonModel, String subject, String exec, String objectString, boolean env) {
+	public  void intSend(Model jsonModel, String subject, String exec, String objectString) {
 		process = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
 		net = "http://w3id.org/sepses/resource/soc#"+objectString;
 		
@@ -229,7 +232,8 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 		double rsst = getEntityTag(jsonModel, subjTag, respro);
 		double rsit = getEntityTag(jsonModel, intTag, respro);
 		double roit = getEntityTag(jsonModel, intTag, resnet);
-			    
+		boolean rsenv = getSuspEnvTag(jsonModel, suspEnv, respro);
+		
 	    if(rsst >= 0.5) {
 	      //benign
 	    	if(roit!=rsit) {
@@ -240,7 +244,7 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 		     }  
 	     }   
 	    }else {
-	    	if(!env) {
+	    	if(!rsenv) {
 	    		//suspect
 	    	if(roit!=rsit) {
 	         double noit = min(rsit,roit);
@@ -263,7 +267,7 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 	
 	//================WRITE===========================
 	
-		public  void confWrite(Model jsonModel, String subject, String exec, String objectString, boolean env) {
+		public  void confWrite(Model jsonModel, String subject, String exec, String objectString) {
 		    process = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
 			file = "http://w3id.org/sepses/resource/file#"+objectString;
 			
@@ -273,7 +277,8 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 			double rsst = getEntityTag(jsonModel, subjTag, respro);
 			double rsct = getEntityTag(jsonModel, confTag, respro);
 			double roct = getEntityTag(jsonModel, confTag, resfile);
-
+			boolean rsenv = getSuspEnvTag(jsonModel, suspEnv, respro);
+			
 		    if(rsst >= 0.5) {
 		    	//benign
 		       if(roct!=rsct) {
@@ -284,7 +289,7 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 			     }  
 		      }	      
 		    }else {
-		    	if(!env) {
+		    	if(!rsenv) {
 		    	//suspect
 		    	 if(roct!=rsct) {
 		           double noct = min(rsct,roct);
@@ -306,7 +311,7 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 		
        
 		
-		public  void intWrite(Model jsonModel, String subject, String exec, String objectString, boolean env) {
+		public  void intWrite(Model jsonModel, String subject, String exec, String objectString) {
 			process = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
 			file = "http://w3id.org/sepses/resource/file#"+objectString;
 			
@@ -316,6 +321,7 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 			double rsst = getEntityTag(jsonModel, subjTag, respro);
 			double rsit = getEntityTag(jsonModel, intTag, respro);
 			double roit = getEntityTag(jsonModel, intTag, resfile);
+			boolean rsenv = getSuspEnvTag(jsonModel, suspEnv, respro);
 				    
 		    if(rsst >= 0.5) {
 		      //benign
@@ -327,7 +333,7 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 			     }  
 		     }   
 		    }else {
-		     if(!env) {
+		     if(!rsenv) {
 		     //suspect
 		    	if(roit!=rsit) {
 		         double noit = min(rsit,roit);
@@ -350,7 +356,7 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 	
 	//================EXEC===========================
 			
-	public  void subjExec(Model jsonModel, String subject, String exec, String objectString, boolean env) {
+	public  void subjExec(Model jsonModel, String subject, String exec, String objectString) {
 		
 		process = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
 		file = "http://w3id.org/sepses/resource/file#"+objectString;
@@ -359,6 +365,7 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 		Resource resfile = jsonModel.createResource(file);
 		double rsst = getEntityTag(jsonModel, subjTag, respro);
 		double roit = getEntityTag(jsonModel, intTag, resfile);		
+		boolean rsenv = getSuspEnvTag(jsonModel, suspEnv, respro);		
 	    
 	    if(rsst >= 0.5) {
 	    	//benign
@@ -367,12 +374,13 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 		         jsonModel.addLiteral(respro, subjTag, roit);
 		    }
 	    }else {
-	    	if(!env) {
+	    	if(!rsenv) {
 	    	//suspect
 	    	if(roit!=rsst) {
 	    		 double nsst = min(rsst,roit);
 		         jsonModel.removeAll(respro, subjTag, null);
 		         jsonModel.addLiteral(respro, subjTag, nsst);
+		         jsonModel.addLiteral(respro, suspEnv, true);
 		    }
 	    }else {
 	    	//suspect env
@@ -456,6 +464,7 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 			double rpsst = getEntityTag(jsonModel, subjTag, resPrevPro);
 			double rpsct = getEntityTag(jsonModel, confTag, resPrevPro);
 			double rpsit = getEntityTag(jsonModel, intTag, resPrevPro);
+			boolean rpenv = getSuspEnvTag(jsonModel, suspEnv, resPrevPro);
 			
 			jsonModel.removeAll(respro, subjTag, null);
 			jsonModel.addLiteral(respro, subjTag, rpsst);
@@ -463,6 +472,9 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 			jsonModel.addLiteral(respro, confTag, rpsct);
 			jsonModel.removeAll(respro, intTag,  null);
 			jsonModel.addLiteral(respro, intTag, rpsit);
+			if(rpenv) {
+				jsonModel.addLiteral(respro, suspEnv, true);
+			}
 			
 		}
 		
@@ -484,6 +496,16 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 			  ptag = s.getObject().asLiteral().getDouble();
 		  }
 		  return ptag;
+	}
+	
+	public boolean getSuspEnvTag(Model jsonModel, Property prop, Resource entity) {
+		boolean suspEnv = false;
+		StmtIterator iter = jsonModel.listStatements(entity, prop,(RDFNode) null);
+		  while (iter.hasNext()) {
+			  Statement s = iter.next();
+			  suspEnv = s.getObject().asLiteral().getBoolean();
+		  }
+		  return suspEnv;
 	}
 	
 	public int getCounter(Model jsonModel, Property prop, Resource entity) {
@@ -578,5 +600,55 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 	 		}
 		 }
 	}	
-	
+
+public void decayIndividualProcess(Model jsonModel, long timer, double period, double T) {
+		
+		String execQuery = "PREFIX : <http://w3id.org/sepses/vocab/rule#>\r\n" + 
+				"PREFIX log: <http://w3id.org/sepses/vocab/event/log#>\r\n" + 
+				"SELECT ?s ?it \r\n"
+				+ "WHERE {\r\n" + 
+				" ?s :intTag ?it.\r\n" +
+				" ?s :subjTag ?st.\r\n" + 
+				" FILTER (?st >= 0.5) \r\n" +
+				" FILTER (?it < 0.5) \r\n" +
+				"}";
+		
+		 QueryExecution qexec = QueryExecutionFactory.create(execQuery, jsonModel);
+		 ArrayList<HashMap<String, RDFNode>> list = new ArrayList<HashMap<String, RDFNode>>();
+		 
+		 ResultSet result = qexec.execSelect();
+		 
+		 while (result.hasNext()) {
+			 HashMap<String, RDFNode> eachres = new HashMap<String, RDFNode>();
+	         QuerySolution soln = result.nextSolution() ;         
+	         eachres.put("s", soln.get("s"));
+	         eachres.put("it",soln.get("it"));
+	         list.add(eachres);
+	        }
+		 //System.out.println(list.size());
+		  for(int i=0;i<list.size();i++) {
+			  Resource s = list.get(i).get("s").asResource();
+			  int c = getCounter(jsonModel, counter, s);
+			  long t = getTimer(jsonModel, timestamp, s);
+			  long age = timer - t;
+			  //System.out.println(c+" : "+age);
+	          double periodNano = period*1000000000;
+	          //System.out.println(c+" "+age+" : "+(c*periodNano));
+	 		if(age >= (c*periodNano)) {
+	 			//System.out.println("yes, adult!");
+	 			jsonModel.removeAll(s, counter, null);
+		 	    jsonModel.addLiteral(s, counter, c+1);	
+	 			double it = list.get(i).get("it").asLiteral().getDouble();
+	 			double decayRateIntTag = (it*period)+((1-period)*T);	
+	 			double nit = 0;	 		
+	 			//System.out.println(s+"=>"+it+" => "+decayRateIntTag);
+	 			if(it<decayRateIntTag) {
+	 			 	 nit = decayRateIntTag;
+	 				 jsonModel.removeAll(s, intTag, null);
+		 			 jsonModel.addLiteral(s, intTag, nit);
+	 			}
+	 		}
+		 }
+	}	
+
 }

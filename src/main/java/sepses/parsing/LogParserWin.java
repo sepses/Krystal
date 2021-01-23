@@ -42,7 +42,7 @@ public class LogParserWin {
 			datumNode = jsonNode.get("datum");
 	}
 	
-	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject,  Set<String> Registry, HashMap<String, String> RegistryObject, HashMap<String, String> SubjExecObject, String file, Set<String> envProcess ) throws IOException{	
+	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject,  Set<String> Registry, HashMap<String, String> RegistryObject, HashMap<String, String> SubjExecObject, String file ) throws IOException{	
 		//filter is the line is an event or not
 		eventNode = datumNode.get("Event");
 		if(eventNode.toBoolean()) {
@@ -108,9 +108,9 @@ public class LogParserWin {
 								//alert.corruptFileAlert(jsonModel, subject+"#"+exec, objectString, timestamp);
 								
 
-								boolean env = isEntityExists(subject+"#"+exec, envProcess);
+								
 								PropagationRule prop = new PropagationRule();
-								prop.writeTag(jsonModel, subject, exec, objectString, env);
+								prop.writeTag(jsonModel, subject, exec, objectString);
 								
 								lastAccess = curWrite;
 								
@@ -224,10 +224,10 @@ public class LogParserWin {
 									AlertRule alert = new AlertRule();
 									 alert.execAlert(jsonModel,alertModel, subject+"#"+exec, objectString, strTime);
 									 
-									 boolean env = isEntityExists(subject+"#"+exec, envProcess);
+									 
 									 
 									 PropagationRule prop = new PropagationRule();
-									 prop.execTag(jsonModel, subject, exec, objectString, env);									lastAccess = curExe;
+									 prop.execTag(jsonModel, subject, exec, objectString);									lastAccess = curExe;
 									
 									//System.out.println("read: "+curRead);
 								}
@@ -276,7 +276,7 @@ public class LogParserWin {
 						PropagationRule prop = new PropagationRule();
 						prop.forkTag(jsonModel, subject+"#"+exec, object+"#");	
 						
-						storeEntity(object+"#", envProcess);
+						
 						
 					}else if(eventType.contains("EVENT_SENDTO")) {
 					
@@ -303,10 +303,10 @@ public class LogParserWin {
 								AlertRule alert = new AlertRule();
 								alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, strTime);
 								
-								boolean env = isEntityExists(subject+"#"+exec, envProcess);
+								
 								
 								PropagationRule prop = new PropagationRule();
-								prop.sendTag(jsonModel, subject, exec, IPAddress, env);
+								prop.sendTag(jsonModel, subject, exec, IPAddress);
 								
 								lastAccess=curSend;
 								
