@@ -57,7 +57,7 @@ public class LogParserLinux {
 				subject = shortenUUID(eventNode.get("subject").get("com.bbn.tc.schema.avro.cdm18.UUID").toString(),uuIndex);
 				//check if this subject is a cloned subject
 				String cloneSubject = getCloneObject(subject, CloneObject);
-				if(!cloneSubject.isEmpty()){
+				if(!cloneSubject.isEmpty() && !eventType.contains("EVENT_WRITE")){
 					subject = cloneSubject;
 				}
 				hostId = eventNode.get("hostId").toString();
@@ -70,9 +70,9 @@ public class LogParserLinux {
 				String networkMap="";
 				
 				//initial value for tag decay
-				double period = 	2;
-				double Tb = 0.75;
-				double Te = 0.45;
+				//double period = 0.25;
+				//double Tb = 0.75;
+				//double Te = 0.45;
 				
 				  if(eventType.contains("EVENT_WRITE")) {
 					 
@@ -89,7 +89,7 @@ public class LogParserLinux {
 								//alert.corruptFileAlert(jsonModel, subject+"#"+exec, objectString, timestamp);
 
 								PropagationRule prop = new PropagationRule();
-								prop.decayIndividualProcess(jsonModel,  subject, exec, ts, period, Tb, Te);
+								//prop.decayIndividualProcess(jsonModel,  subject, exec, ts, period, Tb, Te);
 								prop.writeTag(jsonModel, subject, exec, fileName);
 								
 								lastAccess = curWrite;									
@@ -107,7 +107,7 @@ public class LogParserLinux {
 									jsonModel.read(targetReader, null, "N-TRIPLE");
 																
 									PropagationRule prop = new PropagationRule();
-									prop.decayIndividualProcess(jsonModel,  subject, exec, ts, period, Tb, Te);
+									//prop.decayIndividualProcess(jsonModel,  subject, exec, ts, period, Tb, Te);
 									prop.readTag(jsonModel, subject, exec, fileName);										
 									lastAccess = curRead;
 								}
@@ -117,22 +117,39 @@ public class LogParserLinux {
 					}else if(eventType.contains("EVENT_EXECUTE")) {	
 						
 						String fileName = getFileName(object, FileObject);
-						//String newSubjCmd = eventNode.get("properties").get("map").get("cmdLine").toString();
-						//putNewSubjectCmd(subject, newSubjCmd, SubjectCmd); //update subject cmd
-						//exec = getExecFromCmdLine(newSubjCmd);
-						//cmdline = newSubjCmd;
+						//use new cmd line from file execution
+						String newSubjCmd = eventNode.get("properties").get("map").get("cmdLine").toString();
+						String newExec = getExecFromCmdLine(newSubjCmd);
+						
+						if(!newSubjCmd.equals(subjCmd)) {  //create new subj if new cmd is not the same with the parent cmd
+						  if(isEntityNew(subject+"#"+newExec, Process)) {
+								String newSubj = lm.subjectMap(subject,newExec,newSubjCmd);	
+								String newProcessMap = lm.initialProcessTagMap(subject+"#"+newExec);
+									Reader targetReader2 = new StringReader(newSubj+newProcessMap);
+							  	    jsonModel.read(targetReader2, null, "N-TRIPLE");
+							  	    PropagationRule prop = new PropagationRule();  //these are for deca
+									prop.putProcessTime(jsonModel, subject, newExec, ts);	
+									prop.putCounter(jsonModel, subject, newExec);
+						  }
+						  
+						 forkEvent(lm, subject+"#"+exec, subject+"#"+newExec, timestamp, jsonModel);
+						}
+							
 						
 						if(!fileName.isEmpty()) {						
-							mapper = lm.executeMap(subject,exec, fileName, cmdline, hostId, userId, timestamp);
+							mapper = lm.executeMap(subject,newExec, fileName, newSubjCmd, hostId, userId, timestamp);
 							Reader targetReader2 = new StringReader(mapper);
 					  	    jsonModel.read(targetReader2, null, "N-TRIPLE");
 							 
 							AlertRule alert = new AlertRule();
-							alert.execAlert(jsonModel,alertModel, subject+"#"+exec, fileName, strTime);
-							 
+							alert.execAlert(jsonModel,alertModel, subject+"#"+newExec, fileName, strTime);
+							
+							storeEntity(subject+"#"+newExec, Process);
+							
 							PropagationRule prop = new PropagationRule();
-							prop.decayIndividualProcess(jsonModel,  subject, exec, ts, period, Tb, Te);
-							prop.execTag(jsonModel, subject, exec, fileName);	
+							//prop.decayIndividualProcess(jsonModel,  subject, exec, ts, period, Tb, Te);
+							prop.execTag(jsonModel, subject, newExec, fileName);	
+							
 						}
 					
 					}else if(eventType.contains("EVENT_CLONE")) {
@@ -145,8 +162,8 @@ public class LogParserLinux {
 							//putNewForkObject(subject+"#"+exec, object, ForkObject);
 							forkEvent(lm, subject+"#"+exec, object+"#"+objExec, timestamp, jsonModel);
 							
-							PropagationRule prop = new PropagationRule();
-							prop.decayIndividualProcess(jsonModel,  subject, exec, ts, period, Tb, Te);
+							//PropagationRule prop = new PropagationRule();
+							//prop.decayIndividualProcess(jsonModel,  subject, exec, ts, period, Tb, Te);
 						}
 						
 					}else if(eventType.contains("EVENT_SENDTO")) {
@@ -168,7 +185,7 @@ public class LogParserLinux {
 								alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, strTime);
 								
 								PropagationRule prop = new PropagationRule();
-								prop.decayIndividualProcess(jsonModel,  subject, exec, ts, period, Tb, Te);
+								//prop.decayIndividualProcess(jsonModel,  subject, exec, ts, period, Tb, Te);
 								prop.sendTag(jsonModel, subject, exec, IPAddress);
 								lastAccess=curSend;
 								
@@ -192,7 +209,7 @@ public class LogParserLinux {
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 								
 								PropagationRule prop = new PropagationRule();
-								prop.decayIndividualProcess(jsonModel,  subject, exec, ts, period, Tb, Te);
+								//prop.decayIndividualProcess(jsonModel,  subject, exec, ts, period, Tb, Te);
 								prop.receiveTag(jsonModel, subject, exec, IPAddress);
 								lastAccess=curReceive;
 							}													 
@@ -515,6 +532,21 @@ public class LogParserLinux {
 			}
 		return exec;
 
+	}
+	
+	private  static void putNewForkObject(String process, String object, HashMap<String, String> ForkObject) {
+		//process
+		if(!process.isEmpty() && !object.isEmpty()) {
+			if(!ForkObject.containsKey(object)) {
+				ForkObject.put(object, process);
+			}else {
+				//update
+				ForkObject.remove(object);
+				ForkObject.put(object, process);
+				//System.out.println("udah ada");
+			}
+		}
+		 
 	}
 	
 }

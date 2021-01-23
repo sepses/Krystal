@@ -12,6 +12,17 @@ os-platform: linux
 
 triple-store: graphdb
 
+decay-rule: yes
+
+decay-config:
+ - period: 0.25
+ - Tb: 0.75 
+ - Te: 0.45
+
+attanuation-config:
+ - Ab: 0.2 
+ - Ae: 0.1
+
 live-store: no
 
 backup-file: yes

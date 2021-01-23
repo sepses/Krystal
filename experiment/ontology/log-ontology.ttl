@@ -106,7 +106,7 @@
 
 ###  http://w3id.org/sepses/vocab/event/log#isReceivedBy
 :isReceivedBy rdf:type owl:ObjectProperty ;
-              #rdfs:subPropertyOf :provRel ;
+              rdfs:subPropertyOf :provRel ;
               rdfs:domain :Socket ;
               rdfs:range :Process ;
               rdfs:comment "This property represents connection received by Process from a Socket" .
