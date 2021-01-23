@@ -40,7 +40,7 @@ public class LogParser {
 			datumNode = jsonNode.get("datum");
 	}
 	
-	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject ) throws IOException{	
+	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject, Set<String> envProcess ) throws IOException{	
 		//filter is the line is an event or not
 		eventNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.Event");
 		if(eventNode.toBoolean()) {
@@ -82,7 +82,7 @@ public class LogParser {
 						//if yes create fork Event
 						if(!prevProcess.isEmpty()) {
 							if(!eventType.contains("EVENT_EXECUTE")) {
-  							    forkEvent(lm, prevProcess, subject+"#"+exec,timestamp, jsonModel);
+  							    forkEvent(lm, prevProcess, subject+"#"+exec,timestamp, jsonModel, envProcess);
 							}
 						}else {
 	                       //tag new process
@@ -111,9 +111,10 @@ public class LogParser {
 								
 								//AlertRule alert = new AlertRule();
 								//alert.corruptFileAlert(jsonModel, subject+"#"+exec, objectString, timestamp);
+								boolean env = isEntityExists(subject+"#"+exec,envProcess);
 								
 								PropagationRule prop = new PropagationRule();
-								prop.writeTag(jsonModel, subject, exec, objectString);
+								prop.writeTag(jsonModel, subject, exec, objectString,env);
 								
 								lastAccess = curWrite;
 								
@@ -183,7 +184,7 @@ public class LogParser {
 							 	jsonModel.read(targetReader, null, "N-TRIPLE");
 							 	
 							 	
-								forkEvent(lm, prevProcess, subject+"#"+process2, timestamp, jsonModel);
+								forkEvent(lm, prevProcess, subject+"#"+process2, timestamp, jsonModel, envProcess);
 							 
 								
 								 mapper = lm.executeMap(subject,process2, objectString, cmdline, hostId, userId, timestamp)+fileMap;
@@ -201,7 +202,8 @@ public class LogParser {
 								 
 								 
 								 PropagationRule prop = new PropagationRule();
-								 prop.execTag(jsonModel, subject, process2, objectString);
+								 boolean env = isEntityExists(subject+"#"+process2,envProcess);
+								 prop.execTag(jsonModel, subject, process2, objectString, env);
 						}	 
 						 
 					
@@ -242,8 +244,11 @@ public class LogParser {
 								AlertRule alert = new AlertRule();
 								alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, strTime);
 								
+								boolean env = isEntityExists(subject+"#"+exec,envProcess);
+								
+								
 								PropagationRule prop = new PropagationRule();
-								prop.sendTag(jsonModel, subject, exec, IPAddress);
+								prop.sendTag(jsonModel, subject, exec, IPAddress, env);
 								
 								lastAccess=curSend;
 								
@@ -349,7 +354,7 @@ public class LogParser {
 	
 
 
-	private void forkEvent(LogMapper lm, String prevProcess, String process, String ts, Model jsonModel) {
+	private void forkEvent(LogMapper lm, String prevProcess, String process, String ts, Model jsonModel, Set<String> envProcess) {
 		
 		if(!prevProcess.equals(process)) {
 				String forkMap = lm.forkMap(prevProcess, process, ts);
@@ -358,7 +363,7 @@ public class LogParser {
 				PropagationRule prop = new PropagationRule();
 				prop.forkTag(jsonModel, prevProcess, process);
 		}
-		
+		storeEntity(process, envProcess);
 	}
 
 
@@ -395,6 +400,18 @@ public class LogParser {
 			}
 		}
 	}
+	
+	private  static boolean isEntityExists(String entity, Set<String> store) {
+		//process
+		boolean entityExists = false;
+		if(!entity.isEmpty()) {
+			if(store.contains(entity)) {
+				entityExists=true;
+			}
+		}
+		return entityExists;
+	}
+	
 		
 	private  static String getIpAddress(String netObject, HashMap<String, String> NetworkObject) {
 		//process

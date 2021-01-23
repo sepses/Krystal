@@ -46,7 +46,7 @@ public class LogParserLinux {
 			}
 	}
 	
-	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject, HashMap<String, String> FileObject, HashMap<String, String> SubjectCmd, String file, HashMap<String, String> CloneObject) throws IOException{	
+	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject, HashMap<String, String> FileObject, HashMap<String, String> SubjectCmd, String file, HashMap<String, String> CloneObject, Set<String> envProcess) throws IOException{	
 		//filter is the line is an event or not
 		eventNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.Event");
 		if(eventNode.toBoolean()) {
@@ -67,86 +67,49 @@ public class LogParserLinux {
 				String strTime = new Timestamp(ts/1000000).toString();
 				userId = getUserId(subject, UserObject);
 				object = shortenUUID(eventNode.get("predicateObject").get("com.bbn.tc.schema.avro.cdm18.UUID").toString(),uuIndex);
-				String fileMap = "";
 				String networkMap="";
-		
-				double period = 	0.25;
-				double T = 0.75;
 				
-				
-				
-				
+				//initial value for tag decay
+				//double period = 	0.25;
+				//double T = 0.75;
 				
 				  if(eventType.contains("EVENT_WRITE")) {
 					 
 					  String fileName = getFileName(object, FileObject);
 						
 						if(!fileName.isEmpty()) {						
-							if(isEntityNew(fileName, File)) {
-								if(isConfidentialFile(fileName, confidentialdir)) {
-									fileMap = lm.initialConfFileTagMap(fileName);	
-								}else {
-								    fileMap = lm.initialFileTagMap(fileName);
-								}
-							}
-							
-						
 							String curWrite = subject+exec+fileName+"write";
 							if	(!lastAccess.contains(curWrite)) {				
-								
-								mapper = lm.writeMap(subject,exec,fileName,hostId,userId, timestamp)+fileMap;
-								
-								storeEntity(fileName, File);
-								
-						
-								
+								mapper = lm.writeMap(subject,exec,fileName,hostId,userId, timestamp);
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");
-								
+		
 								//AlertRule alert = new AlertRule();
 								//alert.corruptFileAlert(jsonModel, subject+"#"+exec, objectString, timestamp);
-								
-								
+
 								PropagationRule prop = new PropagationRule();
-								prop.decayProcess(jsonModel, ts, period, T);
-								prop.writeTag(jsonModel, subject, exec, fileName);
-								lastAccess = curWrite;
+								//prop.decayProcess(jsonModel, ts, period, T);
+								boolean env = isEntityExists(subject+"#"+exec, envProcess);
+								prop.writeTag(jsonModel, subject, exec, fileName, env);
 								
-								
+								lastAccess = curWrite;									
 							}
 						}
 					  
 					}else if(eventType.contains("EVENT_READ")) {
 						
 						  String fileName = getFileName(object, FileObject);
-						  					  
-							if(!fileName.isEmpty()) {						
-								if(isEntityNew(fileName, File)) {
-									if(isConfidentialFile(fileName, confidentialdir)) {
-										fileMap = lm.initialConfFileTagMap(fileName);	
-									}else {
-									    fileMap = lm.initialFileTagMap(fileName);
-									}
-								}
-								String curRead = subject+exec+fileName+"read";
-					
+						  	if(!fileName.isEmpty()) {						
+						  		String curRead = subject+exec+fileName+"read";
 								if	(!lastAccess.contains(curRead)) {				
-									
-									mapper = lm.readMap(subject,exec,fileName,hostId,userId,timestamp)+fileMap;
-									
-									storeEntity(fileName, File);
-									
-									
+									mapper = lm.readMap(subject,exec,fileName,hostId,userId,timestamp);			
 									Reader targetReader = new StringReader(mapper);
 									jsonModel.read(targetReader, null, "N-TRIPLE");
 																
 									PropagationRule prop = new PropagationRule();
 									//prop.decayProcess(jsonModel, ts, period, T);
 									prop.readTag(jsonModel, subject, exec, fileName);										
-									
 									lastAccess = curRead;
-						
-									
 								}
 							}
 						
@@ -160,63 +123,36 @@ public class LogParserLinux {
 						//cmdline = newSubjCmd;
 						
 						if(!fileName.isEmpty()) {						
-							if(isEntityNew(fileName, File)) {
-								if(isConfidentialFile(fileName, confidentialdir)) {
-									fileMap = lm.initialConfFileTagMap(fileName);	
-								}else {
-								    fileMap = lm.initialFileTagMap(fileName);
-								}
-							}
-							
-							mapper = lm.executeMap(subject,exec, fileName, cmdline, hostId, userId, timestamp)+fileMap;
+							mapper = lm.executeMap(subject,exec, fileName, cmdline, hostId, userId, timestamp);
+							Reader targetReader2 = new StringReader(mapper);
+					  	    jsonModel.read(targetReader2, null, "N-TRIPLE");
 							 
-							 storeEntity(fileName, File);
+							AlertRule alert = new AlertRule();
+							alert.execAlert(jsonModel,alertModel, subject+"#"+exec, fileName, strTime);
 							 
-							 
-							// System.out.print("execute");
-							 Reader targetReader2 = new StringReader(mapper);
-							 jsonModel.read(targetReader2, null, "N-TRIPLE");
-							 
-							 AlertRule alert = new AlertRule();
-							 alert.execAlert(jsonModel,alertModel, subject+"#"+exec, fileName, strTime);
-							 
-							 
-							 PropagationRule prop = new PropagationRule();
-							 prop.decayProcess(jsonModel, ts, period, T);
-							 prop.execTag(jsonModel, subject, exec, fileName);	
-					
+							PropagationRule prop = new PropagationRule();
+							//prop.decayProcess(jsonModel, ts, period, T);
+							boolean env = isEntityExists(subject+"#"+exec, envProcess);
+							prop.execTag(jsonModel, subject, exec, fileName, env);	
 						}
 					
 					}else if(eventType.contains("EVENT_CLONE")) {
-						 
-						
-						
-						
 						String objCmd = getSubjectCmd(object, SubjectCmd);
 						String objExec = getExecFromCmdLine(objCmd);
 						if(objCmd.equals(subjCmd)) {
-							
 							putNewCloneObject(object, subject, CloneObject);
 						}else {
 
 							//putNewForkObject(subject+"#"+exec, object, ForkObject);
-							forkEvent(lm, subject+"#"+exec, object+"#"+objExec, timestamp, jsonModel);
+							forkEvent(lm, subject+"#"+exec, object+"#"+objExec, timestamp, jsonModel, envProcess);
 							
-							
-							PropagationRule prop = new PropagationRule();
-							prop.decayProcess(jsonModel, ts, period, T);
+							//PropagationRule prop = new PropagationRule();
+							//prop.decayProcess(jsonModel, ts, period, T);
 						}
 						
 					}else if(eventType.contains("EVENT_SENDTO")) {
-					
 						String IPAddress = getIpAddress(object, NetworkObject);
-							
-					
-						
-						if(!IPAddress.isEmpty() && !IPAddress.equals("NA:0")) {
-							
-							
-							
+						if(!IPAddress.isEmpty() && !IPAddress.equals("NA:0") && !IPAddress.equals("NETLINK:0") ) {
 							if(isEntityNew(IPAddress, Network)) {
 								 networkMap = lm.initialNetworkTagMap(IPAddress);
 							}
@@ -224,11 +160,8 @@ public class LogParserLinux {
 							String curSend = subject+exec+IPAddress+"send";
 							if	(!lastAccess.contains(curSend)) {
 								
-								mapper = lm.sendMap(subject,exec,IPAddress,hostId,userId, timestamp) + networkMap;	
-								
 								storeEntity(IPAddress, Network);
-								// System.out.println("sendto"+subject+"#"+exec+IPAddress);
-								 
+								mapper = lm.sendMap(subject,exec,IPAddress,hostId,userId, timestamp) + networkMap;	
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 								
@@ -236,95 +169,69 @@ public class LogParserLinux {
 								alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, strTime);
 								
 								PropagationRule prop = new PropagationRule();
-								prop.decayProcess(jsonModel, ts, period, T);
-								prop.sendTag(jsonModel, subject, exec, IPAddress);
-								
-								
+								//prop.decayProcess(jsonModel, ts, period, T);
+								boolean env = isEntityExists(subject+"#"+exec, envProcess);
+								prop.sendTag(jsonModel, subject, exec, IPAddress, env);
 								lastAccess=curSend;
 								
 							}
-							
 						}
 						
-						
-						
 					}else if(eventType.contains("EVENT_RECVFROM")) {
-					
-				
-						
 						String IPAddress = getIpAddress(object, NetworkObject);
-					
 						
-						if(!IPAddress.isEmpty() && !IPAddress.equals("NA:0")) {
-							
-							
+						if(!IPAddress.isEmpty() && !IPAddress.equals("NA:0") && !IPAddress.equals("NETLINK:0")) {
 							if(isEntityNew(IPAddress, Network)) {
 								networkMap = lm.initialNetworkTagMap(IPAddress);
 							}
 							
 							String curReceive = subject+exec+IPAddress+"receive";
-							if	(!lastAccess.contains(curReceive)) {
-								
-								mapper = lm.receiveMap(subject,exec,IPAddress,hostId,userId, timestamp) + networkMap;
-								
+							if	(!lastAccess.contains(curReceive)) {								
 								storeEntity(IPAddress, Network);
-								
-								//System.out.println("receivefrom"+subject+"#"+exec+IPAddress);
+	
+								mapper = lm.receiveMap(subject,exec,IPAddress,hostId,userId, timestamp) + networkMap;
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 								
 								PropagationRule prop = new PropagationRule();
-								prop.decayProcess(jsonModel, ts, period, T);
+								//prop.decayProcess(jsonModel, ts, period, T);
 								prop.receiveTag(jsonModel, subject, exec, IPAddress);
 								lastAccess=curReceive;
-							}
-														 
+							}													 
 						}
 					}
 				}
 			 
 		}else if(datumNode.get("com.bbn.tc.schema.avro.cdm18.NetFlowObject").toBoolean()) {
-			    networkNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.NetFlowObject");
-				netObject = shortenUUID(networkNode.get("uuid").toString(),uuIndex); 
-				String ip = networkNode.get("remoteAddress").toString();
-				String port =networkNode.get("remotePort").toString();
-				netAddress = ip+":"+port;
-				putNewNetworkObject(netObject, netAddress, NetworkObject);
-				String mapper="";
-				LogMapper lm = new LogMapper();	
-			    
-				mapper = lm.networkMap(netAddress,ip,port);	
-				
-				Reader targetReader = new StringReader(mapper);
-				jsonModel.read(targetReader, null, "N-TRIPLE");
+			networkNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.NetFlowObject");
+			netObject = shortenUUID(networkNode.get("uuid").toString(),uuIndex); 
+			String ip = networkNode.get("remoteAddress").toString();
+			String port =networkNode.get("remotePort").toString();
+			netAddress = ip+":"+port;
+			
+			putNewNetworkObject(netObject, netAddress, NetworkObject);
+			LogMapper lm = new LogMapper();	
+			String mapper = lm.networkMap(netAddress,ip,port);		
+			Reader targetReader = new StringReader(mapper);
+			jsonModel.read(targetReader, null, "N-TRIPLE");
 
 		}else if(datumNode.get("com.bbn.tc.schema.avro.cdm18.Subject").toBoolean()) {
-
 		    subjectNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.Subject");
 			subject = shortenUUID(subjectNode.get("uuid").toString(),uuIndex);
-			
+			String userId = shortenUUID(subjectNode.get("localPrincipal").toString(),uuIndex); 
 			String cmdLine = subjectNode.get("cmdLine").get("string").toString();
 			exec = getExecFromCmdLine(cmdLine);
 			
-			
-			
-			//System.out.println(cmdLine);
 			putNewSubjectCmd(subject, cmdLine, SubjectCmd);
-			String userId = shortenUUID(subjectNode.get("localPrincipal").toString(),uuIndex); 
 			putNewUserObject(subject, userId, UserObject);
 			long time = subjectNode.get("startTimestampNanos").toLong();
-			String mapper="";
-			
 			LogMapper lm = new LogMapper();	
-			
-			String processMap = lm.initialProcessTagMap(subject+"#"+exec);
-			
-		    mapper = lm.subjectMap(subject,exec,cmdLine);	
-			
+			String processMap = lm.initialProcessTagMap(subject+"#"+exec); //initial tag for process
+		    String mapper = lm.subjectMap(subject,exec,cmdLine);	
 			Reader targetReader = new StringReader(mapper+processMap);
 			jsonModel.read(targetReader, null, "N-TRIPLE");
 			
-			PropagationRule prop = new PropagationRule();
+			PropagationRule prop = new PropagationRule();  //these are for deca
 			prop.putProcessTime(jsonModel, subject, exec, time);	
 			prop.putCounter(jsonModel, subject, exec);
 	
@@ -332,27 +239,32 @@ public class LogParserLinux {
 		    fileNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.FileObject");
 			String fileObject = shortenUUID(fileNode.get("uuid").toString(),uuIndex); 
 			String fileName = cleanLine(fileNode.get("baseObject").get("properties").get("map").get("filename").toString()); 
-			putNewFileObject(fileObject, fileName, FileObject);
 			
+			putNewFileObject(fileObject, fileName, FileObject);
+			 LogMapper lm = new LogMapper();
+			 
+			String fileMap = ""; 
+			 if(isConfidentialFile(fileName, confidentialdir)) {
+					fileMap = lm.initialConfFileTagMap(fileName);	//initial tag for confidential file
+				}else {
+				    fileMap = lm.initialFileTagMap(fileName); //initial tag for file
+				}
+			 
+			Reader targetReader = new StringReader(fileMap);
+			jsonModel.read(targetReader, null, "N-TRIPLE");
 			
 		}else if(datumNode.get("com.bbn.tc.schema.avro.cdm18.Principal").toBoolean()) {
-			
-				String mapper="";
-				LogMapper lm = new LogMapper();	
-			    userNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.Principal");
-				userId = shortenUUID(userNode.get("uuid").toString(),uuIndex); 
-				String userType = getUserType(userNode.get("userId").toInt());
-				String userName = userNode.get("username").get("string").toString(); 
+			userNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.Principal");
+			userId = shortenUUID(userNode.get("uuid").toString(),uuIndex); 
+			String userType = getUserType(userNode.get("userId").toInt());
+			String userName = userNode.get("username").get("string").toString(); 
 				
-				mapper = lm.userMap(userId,userType,userName);	
-		
-				Reader targetReader = new StringReader(mapper);
-				jsonModel.read(targetReader, null, "N-TRIPLE");
-			
-		
-		}else if(datumNode.get("com.bbn.tc.schema.avro.cdm18.Host").toBoolean()) {
-			String mapper="";
 			LogMapper lm = new LogMapper();	
+			String mapper = lm.userMap(userId,userType,userName);	
+			Reader targetReader = new StringReader(mapper);
+			jsonModel.read(targetReader, null, "N-TRIPLE");
+			
+		}else if(datumNode.get("com.bbn.tc.schema.avro.cdm18.Host").toBoolean()) {
 		    hostNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.Host");
 			hostId = hostNode.get("uuid").toString(); 
 			//String hostType = hostNode.get("hostType").toString();
@@ -360,12 +272,11 @@ public class LogParserLinux {
 			String hostOS = hostNode.get("osDetails").toString();
 			String hostIP = hostNode.get("interfaces").get(1).get("ipAddresses").get(1).toString();
 			
-			mapper = lm.hostMap(hostId,hostName,hostOS,hostIP);	
+			LogMapper lm = new LogMapper();	
+			String mapper = lm.hostMap(hostId,hostName,hostOS,hostIP);	
 			Reader targetReader = new StringReader(mapper);
 			jsonModel.read(targetReader, null, "N-TRIPLE");
-		
-	
-	}				
+		}				
 		return lastAccess;
 	
 	}
@@ -375,7 +286,7 @@ public class LogParserLinux {
 	
 
 
-	private void forkEvent(LogMapper lm, String prevProcess, String process, String ts, Model jsonModel) {
+	private void forkEvent(LogMapper lm, String prevProcess, String process, String ts, Model jsonModel, Set<String> envProcess) {
 		
 		if(!prevProcess.equals(process)) {
 				String forkMap = lm.forkMap(prevProcess, process, ts);
@@ -384,7 +295,7 @@ public class LogParserLinux {
 				PropagationRule prop = new PropagationRule();
 				prop.forkTag(jsonModel, prevProcess, process);
 		}
-		
+		storeEntity(process, envProcess);
 	}
 
 
@@ -413,6 +324,18 @@ public class LogParserLinux {
 		}
 		return entityNew;
 	}
+	
+	private  static boolean isEntityExists(String entity, Set<String> store) {
+		//process
+		boolean entityExists = false;
+		if(!entity.isEmpty()) {
+			if(store.contains(entity)) {
+				entityExists=true;
+			}
+		}
+		return entityExists;
+	}
+	
 	
 	private  static void storeEntity(String entity, Set<String> store) {
 		if(!entity.isEmpty()) {

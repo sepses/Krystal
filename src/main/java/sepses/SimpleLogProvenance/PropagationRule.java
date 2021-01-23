@@ -54,9 +54,9 @@ public class PropagationRule {
 		confRead(jsonModel, subject, exec, objectString);
 	}
 	
-	public void writeTag(Model jsonModel, String subject, String exec, String objectString) {
-		confWrite(jsonModel, subject, exec, objectString);
-		intWrite(jsonModel, subject, exec, objectString);
+	public void writeTag(Model jsonModel, String subject, String exec, String objectString, boolean env) {
+		confWrite(jsonModel, subject, exec, objectString, env);
+		intWrite(jsonModel, subject, exec, objectString, env);
 	}
 	
 	public void receiveTag(Model jsonModel, String subject, String exec, String objectString) {
@@ -64,13 +64,13 @@ public class PropagationRule {
 		confReceive(jsonModel, subject, exec, objectString);
 	}
 	
-	public void sendTag(Model jsonModel, String subject, String exec, String objectString) {
-		confSend(jsonModel, subject, exec, objectString);
-		intSend(jsonModel, subject, exec, objectString);
+	public void sendTag(Model jsonModel, String subject, String exec, String objectString, boolean env) {
+		confSend(jsonModel, subject, exec, objectString, env);
+		intSend(jsonModel, subject, exec, objectString, env);
 	}
 	
-	public void execTag(Model jsonModel, String subject, String exec, String objectString) {
-		subjExec(jsonModel, subject, exec, objectString);
+	public void execTag(Model jsonModel, String subject, String exec, String objectString, boolean env) {
+		subjExec(jsonModel, subject, exec, objectString, env);
 		intExec(jsonModel, subject, exec, objectString);
 		confExec(jsonModel, subject, exec, objectString);
 	}
@@ -177,7 +177,7 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 				  
 	//================SEND===========================
 			
-	public  void confSend(Model jsonModel, String subject, String exec, String objectString) {
+	public  void confSend(Model jsonModel, String subject, String exec, String objectString, boolean env) {
 	    process = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
 		net = "http://w3id.org/sepses/resource/soc#"+objectString;
 		
@@ -198,16 +198,27 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 		     }  
 	      }	      
 	    }else {
+	    	if(!env) {
 	    	//suspect
 	    	 if(roct!=rsct) {
 	           double noct = min(rsct,roct);
 	           	 jsonModel.removeAll(resnet, confTag, null);
 	           	 jsonModel.addLiteral(resnet, confTag, noct);
 	    	 }
+	    	}else {
+	    	//suspect env	
+	    		if(roct!=rsct) {
+	   	         double noct = min(rsct+0.1,roct);
+	   	          if(noct!=roct) {
+	   	             jsonModel.removeAll(resnet, confTag, null);
+	   		         jsonModel.addLiteral(resnet, confTag, noct);
+	   		     }  
+	   	      }	
+	    	}
 	    }
 	}
 	
-	public  void intSend(Model jsonModel, String subject, String exec, String objectString) {
+	public  void intSend(Model jsonModel, String subject, String exec, String objectString, boolean env) {
 		process = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
 		net = "http://w3id.org/sepses/resource/soc#"+objectString;
 		
@@ -228,19 +239,30 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 		     }  
 	     }   
 	    }else {
-	     //suspect
+	    	if(!env) {
+	    		//suspect
 	    	if(roit!=rsit) {
 	         double noit = min(rsit,roit);
 	         jsonModel.removeAll(resnet, intTag, null);
 	         jsonModel.addLiteral(resnet, intTag, noit);
 	    	}
+	    }else {
+	    	  //suspect env
+	    	if(roit!=rsit) {
+	         double noit = min(rsit+0.1,roit);
+	         if(noit!=roit) {
+	        	 jsonModel.removeAll(resnet, intTag, null);
+		         jsonModel.addLiteral(resnet, intTag, noit);
+		     }  
+	     }  
+	    }
 	    }
 	    	
 	  }
 	
 	//================WRITE===========================
 	
-		public  void confWrite(Model jsonModel, String subject, String exec, String objectString) {
+		public  void confWrite(Model jsonModel, String subject, String exec, String objectString, boolean env) {
 		    process = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
 			file = "http://w3id.org/sepses/resource/file#"+objectString;
 			
@@ -261,16 +283,29 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 			     }  
 		      }	      
 		    }else {
+		    	if(!env) {
 		    	//suspect
 		    	 if(roct!=rsct) {
 		           double noct = min(rsct,roct);
 		           	 jsonModel.removeAll(resfile, confTag, null);
 		           	 jsonModel.addLiteral(resfile, confTag, noct);
 		    	 }
-		    }
-		}
+		    	} else {
+		    	//suspect env
+		    		if(roct!=rsct) {
+				         double noct = min(rsct+0.1,roct);
+				          if(noct!=roct) {
+				             jsonModel.removeAll(resfile, confTag, null);
+					         jsonModel.addLiteral(resfile, confTag, noct);
+					     }  
+				      }
+		    		}
+		    	}
+		   }
 		
-		public  void intWrite(Model jsonModel, String subject, String exec, String objectString) {
+       
+		
+		public  void intWrite(Model jsonModel, String subject, String exec, String objectString, boolean env) {
 			process = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
 			file = "http://w3id.org/sepses/resource/file#"+objectString;
 			
@@ -291,12 +326,22 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 			     }  
 		     }   
 		    }else {
+		     if(!env) {
 		     //suspect
 		    	if(roit!=rsit) {
 		         double noit = min(rsit,roit);
 		         jsonModel.removeAll(resfile, intTag, null);
 		         jsonModel.addLiteral(resfile, intTag, noit);
 		    	}
+		    }else {
+		    	if(roit!=rsit) {
+			         double noit = min(rsit+0.1,roit);
+			         if(noit!=roit) {
+			        	 jsonModel.removeAll(resfile, intTag, null);
+				         jsonModel.addLiteral(resfile, intTag, noit);
+				     }  
+			     }  
+		    }
 		    }
 		    	
 		  }
@@ -304,7 +349,7 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 	
 	//================EXEC===========================
 			
-	public  void subjExec(Model jsonModel, String subject, String exec, String objectString) {
+	public  void subjExec(Model jsonModel, String subject, String exec, String objectString, boolean env) {
 		
 		process = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
 		file = "http://w3id.org/sepses/resource/file#"+objectString;
@@ -321,12 +366,20 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 		         jsonModel.addLiteral(respro, subjTag, roit);
 		    }
 	    }else {
+	    	if(!env) {
 	    	//suspect
 	    	if(roit!=rsst) {
 	    		 double nsst = min(rsst,roit);
 		         jsonModel.removeAll(respro, subjTag, null);
 		         jsonModel.addLiteral(respro, subjTag, nsst);
 		    }
+	    }else {
+	    	//suspect env
+	    	if(roit!=rsst) {
+		         jsonModel.removeAll(respro, subjTag, null);
+		         jsonModel.addLiteral(respro, subjTag, roit);
+		    }
+	    	}
 	    }
 	}
 	
