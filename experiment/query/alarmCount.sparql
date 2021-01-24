@@ -1,0 +1,5 @@
+PREFIX rule: <http://w3id.org/sepses/vocab/rule#>
+select (count(?alert) as ?al) where { 
+    BIND (<<?s ?p ?o>> as ?alert)
+	?alert rule:hasDetectedRule ?a;
+} 

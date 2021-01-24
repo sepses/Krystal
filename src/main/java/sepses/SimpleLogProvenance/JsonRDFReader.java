@@ -166,7 +166,7 @@ public class JsonRDFReader {
 		   System.out.println("finish processing file:"+filename);
 	   }
 	       //end of folder
-	     
+	     System.out.println("Perform reasoning...");
 	     Reasoner reasoner = ReasonerRegistry.getOWLReasoner();
 	     reasoner = reasoner.bindSchema(RDFDataMgr.loadModel(ontology));
 	     InfModel infModel = ModelFactory.createInfModel(reasoner, jsonModel);

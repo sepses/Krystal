@@ -1,6 +1,6 @@
 /experiment/backup
 /experiment/input
-/experiment/query
+#/experiment/query
 /experiment/tdb
 /experiment/output
 /target

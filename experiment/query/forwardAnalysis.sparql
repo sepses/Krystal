@@ -1,0 +1,206 @@
+PREFIX darpa: <http://ss.l/dp#>
+   CONSTRUCT {?s ?p ?o.}
+     WHERE {  
+     <http://ss.r/dp/proc/143515#nginx> darpa:connects* ?s .
+      ?s ?p ?o. 
+      ?s  darpa:intTag ?spt.
+ 	  ?o darpa:intTag ?opt.
+   	FILTER ( 
+        ?spt < 0.5 && ?opt < 0.5  && ?p!=darpa:connects)
+}
+
+==============services version====================
+
+PREFIX darpa: <http://ss.l/dp#>
+PREFIX cat: <http://w3id.org/sepses/vocab/ref/cat#> 
+PREFIX sigma: <http://w3id.org/sepses/vocab/rule/sigma#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+CONSTRUCT {?s ?p ?o. 
+    ?o darpa:hasPotentialAttackTechnique ?tech.
+     ?tech cat:accomplishesTactic ?tt.
+}
+     WHERE {  
+     <http://ss.r/dp/proc/143520#nginx> darpa:connects* ?s .
+      ?s ?p ?o.
+      ?s  darpa:intTag ?spt.
+ 	  ?o darpa:intTag ?opt.
+   
+    optional {?o darpa:detectedRule ?r. ?r sigma:hasAttackTechnique ?tech. 
+         SERVICE <https://sepses.ifs.tuwien.ac.at/sparql> {
+        	?tech cat:accomplishesTactic ?tt.
+            
+    	}
+     }
+   	FILTER ( 
+        ?spt < 0.5 && ?opt < 0.5  && ?p!=darpa:connects)
+    FILTER (?p!=darpa:alertAccess)
+    FILTER (?p!=darpa:isIllegallyExecutedBy)
+    FILTER (?p!=darpa:leaksDataTo)
+    
+}
+
+====update with STARDOG==========
+
+PREFIX : <http://w3id.org/sepses/ns/log#>
+PREFIX cat: <http://w3id.org/sepses/vocab/ref/cat#> 
+PREFIX sigma: <http://w3id.org/sepses/vocab/rule/sigma#>
+PREFIX rule: <http://w3id.org/sepses/ns/rule#>
+CONSTRUCT {?s ?p ?o. ?s rdf:type ?st.?o rdf:type ?ot. ?s rdfs:label ?sl. ?o rdfs:label ?ol.  ?s2 rdfs:label ?s2l.
+    <<?s ?p ?o>> :hasPotentialAttackTechnique ?tech. ?tech rdfs:label ?tl.
+     ?tech cat:accomplishesTactic ?tt.?tt rdfs:label ?ttl.
+       ?tech rdf:type ?techt.
+               ?tt rdf:type ?ttt.
+}
+     WHERE { 
+          FILTER (?t = <http://w3id.org/sepses/res/proc/2#nginx>) 
+          {
+               ?t :connects* ?s .
+               ?s ?p ?o.
+               ?s rdf:type ?st.
+               ?o rdf:type ?ot.
+               ?s rule:intTag ?spt.
+               ?o rule:intTag ?opt
+               optional {?o rule:hasAlert ?r. }
+                FILTER (?spt < 0.5 && ?opt < 0.5  && ?p!=:connects)
+               BIND(STRAFTER(str(?s),"#") as ?sl)
+               BIND(STRAFTER(str(?o),"#") as ?ol)
+               FILTER(?st!=rdfs:Resource)
+               FILTER(?ot!=rdfs:Resource)
+          } UNION {
+               ?t :connects* ?s .
+               ?s ?p ?o.
+               ?s rule:intTag ?spt.
+               ?o rule:intTag ?opt.
+               ?o rule:hasAlert ?r. 
+               SERVICE <https://sepses.ifs.tuwien.ac.at/sparql> {
+                    ?r sigma:hasAttackTechnique ?tech. 
+                    ?tech cat:accomplishesTactic ?tt. 	
+               BIND(STRAFTER(str(?tech),"technique/") as ?tl)
+               BIND(STRAFTER(str(?tt),"tactic/") as ?ttl)
+               ?tech rdf:type ?techt.
+               ?tt rdf:type ?ttt.
+               FILTER(?techt!=rdfs:Resource)
+               FILTER(?ttt!=rdfs:Resource)
+               }
+               FILTER (?spt < 0.5 && ?opt < 0.5  && ?p!=:connects)
+               }     
+     
+    
+} #with small configuration to dissable no group
+
+===local queries====
+PREFIX : <http://w3id.org/sepses/ns/log#>
+PREFIX cat: <http://w3id.org/sepses/vocab/ref/cat#> 
+PREFIX rule: <http://w3id.org/sepses/ns/rule#>
+
+CONSTRUCT {?s ?p ?o. ?s rdf:type ?st.?o rdf:type ?ot. ?s rdfs:label ?sl. ?o rdfs:label ?ol.  ?s2 rdfs:label ?s2l.
+    <<?s ?p ?o>> :hasPotentialAttackTechnique ?tech. ?tech rdfs:label ?tl.
+     ?tech cat:accomplishesTactic ?tt.?tt rdfs:label ?ttl.
+       ?tech rdf:type ?techt.  ?tt rdf:type ?ttt.}
+     WHERE { 
+          
+               <http://w3id.org/sepses/res/proc/2#nginx> :connects* ?s .
+               ?s ?p ?o.
+               ?s rdf:type ?st.
+               ?o rdf:type ?ot.
+               ?s rule:intTag ?spt.
+               ?o rule:intTag ?opt.
+               BIND(STRAFTER(str(?s),"#") as ?sl)
+               BIND(STRAFTER(str(?o),"#") as ?ol)
+               FILTER(?st!=rdfs:Resource)
+               FILTER(?ot!=rdfs:Resource)
+               OPTIONAL{
+                       <<?s ?p ?o>>  rule:hasDetectedRule ?r. 
+                        ?r rule:hasAttackTechnique ?tech. 
+                        ?tech cat:accomplishesTactic ?tt. 	
+                        BIND(STRAFTER(str(?tech),"technique/") as ?tl)
+                        BIND(STRAFTER(str(?tt),"tactic/") as ?ttl)
+                        ?tech rdf:type ?techt.
+                        ?tt rdf:type ?ttt.
+                        FILTER(?techt!=rdfs:Resource)
+                        FILTER(?ttt!=rdfs:Resource)
+               }
+               FILTER (?spt < 0.5 && ?opt < 0.5  && ?p!=:connects)
+    
+}
+
+==latest========
+PREFIX : <http://w3id.org/sepses/vocab/event/log#>
+PREFIX cat: <http://w3id.org/sepses/vocab/ref/attack#> 
+PREFIX rule: <http://w3id.org/sepses/vocab/rule#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+CONSTRUCT { ?s ?p ?o. 
+         
+    <<?s ?p ?o>> :hasPotentialAttackTechnique ?tech.
+     ?tech cat:accomplishesTactic ?tt.
+     
+        ?s rdfs:label ?sl. 
+            ?o rdfs:label ?ol.  
+            ?s rdf:type ?st.
+            ?o rdf:type ?ot. 
+     
+     ?tech rdfs:label ?tl.
+     ?tt rdfs:label ?ttl.
+     ?tech rdf:type ?techt.  
+     ?tt rdf:type ?ttt.
+    }
+     WHERE { 
+          
+               <http://w3id.org/sepses/resource/proc18903#firefox> :provRel* ?s .
+               ?s ?p ?o.
+               ?s rule:intTag ?spt.
+               ?o rule:intTag ?opt.
+                
+               BIND(STRAFTER(str(?s),"#") as ?sl)
+               BIND(STRAFTER(str(?o),"#") as ?ol)
+               OPTIONAL{
+                       <<?s ?p ?o>>  rule:hasDetectedRule ?r. 
+                        ?r rule:hasAttackTechnique ?tech. 
+                        ?tech cat:accomplishesTactic ?tt. 	
+                        BIND(STRAFTER(str(?tech),"technique/") as ?tl)
+                        BIND(STRAFTER(str(?tt),"tactic/") as ?ttl)
+                        ?tech rdf:type ?techt.
+                        ?tt rdf:type ?ttt.
+               }
+               
+               ?s rdf:type ?st.
+               ?o rdf:type ?ot.
+                FILTER(?st!=:SystemObject)
+                 FILTER(?ot!=:SystemObject)
+                 FILTER(?st!=owl:Thing)
+                 FILTER(?ot!=owl:Thing)
+                 FILTER(?st!=rdfs:Resource)
+                 FILTER(?ot!=rdfs:Resource)
+               FILTER (?spt < 0.6 && ?opt < 0.6  && ?p!=:provRel && ?p!=:isReadBy && ?p!=:receives)
+    
+}
+
+=====================new on graph db
+PREFIX darpa: <http://w3id.org/sepses/vocab/event/log#> 
+PREFIX rule: <http://w3id.org/sepses/vocab/rule#> 
+   PREFIX owl: <http://www.w3.org/2002/07/owl#>
+CONSTRUCT {
+    ?ns ?p ?no. 
+
+     }
+   WHERE {  
+     <http://w3id.org/sepses/resource/proc19207#firefox> darpa:provRel* ?s .
+       ?s ?p ?o.
+       ?s a ?st.
+       ?o a ?ot.
+      ?s rule:intTag ?spt.
+      ?o rule:intTag ?spo
+    BIND (IRI(concat("http://w3id.org/ss/r#",strafter(str(?s),"#"))) as ?ns) 
+    BIND (IRI(concat("http://w3id.org/ss/r#",strafter(str(?o),"#"))) as ?no) 
+    
+   	FILTER ( 
+        ?spt < 0.5 && ?spo < 0.5  
+        && ?p!=darpa:provRel 
+       # && ?p!=darpa:forks 
+        && ?p!=darpa:isReadBy
+        #&& ?p!=darpa:executes
+        && ?p!=darpa:receives 
+        && ?p!=owl:sameAs)
+}

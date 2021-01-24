@@ -614,11 +614,14 @@ public void decayIndividualProcess(Model jsonModel, String proc,long timer, doub
 	if(rsit<0.5) { //get only low data tag integrity of subj 
 	    if(rsst>=0.5) {  //if subject is benign   
 		  if(age >= periodNano) {
+			  //System.out.println(s+" benign adult! "+age);
 		    double decayRateIntTag = (rsit*period)+((1-period)*Tb); //add decay rate
 		    if(rsit<decayRateIntTag) { 
 			  jsonModel.removeAll(s, intTag, null);
 			  jsonModel.addLiteral(s, intTag, decayRateIntTag);
 	        }
+		  }else {
+			 // System.out.println(s+" not adult ! "+age);
 		  }    
 		} else {  //if subject is suspect 
 		  boolean rsEnv = getSuspEnvTag(jsonModel, suspEnv, s);
@@ -638,11 +641,14 @@ public void decayIndividualProcess(Model jsonModel, String proc,long timer, doub
 		if(rsct<0.5) { //get only low data tag integrity of subj 
 		    if(rsst>=0.5) {  //if subject is benign   
 			  if(age >= periodNano) {
+				  
 			    double decayRateConfTag = (rsct*period)+((1-period)*Tb); //add decay rate
 			    if(rsct<decayRateConfTag) { 
 				  jsonModel.removeAll(s, confTag, null);
 				  jsonModel.addLiteral(s, confTag, decayRateConfTag);
 		        }
+			  }else {
+				  //System.out.println("benign not adult yet!");
 			  }    
 			} else {  //if subject is suspect 
 			  boolean rsEnv = getSuspEnvTag(jsonModel, suspEnv, s);
@@ -653,7 +659,9 @@ public void decayIndividualProcess(Model jsonModel, String proc,long timer, doub
 					 jsonModel.removeAll(s, confTag, null);
 					 jsonModel.addLiteral(s, confTag, decayRateConfTag);
 					}
-				 }
+				 }else {
+					 // System.out.println("suspect not adult yet!");
+				  }    
 			  }
 			} 
 		 }
