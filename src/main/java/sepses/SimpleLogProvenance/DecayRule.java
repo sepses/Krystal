@@ -68,10 +68,6 @@ public class DecayRule {
 				" BIND (IF(?it>?nit, ?it, ?nit ) AS ?max) \r\n" + //compare with the old it, take the maximum one 
 				"}";
 		
-		//System.out.println(execQuery);
-//		System.exit(0);
-		
-		
         UpdateRequest execRequest = UpdateFactory.create(execQuery);
         UpdateAction.execute(execRequest,jsonModel) ;
         		

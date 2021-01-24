@@ -22,6 +22,7 @@ public class Main {
 	       String osplatform= s.get("os-platform").toString();
 	       String triplestore= s.get("triple-store").toString();
 	       String backupfile= s.get("backup-file").toString();
+	       String decayrule= s.get("decay-rule").toString();
 	       String livestore= s.get("live-store").toString();
 	       String tdbdir= s.get("tdb-dir").toString();
 	       String ontology= s.get("ontology").toString();
@@ -76,7 +77,7 @@ public class Main {
 	      
 	      JsonRDFReader.readJson(type, filefolder, line, sparqlEp, namegraph, startingLine, 
 	    		  outputdir, inputdir, triplestore, backupfile, fieldfilter,
-	    		  livestore, confidentialdir, tdbdir, ontology, ruledir, osplatform);
+	    		  livestore, confidentialdir, tdbdir, ontology, ruledir, osplatform, decayrule);
 	    		  
 	    
 	  	

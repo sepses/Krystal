@@ -98,17 +98,33 @@
 
 ###  http://w3id.org/sepses/vocab/event/log#isReadBy
 :isReadBy rdf:type owl:ObjectProperty ;
-          rdfs:subPropertyOf :provRel ;
+          #rdfs:subPropertyOf :provRel ;
+	  owl:inverseOf :reads;
           rdfs:domain :File ;
           rdfs:range :Process ;
+          rdfs:comment "This property represents read event of a File by a Process" .
+
+###  http://w3id.org/sepses/vocab/event/log#reads
+:reads rdf:type owl:ObjectProperty ;
+          rdfs:subPropertyOf :provRel ;
+          rdfs:domain :Process ;
+          rdfs:range :File ;
           rdfs:comment "This property represents read event of a File by a Process" .
 
 
 ###  http://w3id.org/sepses/vocab/event/log#isReceivedBy
 :isReceivedBy rdf:type owl:ObjectProperty ;
-              rdfs:subPropertyOf :provRel ;
+              #rdfs:subPropertyOf :provRel ;
+	      owl:inverseOf :receives;
               rdfs:domain :Socket ;
               rdfs:range :Process ;
+              rdfs:comment "This property represents connection received by Process from a Socket" .
+
+###  http://w3id.org/sepses/vocab/event/log#receives
+:receives rdf:type owl:ObjectProperty ;
+              rdfs:subPropertyOf :provRel ;
+              rdfs:domain :Process ;
+              rdfs:range :Socket ;
               rdfs:comment "This property represents connection received by Process from a Socket" .
 
 

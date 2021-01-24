@@ -14,6 +14,8 @@ import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.InfModel;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.reasoner.Reasoner;
+import org.apache.jena.reasoner.ReasonerRegistry;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.tdb.TDBFactory;
 
@@ -30,7 +32,7 @@ public class JsonRDFReader {
 	public static void readJson(String t, String filefolder, String l, String se, String ng, String sl, String outputdir, 
 									String inputdir, String triplestore, String backupfile,  ArrayList<String> fieldfilter,
 										String livestore, ArrayList<String> confidentialdir, String tdbdir, String ontology, 
-										String ruledir, String os) throws Exception {
+										String ruledir, String os, String decayrule) throws Exception {
 		
 		  
 		Integer lineNumber = 1; // 1 here means the minimum line to be extracted
@@ -107,7 +109,7 @@ public class JsonRDFReader {
 									}else if (os.equals("linux")){
 										LogParserLinux lp = new LogParserLinux(line); //ubuntu
 										lastAccess = lp.parseJSONtoRDF(jsonModel,alertModel,fieldfilter, confidentialdir, uuIndex, Process, File, 
-								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, FileObject, SubjectCmd, file, CloneObject);
+								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, FileObject, SubjectCmd, file, CloneObject, decayrule);
 										
 									}else {
 										LogParser lp = new LogParser(line); //freebsd
@@ -165,8 +167,11 @@ public class JsonRDFReader {
 	   }
 	       //end of folder
 	     
+	     Reasoner reasoner = ReasonerRegistry.getOWLReasoner();
+	     reasoner = reasoner.bindSchema(RDFDataMgr.loadModel(ontology));
+	     InfModel infModel = ModelFactory.createInfModel(reasoner, jsonModel);
 	     
-			InfModel infModel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), jsonModel);
+		 //InfModel infModel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), inf);
 			
 	     if(backupfile!="false") {
 			 	String rdfFile = Utility.saveToRDF(infModel, outputdir, namegraph);

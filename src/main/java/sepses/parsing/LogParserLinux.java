@@ -46,7 +46,7 @@ public class LogParserLinux {
 			}
 	}
 	
-	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject, HashMap<String, String> FileObject, HashMap<String, String> SubjectCmd, String file, HashMap<String, String> CloneObject) throws IOException{	
+	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject, HashMap<String, String> FileObject, HashMap<String, String> SubjectCmd, String file, HashMap<String, String> CloneObject, String decayrule) throws IOException{	
 		//filter is the line is an event or not
 		eventNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.Event");
 		if(eventNode.toBoolean()) {
@@ -57,7 +57,7 @@ public class LogParserLinux {
 				subject = shortenUUID(eventNode.get("subject").get("com.bbn.tc.schema.avro.cdm18.UUID").toString(),uuIndex);
 				//check if this subject is a cloned subject
 				String cloneSubject = getCloneObject(subject, CloneObject);
-				if(!cloneSubject.isEmpty() && !eventType.contains("EVENT_WRITE")){
+				if(!cloneSubject.isEmpty() && !eventType.contains("EVENT_EXECUTE")){
 					subject = cloneSubject;
 				}
 				hostId = eventNode.get("hostId").toString();
@@ -70,9 +70,9 @@ public class LogParserLinux {
 				String networkMap="";
 				
 				//initial value for tag decay
-				//double period = 0.25;
-				//double Tb = 0.75;
-				//double Te = 0.45;
+				double period = 0.25;
+				double Tb = 0.75;
+				double Te = 0.45;
 				
 				  if(eventType.contains("EVENT_WRITE")) {
 					 
@@ -89,7 +89,9 @@ public class LogParserLinux {
 								//alert.corruptFileAlert(jsonModel, subject+"#"+exec, objectString, timestamp);
 
 								PropagationRule prop = new PropagationRule();
-								//prop.decayIndividualProcess(jsonModel,  subject, exec, ts, period, Tb, Te);
+								if(decayrule!="false") {
+									prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
+								}
 								prop.writeTag(jsonModel, subject, exec, fileName);
 								
 								lastAccess = curWrite;									
@@ -107,7 +109,9 @@ public class LogParserLinux {
 									jsonModel.read(targetReader, null, "N-TRIPLE");
 																
 									PropagationRule prop = new PropagationRule();
-									//prop.decayIndividualProcess(jsonModel,  subject, exec, ts, period, Tb, Te);
+									if(decayrule!="false") {
+									  prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
+									}
 									prop.readTag(jsonModel, subject, exec, fileName);										
 									lastAccess = curRead;
 								}
@@ -115,6 +119,8 @@ public class LogParserLinux {
 						
 					
 					}else if(eventType.contains("EVENT_EXECUTE")) {	
+						
+						
 						
 						String fileName = getFileName(object, FileObject);
 						//use new cmd line from file execution
@@ -127,12 +133,15 @@ public class LogParserLinux {
 								String newProcessMap = lm.initialProcessTagMap(subject+"#"+newExec);
 									Reader targetReader2 = new StringReader(newSubj+newProcessMap);
 							  	    jsonModel.read(targetReader2, null, "N-TRIPLE");
-							  	    PropagationRule prop = new PropagationRule();  //these are for deca
+							  	    PropagationRule prop = new PropagationRule();  //these are for 
 									prop.putProcessTime(jsonModel, subject, newExec, ts);	
 									prop.putCounter(jsonModel, subject, newExec);
 						  }
-						  
-						 forkEvent(lm, subject+"#"+exec, subject+"#"+newExec, timestamp, jsonModel);
+						}
+						
+						if(!cloneSubject.isEmpty()){
+								 String prevExec = getExecFromCmdLine(getSubjectCmd(cloneSubject, SubjectCmd));
+								 forkEvent(lm, cloneSubject+"#"+prevExec, subject+"#"+newExec, timestamp, jsonModel);
 						}
 							
 						
@@ -147,7 +156,9 @@ public class LogParserLinux {
 							storeEntity(subject+"#"+newExec, Process);
 							
 							PropagationRule prop = new PropagationRule();
-							//prop.decayIndividualProcess(jsonModel,  subject, exec, ts, period, Tb, Te);
+							if(decayrule!="false") {
+							  prop.decayIndividualProcess(jsonModel,  subject+"#"+newExec, ts, period, Tb, Te);
+							}
 							prop.execTag(jsonModel, subject, newExec, fileName);	
 							
 						}
@@ -158,12 +169,8 @@ public class LogParserLinux {
 						if(objCmd.equals(subjCmd)) {
 							putNewCloneObject(object, subject, CloneObject);
 						}else {
-
 							//putNewForkObject(subject+"#"+exec, object, ForkObject);
 							forkEvent(lm, subject+"#"+exec, object+"#"+objExec, timestamp, jsonModel);
-							
-							//PropagationRule prop = new PropagationRule();
-							//prop.decayIndividualProcess(jsonModel,  subject, exec, ts, period, Tb, Te);
 						}
 						
 					}else if(eventType.contains("EVENT_SENDTO")) {
@@ -185,7 +192,9 @@ public class LogParserLinux {
 								alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, strTime);
 								
 								PropagationRule prop = new PropagationRule();
-								//prop.decayIndividualProcess(jsonModel,  subject, exec, ts, period, Tb, Te);
+								if(decayrule!="false") {
+								 prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
+								}
 								prop.sendTag(jsonModel, subject, exec, IPAddress);
 								lastAccess=curSend;
 								
@@ -209,7 +218,9 @@ public class LogParserLinux {
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 								
 								PropagationRule prop = new PropagationRule();
-								//prop.decayIndividualProcess(jsonModel,  subject, exec, ts, period, Tb, Te);
+								if(decayrule!="false") {
+								 prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
+								}
 								prop.receiveTag(jsonModel, subject, exec, IPAddress);
 								lastAccess=curReceive;
 							}													 
@@ -297,12 +308,7 @@ public class LogParserLinux {
 	}
 	
 	
-
-	
-
-
-	private void forkEvent(LogMapper lm, String prevProcess, String process, String ts, Model jsonModel) {
-		
+	private void forkEvent(LogMapper lm, String prevProcess, String process, String ts, Model jsonModel) {		
 		if(!prevProcess.equals(process)) {
 				String forkMap = lm.forkMap(prevProcess, process, ts);
 				Reader targetReader = new StringReader(forkMap);
@@ -494,7 +500,7 @@ public class LogParserLinux {
 	}
 	
 	private static String cleanCmd(String line) {
-		line = line.replaceAll("[\\n\\t]", "");
+		line = line.replaceAll("[\\n\\t:]", "");
 		return line;
 	}
 	

@@ -601,78 +601,61 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 		 }
 	}	
 
-public void decayIndividualProcess(Model jsonModel, String subject, String exec,long timer, double period, double Tb, double Te) {
-
-	process = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
+public void decayIndividualProcess(Model jsonModel, String proc,long timer, double period, double Tb, double Te) {
+	process = "http://w3id.org/sepses/resource/proc"+proc;
 	Resource s = jsonModel.createResource(process);
-	
 	double rsst = getEntityTag(jsonModel, subjTag, s);
-	
-	boolean rsEnv = getSuspEnvTag(jsonModel, suspEnv, s);
-  if(rsst>=0.5) {
-	double rsit = getEntityTag(jsonModel, intTag, s);
-	double rsct = getEntityTag(jsonModel, confTag, s);
 	long t = getTimer(jsonModel, timestamp, s);
-	int c = getCounter(jsonModel, counter, s);	
 	long age = timer - t;
-			  //System.out.println(c+" : "+age);
-	          double periodNano = period*1000000000;
-		          //System.out.println(c+" "+age+" : "+(c*periodNano));
-		 		if(age >= (c*periodNano)) {
-		 			//System.out.println("yes, adult!");
-		 			jsonModel.removeAll(s, counter, null);
-			 	    jsonModel.addLiteral(s, counter, c+1);	
-		 			double decayRateIntTag = (rsit*period)+((1-period)*Tb);
-		 			double decayRateConfTag = (rsct*period)+((1-period)*Tb);
-		 			
-		 			double nit = 0;	 		
-		 			double nct = 0;	 		
-		 			//System.out.println(s+"=>"+it+" => "+decayRateIntTag);
-		 			if(rsit<decayRateIntTag) {
-		 			 	 nit = decayRateIntTag;
-		 				 jsonModel.removeAll(s, intTag, null);
-			 			 jsonModel.addLiteral(s, intTag, nit);
-		 			}
-		 			if(rsct<decayRateConfTag) {
-		 			 	 nct = decayRateConfTag;
-		 				 jsonModel.removeAll(s, confTag, null);
-			 			 jsonModel.addLiteral(s, confTag, nct);
-		 			}
-		 		}
-	    
-	} else {
-		if(rsEnv) {
-			double rsit = getEntityTag(jsonModel, intTag, s);
-			double rsct = getEntityTag(jsonModel, confTag, s);
-			long t = getTimer(jsonModel, timestamp, s);
-			int c = getCounter(jsonModel, counter, s);	
-			long age = timer - t;
-					  //System.out.println(c+" : "+age);
-			          double periodNano = period*1000000000;
-				          //System.out.println(c+" "+age+" : "+(c*periodNano));
-				 		if(age >= (c*periodNano)) {
-				 			//System.out.println("yes, adult!");
-				 			jsonModel.removeAll(s, counter, null);
-					 	    jsonModel.addLiteral(s, counter, c+1);	
-					 	    double decayRateIntTag = (rsit*period)+((1-period)*Te);
-				 			double decayRateConfTag = (rsct*period)+((1-period)*Te);
-				 			
-				 			double nit = 0;	 		
-				 			double nct = 0;	 		
-				 			//System.out.println(s+"=>"+it+" => "+decayRateIntTag);
-				 			if(rsit<decayRateIntTag) {
-				 			 	 nit = decayRateIntTag;
-				 				 jsonModel.removeAll(s, intTag, null);
-					 			 jsonModel.addLiteral(s, intTag, nit);
-				 			}
-				 			if(rsct<decayRateConfTag) {
-				 			 	 nct = decayRateConfTag;
-				 				 jsonModel.removeAll(s, confTag, null);
-					 			 jsonModel.addLiteral(s, confTag, nct);
-				 			}
-				 		}
-			    
-		}
-	  } 
-	}
+	double periodNano = period*1000000000;
+	
+	//1. decay data integrity
+	double rsit = getEntityTag(jsonModel, intTag, s); 
+	if(rsit<0.5) { //get only low data tag integrity of subj 
+	    if(rsst>=0.5) {  //if subject is benign   
+		  if(age >= periodNano) {
+		    double decayRateIntTag = (rsit*period)+((1-period)*Tb); //add decay rate
+		    if(rsit<decayRateIntTag) { 
+			  jsonModel.removeAll(s, intTag, null);
+			  jsonModel.addLiteral(s, intTag, decayRateIntTag);
+	        }
+		  }    
+		} else {  //if subject is suspect 
+		  boolean rsEnv = getSuspEnvTag(jsonModel, suspEnv, s);
+		  if(rsEnv) { //if suspect in environment
+		    if(age >= periodNano) {
+		 	  double decayRateIntTag = (rsit*period)+((1-period)*Te);
+			  if(rsit<decayRateIntTag) {
+				 jsonModel.removeAll(s, intTag, null);
+				 jsonModel.addLiteral(s, intTag, decayRateIntTag);
+				}
+			 }
+		  }
+		} 
+	  }
+	//2. decay data confidentiality
+		double rsct = getEntityTag(jsonModel, confTag, s); 
+		if(rsct<0.5) { //get only low data tag integrity of subj 
+		    if(rsst>=0.5) {  //if subject is benign   
+			  if(age >= periodNano) {
+			    double decayRateConfTag = (rsct*period)+((1-period)*Tb); //add decay rate
+			    if(rsct<decayRateConfTag) { 
+				  jsonModel.removeAll(s, confTag, null);
+				  jsonModel.addLiteral(s, confTag, decayRateConfTag);
+		        }
+			  }    
+			} else {  //if subject is suspect 
+			  boolean rsEnv = getSuspEnvTag(jsonModel, suspEnv, s);
+			  if(rsEnv) { //if suspect in environment
+			    if(age >= periodNano) {
+			 	  double decayRateConfTag = (rsct*period)+((1-period)*Te);
+				  if(rsct<decayRateConfTag) {
+					 jsonModel.removeAll(s, confTag, null);
+					 jsonModel.addLiteral(s, confTag, decayRateConfTag);
+					}
+				 }
+			  }
+			} 
+		 }
+    }
 }
