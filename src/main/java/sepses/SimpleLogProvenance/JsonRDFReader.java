@@ -168,9 +168,12 @@ public class JsonRDFReader {
 	   }
 	       //end of folder
 	     System.out.println("Perform reasoning...");
-	     Reasoner reasoner = ReasonerRegistry.getOWLReasoner();
-	     reasoner = reasoner.bindSchema(RDFDataMgr.loadModel(ontology));
-	     InfModel infModel = ModelFactory.createInfModel(reasoner, jsonModel);
+	    // Reasoner reasoner = ReasonerRegistry.getOWLReasoner();
+	     //reasoner = reasoner.bindSchema(RDFDataMgr.loadModel(ontology));
+	     //InfModel infModel = ModelFactory.createInfModel(reasoner, jsonModel);
+	     InfModel infModel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), jsonModel);
+		    
+	     
 	     
 	     //detect alert from rule dir (i.e. sigma rule)
 	     AlertRule.generateAlertFromRuleDir(infModel,alertModel, ruledir);
