@@ -30,13 +30,13 @@ public class Main {
 	       ArrayList<String> confidentialdir= (ArrayList<String>) s.get("confidential-dir");
 	       
 		//=====commandline argument===========
-//		  Options options = new Options();
-//	      options.addOption("t", true, "Type of parser (elastic, darpa)");
-//	      options.addOption("f", true, "folder file location");
-//	      options.addOption("l", true, "line number to process for each iteration");
-//	      options.addOption("e", true, "sparql endpoint");
-//	      options.addOption("n", true, "namegraph");
-//	      options.addOption("sl", true, "starting line, default 0");
+		  Options options = new Options();
+	      options.addOption("t", true, "Type of parser (elastic, darpa)");
+	      options.addOption("f", true, "folder file location");
+	      options.addOption("l", true, "line number to process for each iteration");
+	      options.addOption("e", true, "sparql endpoint");
+	      options.addOption("n", true, "namegraph");
+	      options.addOption("sl", true, "starting line, default 0");
 	      
 	      CommandLineParser parser = new DefaultParser();
 	      CommandLine cmd = parser.parse(options, args); 
@@ -50,19 +50,19 @@ public class Main {
 	      
 	  	//====== only for experiment in IDE, please uncomment this lines when you compile ========= 
 	      
-	      type = "darpa";
-	      filefolder = inputdir+"darpa/";
-	  	  line = "100000";
-	      if(triplestore.equals("virtuoso")) {  	  
-	  	     sparqlEp ="http://localhost:8890/sparql";
-	      }else if(triplestore.equals("graphdb")){
-	  	     sparqlEp = "http://localhost:4000/repositories/RDFSTAR";
-	      }else {
-	  	    //default: graphdb	 
-	  	     sparqlEp = "http://localhost:4000/repositories/fd10000";
-	  	   }
-	      namegraph = "http://w3id.org/sepses/graph/fd10000";
-	  	  startingLine = "0";
+//	      type = "darpa";
+//	      filefolder = inputdir+"darpa/";
+//	  	  line = "100000";
+//	      if(triplestore.equals("virtuoso")) {  	  
+//	  	     sparqlEp ="http://localhost:8890/sparql";
+//	      }else if(triplestore.equals("graphdb")){
+//	  	     sparqlEp = "http://localhost:4000/repositories/RDFSTAR";
+//	      }else {
+//	  	    //default: graphdb	 
+//	  	     sparqlEp = "http://localhost:4000/repositories/fd10000";
+//	  	   }
+//	      namegraph = "http://w3id.org/sepses/graph/fd10000";
+//	  	  startingLine = "0";
 
 	  	  //=======end of experiment in IDE=============
 	    
