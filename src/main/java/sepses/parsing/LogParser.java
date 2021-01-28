@@ -231,7 +231,8 @@ public class LogParser {
 								 PropagationRule prop = new PropagationRule();
 								 
 									if(!stime.isEmpty()) {
-									   prop.putProcessTime(jsonModel, subject, process2, Long.parseLong(stime));
+										prop.putProcessTime(jsonModel, subject, exec, Long.parseLong(stime));
+										prop.putProcessTime(jsonModel, subject, process2, Long.parseLong(stime));
 									}
 								 
 									if(decayrule!="false") {
