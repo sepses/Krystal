@@ -30,13 +30,13 @@ public class Main {
 	       ArrayList<String> confidentialdir= (ArrayList<String>) s.get("confidential-dir");
 	       
 		//=====commandline argument===========
-		  Options options = new Options();
-	      options.addOption("t", true, "Type of parser (elastic, darpa)");
-	      options.addOption("f", true, "folder file location");
-	      options.addOption("l", true, "line number to process for each iteration");
-	      options.addOption("e", true, "sparql endpoint");
-	      options.addOption("n", true, "namegraph");
-	      options.addOption("sl", true, "starting line, default 0");
+//		  Options options = new Options();
+//	      options.addOption("t", true, "Type of parser (elastic, darpa)");
+//	      options.addOption("f", true, "folder file location");
+//	      options.addOption("l", true, "line number to process for each iteration");
+//	      options.addOption("e", true, "sparql endpoint");
+//	      options.addOption("n", true, "namegraph");
+//	      options.addOption("sl", true, "starting line, default 0");
 	      
 	      CommandLineParser parser = new DefaultParser();
 	      CommandLine cmd = parser.parse(options, args); 
