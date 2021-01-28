@@ -40,7 +40,7 @@ public class LogParser {
 			datumNode = jsonNode.get("datum");
 	}
 	
-	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject, String decayrule ) throws IOException{	
+	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject, HashMap<String, String> SubjectTime, String decayrule) throws IOException{	
 		//filter is the line is an event or not
 		eventNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.Event");
 		if(eventNode.toBoolean()) {
@@ -50,8 +50,17 @@ public class LogParser {
 				LogMapper lm = new LogMapper();	
 				subject = shortenUUID(eventNode.get("subject").get("com.bbn.tc.schema.avro.cdm18.UUID").toString(),uuIndex);
 				exec = eventNode.get("properties").get("map").get("exec").toString();
+				String stime = getSubjectTime(subject, SubjectTime);
+				long time = 0;
+				if(!stime.isEmpty()) {
+					time = Long.parseLong(stime);
+				}
+				//System.out.println(time);
+				
+					
+				
 				hostId = eventNode.get("hostId").toString();
-				int ts = eventNode.get("timestampNanos").toInt();
+				long ts = eventNode.get("timestampNanos").toLong();
 				String strTime = new Timestamp(ts/1000000).toString();
 				String timestamp = eventNode.get("timestampNanos").toString();
 				userId = getUserId(subject, UserObject);
@@ -111,11 +120,14 @@ public class LogParser {
 								storeEntity(objectString, File);
 								storeEntity(subject+"#"+exec, Process);
 						
-								
+				
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 								
 								PropagationRule prop = new PropagationRule();
+								
+								prop.putProcessTime(jsonModel, subject, exec, time);
+								
 								if(decayrule!="false") {
 									prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
 								}
@@ -148,6 +160,9 @@ public class LogParser {
 									jsonModel.read(targetReader, null, "N-TRIPLE");
 																
 									PropagationRule prop = new PropagationRule();
+									
+									prop.putProcessTime(jsonModel, subject, exec, time);
+									
 									if(decayrule!="false") {
 									  prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
 									}
@@ -211,6 +226,7 @@ public class LogParser {
 								 jsonModel.read(targetReader2, null, "N-TRIPLE");
 								 
 								 PropagationRule prop = new PropagationRule();
+								 prop.putProcessTime(jsonModel, subject, process2, time);
 									if(decayrule!="false") {
 									  prop.decayIndividualProcess(jsonModel,  subject+"#"+process2, ts, period, Tb, Te);
 									}
@@ -257,6 +273,8 @@ public class LogParser {
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 							
 								PropagationRule prop = new PropagationRule();
+								prop.putProcessTime(jsonModel, subject, exec, time);
+								
 								if(decayrule!="false") {
 								 prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
 								}
@@ -299,7 +317,7 @@ public class LogParser {
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 								
 								PropagationRule prop = new PropagationRule();
-								
+								prop.putProcessTime(jsonModel, subject, exec, time);
 								if(decayrule!="false") {
 									 prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
 									}
@@ -333,10 +351,9 @@ public class LogParser {
 			subject = shortenUUID(subjectNode.get("uuid").toString(),uuIndex); 
 			String userId = shortenUUID(subjectNode.get("localPrincipal").toString(),uuIndex); 
 			putNewUserObject(subject, userId, UserObject);
-			long time = subjectNode.get("startTimestampNanos").toLong();
-
-			PropagationRule prop = new PropagationRule();  //these are for deca
-			prop.putProcessTime(jsonModel, subject, exec, time);	
+			String time = subjectNode.get("startTimestampNanos").toString();
+			putNewSubjectTime(subject, time, SubjectTime);
+			
 			
 		}else if(datumNode.get("com.bbn.tc.schema.avro.cdm18.Principal").toBoolean()) {
 			
@@ -553,5 +570,25 @@ public class LogParser {
 	}
 	
 	
+	private  static void putNewSubjectTime(String subject, String time, HashMap<String, String> SubjectTime) {
+		//process
+		if(!subject.isEmpty() && !time.isEmpty()) {
+			if(!SubjectTime.containsKey(subject)) {
+				SubjectTime.put(subject, time);
+				
+			}
+		}
+		 
+	}
+	private  static String getSubjectTime(String subject, HashMap<String, String> SubjectTime) {
+		//process
+		String time="";
+		if(!subject.isEmpty()) {
+			if(SubjectTime.containsKey(subject)) {
+				time = SubjectTime.get(subject);
+			}
+		}
 	
+		 return time;	
+	}
 }

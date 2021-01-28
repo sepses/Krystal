@@ -70,6 +70,7 @@ public class JsonRDFReader {
 		HashMap<String, String> ForkObject = new HashMap<String, String>();
 		HashMap<String, String> UserObject = new HashMap<String, String>();
 		HashMap<String, String> SubjectCmd = new HashMap<String, String>();
+		HashMap<String, String> SubjectTime = new HashMap<String, String>();
 		HashMap<String, String> CloneObject = new HashMap<String, String>();
 		HashMap<String, String> RegistryObject = new HashMap<String, String>();
 		String lastAccess = "";
@@ -114,7 +115,7 @@ public class JsonRDFReader {
 									}else {
 										LogParser lp = new LogParser(line); //freebsd
 										lastAccess = lp.parseJSONtoRDF(jsonModel,alertModel,fieldfilter, confidentialdir, uuIndex, Process, File, 
-								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, decayrule);
+								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, SubjectTime, decayrule);
 									}
 									
 							} catch (Exception e) {
