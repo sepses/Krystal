@@ -40,7 +40,7 @@ public class LogParser {
 			datumNode = jsonNode.get("datum");
 	}
 	
-	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject ) throws IOException{	
+	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject, String decayrule ) throws IOException{	
 		//filter is the line is an event or not
 		eventNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.Event");
 		if(eventNode.toBoolean()) {
@@ -61,6 +61,12 @@ public class LogParser {
 				String fileMap = "";
 				String prevProcess="";
 				String networkMap="";
+				
+				//initial value for tag decay
+				double period = 0.25;
+				double Tb = 0.75;
+				double Te = 0.45;
+
 				
 				//is file new
 				if(isEntityNew(objectString, File)) {
@@ -109,10 +115,14 @@ public class LogParser {
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 								
-								//AlertRule alert = new AlertRule();
-								//alert.corruptFileAlert(jsonModel, subject+"#"+exec, objectString, timestamp);
-								
 								PropagationRule prop = new PropagationRule();
+								if(decayrule!="false") {
+									prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
+								}
+								
+								AlertRule alert = new AlertRule();
+								alert.corruptFileAlert(jsonModel, alertModel, subject+"#"+exec, objectString, strTime);
+								
 								prop.writeTag(jsonModel, subject, exec, objectString);
 								
 								lastAccess = curWrite;
@@ -138,6 +148,10 @@ public class LogParser {
 									jsonModel.read(targetReader, null, "N-TRIPLE");
 																
 									PropagationRule prop = new PropagationRule();
+									if(decayrule!="false") {
+									  prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
+									}
+								
 									prop.readTag(jsonModel, subject, exec, objectString);										
 									
 									lastAccess = curRead;
@@ -196,11 +210,14 @@ public class LogParser {
 								 Reader targetReader2 = new StringReader(mapper);
 								 jsonModel.read(targetReader2, null, "N-TRIPLE");
 								 
+								 PropagationRule prop = new PropagationRule();
+									if(decayrule!="false") {
+									  prop.decayIndividualProcess(jsonModel,  subject+"#"+process2, ts, period, Tb, Te);
+									}
+									
 								 AlertRule alert = new AlertRule();
 								 alert.execAlert(jsonModel,alertModel, subject+"#"+process2, objectString, strTime);
 								 
-								 
-								 PropagationRule prop = new PropagationRule();
 								 prop.execTag(jsonModel, subject, process2, objectString);
 						}	 
 						 
@@ -238,12 +255,15 @@ public class LogParser {
 								 
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");
-								
+							
+								PropagationRule prop = new PropagationRule();
+								if(decayrule!="false") {
+								 prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
+								}
+
 								AlertRule alert = new AlertRule();
 								alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, strTime);
 								
-								
-								PropagationRule prop = new PropagationRule();
 								prop.sendTag(jsonModel, subject, exec, IPAddress);
 								
 								lastAccess=curSend;
@@ -279,6 +299,11 @@ public class LogParser {
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 								
 								PropagationRule prop = new PropagationRule();
+								
+								if(decayrule!="false") {
+									 prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
+									}
+								
 								prop.receiveTag(jsonModel, subject, exec, IPAddress);
 								
 									lastAccess=curReceive;
@@ -308,7 +333,10 @@ public class LogParser {
 			subject = shortenUUID(subjectNode.get("uuid").toString(),uuIndex); 
 			String userId = shortenUUID(subjectNode.get("localPrincipal").toString(),uuIndex); 
 			putNewUserObject(subject, userId, UserObject);
-			
+			long time = subjectNode.get("startTimestampNanos").toLong();
+
+			PropagationRule prop = new PropagationRule();  //these are for deca
+			prop.putProcessTime(jsonModel, subject, exec, time);	
 			
 		}else if(datumNode.get("com.bbn.tc.schema.avro.cdm18.Principal").toBoolean()) {
 			

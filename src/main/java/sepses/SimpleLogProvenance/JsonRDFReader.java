@@ -114,7 +114,7 @@ public class JsonRDFReader {
 									}else {
 										LogParser lp = new LogParser(line); //freebsd
 										lastAccess = lp.parseJSONtoRDF(jsonModel,alertModel,fieldfilter, confidentialdir, uuIndex, Process, File, 
-								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject);
+								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, decayrule);
 									}
 									
 							} catch (Exception e) {
