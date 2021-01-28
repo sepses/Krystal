@@ -29,6 +29,7 @@ public class PropagationRule {
 	public Property suspEnv;
 	public Property timestamp;
 	public Property counter;
+	
 				
 	public PropagationRule() {
 		Model model = ModelFactory.createDefaultModel();		

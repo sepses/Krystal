@@ -40,7 +40,7 @@ public class LogParser {
 			datumNode = jsonNode.get("datum");
 	}
 	
-	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject, HashMap<String, String> SubjectTime, String decayrule) throws IOException{	
+	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject, HashMap<String, String> SubjectTime,  String decayrule) throws IOException{	
 		//filter is the line is an event or not
 		eventNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.Event");
 		if(eventNode.toBoolean()) {
@@ -51,10 +51,8 @@ public class LogParser {
 				subject = shortenUUID(eventNode.get("subject").get("com.bbn.tc.schema.avro.cdm18.UUID").toString(),uuIndex);
 				exec = eventNode.get("properties").get("map").get("exec").toString();
 				String stime = getSubjectTime(subject, SubjectTime);
-				long time = 0;
-				if(!stime.isEmpty()) {
-					time = Long.parseLong(stime);
-				}
+				
+
 				//System.out.println(time);
 				
 					
@@ -126,7 +124,10 @@ public class LogParser {
 								
 								PropagationRule prop = new PropagationRule();
 								
-								prop.putProcessTime(jsonModel, subject, exec, time);
+								
+								if(!stime.isEmpty()) {
+										prop.putProcessTime(jsonModel, subject, exec, Long.parseLong(stime));
+								}
 								
 								if(decayrule!="false") {
 									prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
@@ -161,7 +162,9 @@ public class LogParser {
 																
 									PropagationRule prop = new PropagationRule();
 									
-									prop.putProcessTime(jsonModel, subject, exec, time);
+									if(!stime.isEmpty()) {
+										prop.putProcessTime(jsonModel, subject, exec, Long.parseLong(stime));
+									}
 									
 									if(decayrule!="false") {
 									  prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
@@ -226,7 +229,11 @@ public class LogParser {
 								 jsonModel.read(targetReader2, null, "N-TRIPLE");
 								 
 								 PropagationRule prop = new PropagationRule();
-								 prop.putProcessTime(jsonModel, subject, process2, time);
+								 
+									if(!stime.isEmpty()) {
+									   prop.putProcessTime(jsonModel, subject, process2, Long.parseLong(stime));
+									}
+								 
 									if(decayrule!="false") {
 									  prop.decayIndividualProcess(jsonModel,  subject+"#"+process2, ts, period, Tb, Te);
 									}
@@ -273,8 +280,10 @@ public class LogParser {
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 							
 								PropagationRule prop = new PropagationRule();
-								prop.putProcessTime(jsonModel, subject, exec, time);
-								
+								if(!stime.isEmpty()) {
+										prop.putProcessTime(jsonModel, subject, exec, Long.parseLong(stime));
+									}
+						
 								if(decayrule!="false") {
 								 prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
 								}
@@ -317,7 +326,9 @@ public class LogParser {
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 								
 								PropagationRule prop = new PropagationRule();
-								prop.putProcessTime(jsonModel, subject, exec, time);
+								if(!stime.isEmpty()) {
+									prop.putProcessTime(jsonModel, subject, exec, Long.parseLong(stime));
+								}
 								if(decayrule!="false") {
 									 prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
 									}
@@ -580,6 +591,7 @@ public class LogParser {
 		}
 		 
 	}
+	
 	private  static String getSubjectTime(String subject, HashMap<String, String> SubjectTime) {
 		//process
 		String time="";
@@ -591,4 +603,6 @@ public class LogParser {
 	
 		 return time;	
 	}
+	
+	
 }
