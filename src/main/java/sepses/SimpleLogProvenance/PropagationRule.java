@@ -640,8 +640,7 @@ public void decayIndividualProcess(Model jsonModel, String proc,long timer, doub
 		double rsct = getEntityTag(jsonModel, confTag, s); 
 		if(rsct<0.5) { //get only low data tag integrity of subj 
 		    if(rsst>=0.5) {  //if subject is benign   
-			  if(age >= periodNano) {
-				  
+			  if(age >= periodNano) {		  
 			    double decayRateConfTag = (rsct*period)+((1-period)*Tb); //add decay rate
 			    if(rsct<decayRateConfTag) { 
 				  jsonModel.removeAll(s, confTag, null);

@@ -12,7 +12,7 @@ os-platform: linux
 
 triple-store: graphdb
 
-decay-rule: no
+decay-rule: yes
 
 live-store: no
 

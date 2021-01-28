@@ -1,73 +1,93 @@
 package sepses.SimpleLogProvenance;
 
 import java.util.ArrayList;
-
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
-import org.apache.jena.rdf.model.InfModel;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.riot.RDFDataMgr;
+import org.apache.jena.update.UpdateAction;
+import org.apache.jena.update.UpdateFactory;
+import org.apache.jena.update.UpdateRequest;
 
 public class AttackConstruction {
-	
-	public static void main(String[] args) {
+	public static void getMostWeightedAlert(Model jsonModel, Model alertModel){
 		
-		Model jsonModel = RDFDataMgr.loadModel("experiment/input/rdfsample/cadet31_output.ttl") ;
-		Model ontology = RDFDataMgr.loadModel("experiment/ontology/sepses-ontology.ttl");
-		InfModel infmodel = ModelFactory.createRDFSModel(ontology, jsonModel);
-		System.out.print(AttackGeneration(infmodel));
+		String q = "PREFIX sepses: <http://w3id.org/sepses/vocab/event/log#>\r\n"
+				+ "PREFIX rule: <http://w3id.org/sepses/vocab/rule#>\r\n" + 
+				"SELECT ?s WHERE { \r\n" + 
+				"	<< ?s ?p ?o >> rule:hasDetectedRule ?a\r\n" + 
+				"} \r\n";
 		
-	}
-	
-	public static String AttackGeneration(Model jsonModel){
+		    ArrayList<String> alert = new ArrayList<String>();
 		
-		String walert = getMostWeightedAlert(jsonModel);
-		String ralert = findRootAlert(jsonModel, walert);
-		String query = constructAttackGraph(jsonModel, ralert);
-		return query;
-	}
-	
-	public static String getMostWeightedAlert(Model jsonModel){
-		//get the most weighted alert
-		
-		String q = "PREFIX sepses: <http://w3id.org/sepses/ns/log#>\r\n"
-				+ "PREFIX rule: <http://w3id.org/sepses/ns/rule#>\r\n" + 
-				"select ?s (count (?s) as ?c) where { \r\n" + 
-				"   ?s a sepses:Process.\r\n" + 
-				"	<< ?s ?p ?o >> rule:hasAlert ?a\r\n" + 
-				"} group by ?s\r\n" + 
-				"order by DESC(?c)\r\n";
-		
-		
-		  	QueryExecution qe = QueryExecutionFactory.create(q, jsonModel);
+		  	QueryExecution qe = QueryExecutionFactory.create(q, alertModel);
 	        ResultSet rs = qe.execSelect();
+	        
 	        String s ="";
 	        
 	        while (rs.hasNext()) {
 	            QuerySolution qs = rs.nextSolution();
-	            RDFNode ns = qs.get("?s");
+	            RDFNode ns = qs.get("?s");            
 	            s = ns.toString();
-	          
+                alert.add(s);
 	        }
+	    	
+	       for(int i=0; i<alert.size();i++) {	    	   
+	    	   String rootAlert =  findRootAlert(alertModel.union(jsonModel), alert.get(i));
+	    	   addAlertWeighted(alertModel,rootAlert);
+	       
+	       }
+	       
+	       getMostWeightedAlert(alertModel);
 	        
-	        qe.close();
-	        return s;
 	}
 	
+	private static void getMostWeightedAlert(Model alertModel) {
+		String q = "PREFIX sepses: <http://w3id.org/sepses/vocab/event/log#>\r\n"
+				+ "PREFIX rule: <http://w3id.org/sepses/vocab/rule#>\r\n" + 
+				"SELECT ?s ?aw WHERE { \r\n" + 
+				"	<< ?s ?p ?o >> rule:hasDetectedRule ?a; \r\n"
+				+ "                rule:alertWeight ?aw \r\n" + 
+				"} ORDER by DESC(?aw)\r\n"
+				+ "LIMIT 5";
+		    
+		  	QueryExecution qe = QueryExecutionFactory.create(q, alertModel);
+	        ResultSet rs = qe.execSelect();
+	        while (rs.hasNext()) {
+	            QuerySolution qs = rs.nextSolution();
+	            RDFNode ns = qs.get("?s");            
+	            RDFNode nw = qs.get("?aw");            
+	            System.out.println(ns +" : "+nw);
+                
+	        }
+	
+	}
+
+	private static void addAlertWeighted(Model alertModel, String rootAlert) {
+		String q = "PREFIX sepses: <http://w3id.org/sepses/vocab/event/log#>\r\n"
+				+ "PREFIX rule: <http://w3id.org/sepses/vocab/rule#>\r\n" + 
+				  "DELETE { "+rootAlert+" rule:alertWeight ?aw.}\r\n"+
+				  "INSERT {"+rootAlert+"  rule:alertWeight ?naw.}\r\n"+
+				 "WHERE { \r\n" + 
+				  		rootAlert+" rule:alertWeight ?aw.\r\n"+
+				  		"BIND (?aw+1 as ?naw)"+
+				  		"} \r\n";
+		UpdateRequest execRequest = UpdateFactory.create(q);
+        UpdateAction.execute(execRequest,alertModel) ;
+	}
+
 	public static String findRootAlert(Model jsonModel, String source){
 		//perform backward search to find root alert
 		String root="";
 		if(!source.isEmpty()) {
-			String q ="PREFIX sepses: <http://w3id.org/sepses/ns/log#>\r\n"
-					+ "PREFIX rule: <http://w3id.org/sepses/ns/rule#>\r\n" + 
-					"   SELECT  ?s\r\n" + 
+			String q ="PREFIX sepses: <http://w3id.org/sepses/vocab/event/log#>\r\n"
+					+ "PREFIX rule: <http://w3id.org/sepses/vocab/rule#>\r\n" + 
+					"   SELECT  ?s ?p ?o \r\n" + 
 					"     WHERE {  \r\n" + 
-					"     <"+source+"> ^sepses:connects* ?s .\r\n" + 
-					"    <<?s ?p ?o>> rule:hasAlert ?alert . \r\n" + 
+					"     <"+source+"> ^sepses:provRel* ?s .\r\n" + 
+					"    <<?s ?p ?o>> rule:hasDetectedRule ?alert . \r\n" + 
 					"    \r\n" + 
 					"}";
 		
@@ -77,8 +97,12 @@ public class AttackConstruction {
 		    while (rs.hasNext()) {
 		        QuerySolution qs = rs.nextSolution();
 		        RDFNode ns = qs.get("?s");
-		        s.add(ns.toString());
+		        RDFNode np = qs.get("?p");
+		        RDFNode no = qs.get("?o");
+		        String rdf = "<< <"+ns.toString()+"> <"+np.toString()+"> <"+no.toString()+"> >>";
+		        s.add(rdf);
 		    }
+		    
 		    qe.close();
 		    if(s.size()==1) {
 		    	root = s.get(0);
@@ -90,29 +114,5 @@ public class AttackConstruction {
 		 }
     return root;
    }
-	
-	public static String constructAttackGraph(Model jsonModel, String source){
-		//perform forward search to construct attack graph
-		if(!source.isEmpty()) {
-		String q = "PREFIX sepses: <http://w3id.org/sepses/ns/log#>\r\n"
-				+ "PREFIX rule: <http://w3id.org/sepses/ns/rule#>\r\n" + 
-				"   CONSTRUCT {?s ?p ?o. ?s2 ?p2 ?s}\r\n" + 
-				"     WHERE {  \r\n" + 
-				"     <"+source+"> sepses:connects* ?s .\r\n" + 
-				"      ?s ?p ?o.\r\n" + 
-				"    OPTIONAL {?s2 ?p2 ?s. ?s2 sepses:confTag ?sct. \r\n" + 
-				"              FILTER (?sct < 0.5 && ?p2!=sepses:connects)\r\n" + 
-				"}\r\n" + 
-				"      ?s  rule:intTag ?spt.\r\n" + 
-				" 	  ?o rule:intTag ?opt.\r\n" + 
-				"   	FILTER ( \r\n" + 
-				"        ?spt < 0.5 && ?opt < 0.5  && ?p!=sepses:connects)\r\n" + 
-				"    \r\n" + 
-				"}";
-		return q;
-	  }else {
-		return "no alert";
-	  }
-	}
-	
+
 }

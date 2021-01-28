@@ -171,13 +171,15 @@ public class JsonRDFReader {
 	     reasoner = reasoner.bindSchema(RDFDataMgr.loadModel(ontology));
 	     InfModel infModel = ModelFactory.createInfModel(reasoner, jsonModel);
 	     
-		 //InfModel infModel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), inf);
-			
+	     //detect alert from rule dir (i.e. sigma rule)
+	     AlertRule.generateAlertFromRuleDir(infModel,alertModel, ruledir);
+		  
+	     System.out.println("Finish!, get the primary alarm.. ");
+	     AttackConstruction.getMostWeightedAlert(infModel,alertModel);
+		     
 	     if(backupfile!="false") {
-			 	String rdfFile = Utility.saveToRDF(infModel, outputdir, namegraph);
+	    	 	String rdfFile = Utility.saveToRDF(infModel, outputdir, namegraph);
 				//Utility.exportHDT(rdfFile, outputdir, namegraph);
-				//detect alert from rule dir (i.e. sigma rule)
-				AlertRule.generateAlertFromRuleDir(infModel,alertModel, ruledir);
 				String alertFile = Utility.saveToRDF(alertModel, outputdir, namegraph+"_alert");
 				if(livestore=="false") {
 					Utility.storeFileInRepo(triplestore, rdfFile, sparqlEp, namegraph, "dba", "dba");
@@ -185,21 +187,6 @@ public class JsonRDFReader {
 				}	
 			} 
 	   
-	  System.out.println("Finish!, Generating query for attack construction.. ");
- 	  //generate query for attack construction
-	  String q = AttackConstruction.AttackGeneration(infModel.union(alertModel));
-	  
-	  System.out.println(q);
-	  
-	  
-	  
 	}
 
-	
-
-
-
-
-
-	
 }

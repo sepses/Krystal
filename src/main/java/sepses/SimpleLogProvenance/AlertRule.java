@@ -34,7 +34,7 @@ public class AlertRule {
 				+ "PREFIX rule: <http://w3id.org/sepses/vocab/rule#>\r\n";
 		timestamp = "<http://w3id.org/sepses/vocab/event/log#timestamp>";
 		
-	}
+	}	
 	
 	public void execAlert(Model jsonModel, Model alertModel, String proc, String objectString, String ts) {
 		process = "<http://w3id.org/sepses/resource/proc"+proc+">";
@@ -43,7 +43,9 @@ public class AlertRule {
 		
 		String q ="CONSTRUCT { << "+file+" sepses:isExecutedBy "+process+" >> "
 					+ "rule:hasDetectedRule <http://w3id.org/sepses/resource/rule/exec-rule>; \r\n"
-					+ "			             sepses:timestamp "+time+"."
+					+ "rule:alertWeight 0; \r\n"
+					+ "			             sepses:timestamp "+time+".\r\n"
+					+file+" sepses:isExecutedBy "+process
 						+ " \r\n}"+
 				   "WHERE { \r\n" + 
 				    file+" rule:intTag  ?oit.\r\n"+
@@ -69,7 +71,9 @@ public class AlertRule {
 		
 		String q ="CONSTRUCT { << "+process+" sepses:sends "+network+" >> "
 								+ "rule:hasDetectedRule <http://w3id.org/sepses/resource/rule/data-leak-rule>; \r\n"+
-								"sepses:timestamp "+time+"."+
+								   "rule:alertWeight 0; \r\n"+
+								"sepses:timestamp "+time+".\r\n"+
+								process+" sepses:sends "+network+
 						   " \r\n}"+
 				"WHERE { \r\n" + 
 				    network+" rule:confTag  ?oct.\r\n"+
@@ -95,7 +99,9 @@ public class AlertRule {
 		
 		String q ="CONSTRUCT { << "+process+" sepses:writes "+file+" >> "
 								+ "rule:hasDetectedRule <http://w3id.org/sepses/resource/rule/corrupt-file-rule>;\r\n"+
-						  			"sepses:timestamp "+time+"."+
+								  "rule:alertWeight 0; \r\n"+
+						  			"sepses:timestamp "+time+".\r\n"+
+						  			process+" sepses:writes "+file+
 						   " \r\n}"+
 				   "WHERE { \r\n" + 
 				    file+" rule:intTag  ?oit.\r\n"+
