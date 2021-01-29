@@ -59,6 +59,7 @@ public class LogParserLinux {
 			    String subjCmd = getSubjectCmd(subject, SubjectCmd);
 			    exec = getExecFromCmdLine(subjCmd);
 				long ts = eventNode.get("timestampNanos").toLong();
+				String sts = eventNode.get("timestampNanos").toString();
 				String strTime = new Timestamp(ts/1000000).toString();
 				userId = getUserId(subject, UserObject);
 				object = shortenUUID(eventNode.get("predicateObject").get("com.bbn.tc.schema.avro.cdm18.UUID").toString(),uuIndex);
@@ -90,7 +91,7 @@ public class LogParserLinux {
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 		
 								AlertRule alert = new AlertRule();
-								alert.corruptFileAlert(jsonModel, alertModel, subject+"#"+exec, fileName, strTime);
+								alert.corruptFileAlert(jsonModel, alertModel, subject+"#"+exec, fileName, sts);
 
 								prop.writeTag(jsonModel, subject, exec, fileName);
 								
@@ -142,7 +143,7 @@ public class LogParserLinux {
 							}
 							
 							AlertRule alert = new AlertRule();
-							alert.execAlert(jsonModel,alertModel, subject+"#"+newExec, fileName, strTime);
+							alert.execAlert(jsonModel,alertModel, subject+"#"+newExec, fileName, sts);
 							
 							prop.execTag(jsonModel, subject, newExec, fileName);	
 							
@@ -169,7 +170,7 @@ public class LogParserLinux {
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 								
 								AlertRule alert = new AlertRule();
-								alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, strTime);
+								alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
 								
 								prop.sendTag(jsonModel, subject, exec, IPAddress);
 								lastAccess=curSend;

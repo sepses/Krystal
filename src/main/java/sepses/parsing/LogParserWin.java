@@ -57,7 +57,8 @@ public class LogParserWin {
 				
 				hostId = eventNode.get("hostId").toString();
 				int ts = eventNode.get("timestampNanos").toInt();
-				String strTime = new Timestamp(ts/1000000).toString();
+				String sts = eventNode.get("timestampNanos").toString();
+				
 				String timestamp = eventNode.get("timestampNanos").toString();
 				userId = getUserId(subject, UserObject);
 				objectString = cleanLine(eventNode.get("predicateObjectPath").get("string").toString());	
@@ -65,7 +66,7 @@ public class LogParserWin {
 				String processMap = "";
 				String fileMap = "";
 				String networkMap="";
-				String registryMap="";
+				
 				
 				//is file new
 				if(isEntityNew(objectString, File)) {
@@ -222,7 +223,7 @@ public class LogParserWin {
 									 jsonModel.read(targetReader2, null, "N-TRIPLE");
 									 
 									AlertRule alert = new AlertRule();
-									 alert.execAlert(jsonModel,alertModel, subject+"#"+exec, objectString, strTime);
+									 alert.execAlert(jsonModel,alertModel, subject+"#"+exec, objectString, sts);
 									 
 									 
 									 
@@ -252,7 +253,7 @@ public class LogParserWin {
 									 jsonModel.read(targetReader2, null, "N-TRIPLE");
 									 
 									AlertRule alert = new AlertRule();
-									alert.execAlert(jsonModel,alertModel, subject+"#"+exec, objectString, strTime);
+									alert.execAlert(jsonModel,alertModel, subject+"#"+exec, objectString, sts);
 									 
 									 
 									 PropagationRule prop = new PropagationRule();
@@ -301,7 +302,7 @@ public class LogParserWin {
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 								
 								AlertRule alert = new AlertRule();
-								alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, strTime);
+								alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
 								
 								
 								

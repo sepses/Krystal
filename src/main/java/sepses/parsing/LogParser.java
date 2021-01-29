@@ -134,7 +134,7 @@ public class LogParser {
 								
 								
 								AlertRule alert = new AlertRule();
-								alert.corruptFileAlert(jsonModel, alertModel, subject+"#"+exec, objectString, strTime);
+								alert.corruptFileAlert(jsonModel, alertModel, subject+"#"+exec, objectString, sts);
 								
 								prop.writeTag(jsonModel, subject, exec, objectString);
 								
@@ -216,7 +216,7 @@ public class LogParser {
 									}
 									
 								 AlertRule alert = new AlertRule();
-								 alert.execAlert(jsonModel,alertModel, subject+"#"+process2, objectString, strTime);
+								 alert.execAlert(jsonModel,alertModel, subject+"#"+process2, objectString, sts);
 								 
 								 prop.execTag(jsonModel, subject, process2, objectString);
 						}	 
@@ -255,7 +255,7 @@ public class LogParser {
 													
 								
 								AlertRule alert = new AlertRule();
-								alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, strTime);
+								alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
 								
 								prop.sendTag(jsonModel, subject, exec, IPAddress);
 								

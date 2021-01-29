@@ -5,19 +5,30 @@ import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.InfModel;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.update.UpdateAction;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
 
 public class AttackConstruction {
+	
+	public static void main(String[] args) {
+		
+		Model alertModel = RDFDataMgr.loadModel("experiment/output/fd10000_alert_output.ttl") ;
+		Model jsonModel = RDFDataMgr.loadModel("experiment/output/fd10000_output.ttl") ;
+		getMostWeightedAlert(jsonModel,alertModel);
+		
+	}
 	public static void getMostWeightedAlert(Model jsonModel, Model alertModel){
 		
 		String q = "PREFIX sepses: <http://w3id.org/sepses/vocab/event/log#>\r\n"
 				+ "PREFIX rule: <http://w3id.org/sepses/vocab/rule#>\r\n" + 
 				"SELECT ?s WHERE { \r\n" + 
-				"	<< ?s ?p ?o >> rule:hasDetectedRule ?a\r\n" + 
+				"	<< ?s ?p ?o >> rule:hasDetectedRule ?a;\r\n"
+				+ "				   rule:alertType \"internal\". \r\n" + 
 				"} \r\n";
 		
 		    ArrayList<String> alert = new ArrayList<String>();
@@ -34,12 +45,12 @@ public class AttackConstruction {
                 alert.add(s);
 	        }
 	    	
-	       for(int i=0; i<alert.size();i++) {	    	   
+	       for(int i=0; i<alert.size();i++) {
 	    	   String rootAlert =  findRootAlert(alertModel.union(jsonModel), alert.get(i));
 	    	   addAlertWeighted(alertModel,rootAlert);
-	       
 	       }
 	       
+	       System.out.println("get most weighted alarm!");
 	       getMostWeightedAlert(alertModel);
 	        
 	}
@@ -66,16 +77,19 @@ public class AttackConstruction {
 	}
 
 	private static void addAlertWeighted(Model alertModel, String rootAlert) {
-		String q = "PREFIX sepses: <http://w3id.org/sepses/vocab/event/log#>\r\n"
-				+ "PREFIX rule: <http://w3id.org/sepses/vocab/rule#>\r\n" + 
-				  "DELETE { "+rootAlert+" rule:alertWeight ?aw.}\r\n"+
-				  "INSERT {"+rootAlert+"  rule:alertWeight ?naw.}\r\n"+
-				 "WHERE { \r\n" + 
-				  		rootAlert+" rule:alertWeight ?aw.\r\n"+
-				  		"BIND (?aw+1 as ?naw)"+
-				  		"} \r\n";
-		UpdateRequest execRequest = UpdateFactory.create(q);
-        UpdateAction.execute(execRequest,alertModel) ;
+		//System.out.println("add weigh on alert "+rootAlert);
+		if(!rootAlert.isEmpty()) {
+			String q = "PREFIX sepses: <http://w3id.org/sepses/vocab/event/log#>\r\n"
+					+ "PREFIX rule: <http://w3id.org/sepses/vocab/rule#>\r\n" + 
+					  "DELETE { "+rootAlert+" rule:alertWeight ?aw.}\r\n"+
+					  "INSERT {"+rootAlert+"  rule:alertWeight ?naw.}\r\n"+
+					 "WHERE { \r\n" + 
+					  		rootAlert+" rule:alertWeight ?aw.\r\n"+
+					  		"BIND (?aw+1 as ?naw)"+
+					  		"} \r\n";
+			UpdateRequest execRequest = UpdateFactory.create(q);
+	        UpdateAction.execute(execRequest,alertModel) ;
+		}
 	}
 
 	public static String findRootAlert(Model jsonModel, String source){

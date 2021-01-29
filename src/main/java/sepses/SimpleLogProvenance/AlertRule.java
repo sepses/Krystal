@@ -34,6 +34,7 @@ public class AlertRule {
 				+ "PREFIX rule: <http://w3id.org/sepses/vocab/rule#>\r\n";
 		timestamp = "<http://w3id.org/sepses/vocab/event/log#timestamp>";
 		
+		
 	}	
 
 
@@ -41,12 +42,13 @@ public class AlertRule {
 	public void execAlert(Model jsonModel, Model alertModel, String proc, String objectString, String ts) {
 		process = "<http://w3id.org/sepses/resource/proc"+proc+">";
 		file = "<http://w3id.org/sepses/resource/file#"+objectString+">";
-		String time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#timestamp>";
+		String time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#long>";
 		
 		String q ="CONSTRUCT { << "+file+" sepses:isExecutedBy "+process+" >> "
 					+ "rule:hasDetectedRule <http://w3id.org/sepses/resource/rule/exec-rule>; \r\n"
 					+ "rule:alertWeight 0; \r\n"
-					+ "			             sepses:timestamp "+time+".\r\n"
+					+ "rule:timestamp "+time+";\r\n"
+					+ "rule:alertType \"internal\" .\r\n"
 					+file+" sepses:isExecutedBy "+process
 						+ " \r\n}"+
 				   "WHERE { \r\n" + 
@@ -69,12 +71,13 @@ public class AlertRule {
 		
 		process = "<http://w3id.org/sepses/resource/proc"+proc+">";
 		network = "<http://w3id.org/sepses/resource/soc#"+net+">";
-		String time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#timestamp>";
+		String time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#long>";
 		
 		String q ="CONSTRUCT { << "+process+" sepses:sends "+network+" >> "
 								+ "rule:hasDetectedRule <http://w3id.org/sepses/resource/rule/data-leak-rule>; \r\n"+
 								   "rule:alertWeight 0; \r\n"+
-								"sepses:timestamp "+time+".\r\n"+
+								"rule:timestamp "+time+";\r\n"+
+								 "rule:alertType \"internal\" .\r\n"+
 								process+" sepses:sends "+network+
 						   " \r\n}"+
 				"WHERE { \r\n" + 
@@ -97,12 +100,13 @@ public class AlertRule {
 	public void corruptFileAlert(Model jsonModel, Model alertModel, String proc, String objectString, String ts) {
 		process = "<http://w3id.org/sepses/resource/proc"+proc+">";
 		file = "<http://w3id.org/sepses/resource/file#"+objectString+">";
-		String time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#timestamp>";
+		String time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#long>";
 		
 		String q ="CONSTRUCT { << "+process+" sepses:writes "+file+" >> "
 								+ "rule:hasDetectedRule <http://w3id.org/sepses/resource/rule/corrupt-file-rule>;\r\n"+
 								  "rule:alertWeight 0; \r\n"+
-						  			"sepses:timestamp "+time+".\r\n"+
+						  			"sepses:timestamp "+time+";\r\n"+
+						  			 "rule:alertType \"internal\" .\r\n"+
 						  			process+" sepses:writes "+file+
 						   " \r\n}"+
 				   "WHERE { \r\n" + 
