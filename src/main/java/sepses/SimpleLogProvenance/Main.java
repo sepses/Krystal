@@ -75,6 +75,7 @@ public class Main {
 	  	  //clean tdb dir
 	  	  Utility.deleteFileInDirectory(tdbdir);
 	      
+	  	  System.out.println("Star running "+osplatform+" parser...");
 	      JsonRDFReader.readJson(type, filefolder, line, sparqlEp, namegraph, startingLine, 
 	    		  outputdir, inputdir, triplestore, backupfile, fieldfilter,
 	    		  livestore, confidentialdir, tdbdir, ontology, ruledir, osplatform, decayrule);

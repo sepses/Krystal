@@ -84,7 +84,7 @@ public class LogParser {
 				double Te = 0.45;
 				
 				if(decayrule!="false") {
-					if(ts!=0){
+					if(ts!=0 && !eventType.contains("EVENT_FORK")){
 						prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
 					}
 				}

@@ -71,9 +71,12 @@ public class LogParserLinux {
 				double Tb = 0.75;
 				double Te = 0.45;
 				
-				if(decayrule!="false") {
-					  prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
-					}
+				if (decayrule!="false") {
+				  if(ts!=0 && !eventType.contains("EVENT_CLONE")) {
+					prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
+				   }
+				}
+				
 				
 				  if(eventType.contains("EVENT_WRITE")) {
 					 

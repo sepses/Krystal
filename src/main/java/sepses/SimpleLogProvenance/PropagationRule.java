@@ -621,9 +621,7 @@ public void decayIndividualProcess(Model jsonModel, String proc,long timer, doub
 			  jsonModel.removeAll(s, intTag, null);
 			  jsonModel.addLiteral(s, intTag, decayRateIntTag);
 	        }
-		  }else {
-			 // System.out.println(s+" not adult ! "+age);
-		  }    
+		  }
 		} else {  //if subject is suspect 
 		  boolean rsEnv = getSuspEnvTag(jsonModel, suspEnv, s);
 		  if(rsEnv) { //if suspect in environment
@@ -647,8 +645,6 @@ public void decayIndividualProcess(Model jsonModel, String proc,long timer, doub
 				  jsonModel.removeAll(s, confTag, null);
 				  jsonModel.addLiteral(s, confTag, decayRateConfTag);
 		        }
-			  }else {
-				  //System.out.println("benign not adult yet!");
 			  }    
 			} else {  //if subject is suspect 
 			  boolean rsEnv = getSuspEnvTag(jsonModel, suspEnv, s);
@@ -659,9 +655,7 @@ public void decayIndividualProcess(Model jsonModel, String proc,long timer, doub
 					 jsonModel.removeAll(s, confTag, null);
 					 jsonModel.addLiteral(s, confTag, decayRateConfTag);
 					}
-				 }else {
-					 // System.out.println("suspect not adult yet!");
-				  }    
+				 }   
 			  }
 			} 
 		 }

@@ -3,4 +3,5 @@
 #/experiment/query
 /experiment/tdb
 /experiment/output
+/config.yaml
 /target
