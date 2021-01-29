@@ -50,17 +50,24 @@ public class LogParser {
 				LogMapper lm = new LogMapper();	
 				subject = shortenUUID(eventNode.get("subject").get("com.bbn.tc.schema.avro.cdm18.UUID").toString(),uuIndex);
 				exec = eventNode.get("properties").get("map").get("exec").toString();
-				String stime = getSubjectTime(subject, SubjectTime);
-				
-
-				//System.out.println(time);
-				
-					
-				
 				hostId = eventNode.get("hostId").toString();
 				long ts = eventNode.get("timestampNanos").toLong();
+				String sts = eventNode.get("timestampNanos").toString();
+				
 				String strTime = new Timestamp(ts/1000000).toString();
 				String timestamp = eventNode.get("timestampNanos").toString();
+				String stime = getSubjectTime(subject, SubjectTime);
+				
+				PropagationRule prop = new PropagationRule();
+				if(!stime.isEmpty()) {
+					prop.putProcessTime(jsonModel, subject, exec, Long.parseLong(stime));
+				}else {
+					putNewSubjectTime(subject, sts, SubjectTime);
+					String nstime = getSubjectTime(subject, SubjectTime);
+					prop.putProcessTime(jsonModel, subject, exec, Long.parseLong(nstime));
+				}
+			
+				
 				userId = getUserId(subject, UserObject);
 				objectString = cleanLine(eventNode.get("predicateObjectPath").get("string").toString());	
 				object = shortenUUID(eventNode.get("predicateObject").get("com.bbn.tc.schema.avro.cdm18.UUID").toString(),uuIndex);
@@ -104,30 +111,19 @@ public class LogParser {
 					
 				}
 				
-				
 				  if(eventType.contains("EVENT_WRITE")) {
 					  
 						if(objectString!="" && !objectString.contains("<unknown>")) {
 							String curWrite = subject+exec+objectString+"write";
 							if	(!lastAccess.contains(curWrite)) {				
-								
-								
-								
-								mapper = lm.writeMap(subject,exec,objectString,hostId,userId, timestamp)+fileMap+processMap;
+						
+								 mapper = lm.writeMap(subject,exec,objectString,hostId,userId, timestamp)+fileMap+processMap;
 								
 								storeEntity(objectString, File);
 								storeEntity(subject+"#"+exec, Process);
 						
-				
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");
-								
-								PropagationRule prop = new PropagationRule();
-								
-								
-								if(!stime.isEmpty()) {
-										prop.putProcessTime(jsonModel, subject, exec, Long.parseLong(stime));
-								}
 								
 								if(decayrule!="false") {
 									prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
@@ -139,9 +135,6 @@ public class LogParser {
 								prop.writeTag(jsonModel, subject, exec, objectString);
 								
 								lastAccess = curWrite;
-								
-								//System.out.println("write: "+curWrite);
-								
 								
 							}
 					  }
@@ -159,12 +152,7 @@ public class LogParser {
 									
 									Reader targetReader = new StringReader(mapper);
 									jsonModel.read(targetReader, null, "N-TRIPLE");
-																
-									PropagationRule prop = new PropagationRule();
 									
-									if(!stime.isEmpty()) {
-										prop.putProcessTime(jsonModel, subject, exec, Long.parseLong(stime));
-									}
 									
 									if(decayrule!="false") {
 									  prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
@@ -174,7 +162,6 @@ public class LogParser {
 									
 									lastAccess = curRead;
 									
-									//System.out.println("read: "+curRead);
 								}
 							}
 					
@@ -228,13 +215,9 @@ public class LogParser {
 								 Reader targetReader2 = new StringReader(mapper);
 								 jsonModel.read(targetReader2, null, "N-TRIPLE");
 								 
-								 PropagationRule prop = new PropagationRule();
-								 
-									if(!stime.isEmpty()) {
-										prop.putProcessTime(jsonModel, subject, exec, Long.parseLong(stime));
+								 if(!stime.isEmpty()) {
 										prop.putProcessTime(jsonModel, subject, process2, Long.parseLong(stime));
-									}
-								 
+								}
 									if(decayrule!="false") {
 									  prop.decayIndividualProcess(jsonModel,  subject+"#"+process2, ts, period, Tb, Te);
 									}
@@ -251,7 +234,7 @@ public class LogParser {
 						putNewForkObject(subject+"#"+exec, object, ForkObject);
 						
 						storeEntity(subject+"#"+exec, Process);
-					
+						
 						// System.out.println("fork");
 						Reader targetReader = new StringReader(processMap);
 						jsonModel.read(targetReader, null, "N-TRIPLE");
@@ -280,10 +263,6 @@ public class LogParser {
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 							
-								PropagationRule prop = new PropagationRule();
-								if(!stime.isEmpty()) {
-										prop.putProcessTime(jsonModel, subject, exec, Long.parseLong(stime));
-									}
 						
 								if(decayrule!="false") {
 								 prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
@@ -326,10 +305,6 @@ public class LogParser {
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 								
-								PropagationRule prop = new PropagationRule();
-								if(!stime.isEmpty()) {
-									prop.putProcessTime(jsonModel, subject, exec, Long.parseLong(stime));
-								}
 								if(decayrule!="false") {
 									 prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
 									}
@@ -364,7 +339,10 @@ public class LogParser {
 			String userId = shortenUUID(subjectNode.get("localPrincipal").toString(),uuIndex); 
 			putNewUserObject(subject, userId, UserObject);
 			String time = subjectNode.get("startTimestampNanos").toString();
-			putNewSubjectTime(subject, time, SubjectTime);
+			if(!time.equals("0")  && !time.equals("")) {
+				//System.out.println(subject+" : "+time);
+				putNewSubjectTime(subject, time, SubjectTime);
+			}
 			
 			
 		}else if(datumNode.get("com.bbn.tc.schema.avro.cdm18.Principal").toBoolean()) {

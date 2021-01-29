@@ -532,8 +532,6 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 	//=============add time for subject======================
 	public void putProcessTime(Model jsonModel, String subject, String exec, long ts) {
 		process = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
-		
-		
 		Resource respro = jsonModel.createResource(process);		
 	    jsonModel.removeAll(respro, timestamp, null);
 	    jsonModel.addLiteral(respro, timestamp, ts);
@@ -665,5 +663,6 @@ public void decayIndividualProcess(Model jsonModel, String proc,long timer, doub
 			  }
 			} 
 		 }
-    }
+    
+  }
 }

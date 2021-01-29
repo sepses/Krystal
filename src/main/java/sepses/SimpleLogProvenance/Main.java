@@ -49,7 +49,7 @@ public class Main {
 	    //=====end commandline argument===========
 	      
 	  	//====== only for experiment in IDE, please uncomment this lines when you compile ========= 
-	      
+
 //	      type = "darpa";
 //	      filefolder = inputdir+"darpa/";
 //	  	  line = "100000";
