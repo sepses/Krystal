@@ -178,8 +178,6 @@ public class JsonRDFReader {
 	         
 	     if(backupfile!="false") {
 	    	 	String rdfFile = Utility.saveToRDF(infModel, outputdir, namegraph);
-				System.out.println("Finish!, get the primary alarm.. ");
-			    AttackConstruction.getMostWeightedAlert(infModel,alertModel);
 			    String alertFile = Utility.saveToRDF(alertModel, outputdir, namegraph+"_alert");
 			    Utility.exportHDT(rdfFile, outputdir, namegraph);
 				if(livestore=="false") {
@@ -187,6 +185,10 @@ public class JsonRDFReader {
 					//Utility.storeFileInRepo(triplestore, alertFile, sparqlEp, namegraph, "dba", "dba");
 				}	
 			} 
+	     
+	   System.out.println("Finish!, get the primary alarm.. ");
+	   AttackConstruction.getMostWeightedAlert(infModel,alertModel);
+	
 	   Statistic.countAlarm(alertModel);
 	}
 
