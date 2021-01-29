@@ -179,7 +179,7 @@ public class JsonRDFReader {
 	     AlertRule.generateAlertFromRuleDir(infModel,alertModel, ruledir);
 		  
 	     System.out.println("Finish!, get the primary alarm.. ");
-	     //AttackConstruction.getMostWeightedAlert(infModel,alertModel);
+	     AttackConstruction.getMostWeightedAlert(infModel,alertModel);
 		     
 	     if(backupfile!="false") {
 	    	 	String rdfFile = Utility.saveToRDF(infModel, outputdir, namegraph);
