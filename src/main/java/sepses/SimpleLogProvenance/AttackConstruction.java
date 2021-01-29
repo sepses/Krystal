@@ -1,6 +1,8 @@
 package sepses.SimpleLogProvenance;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.*; 
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QuerySolution;
@@ -23,6 +25,8 @@ public class AttackConstruction {
 		
 	}
 	public static void getMostWeightedAlert(Model jsonModel, Model alertModel){
+		  HashMap<String, Integer> alertCount = new HashMap<String, Integer>();
+		
 		System.out.println("Start attack construction");
 		String q = "PREFIX sepses: <http://w3id.org/sepses/vocab/event/log#>\r\n"
 				+ "PREFIX rule: <http://w3id.org/sepses/vocab/rule#>\r\n" + 
@@ -48,10 +52,11 @@ public class AttackConstruction {
 	       for(int i=0; i<alert.size();i++) {
 	    	   String rootAlert =  findRootAlert(alertModel.union(jsonModel), alert.get(i));
 	    	   addAlertWeighted(alertModel,rootAlert);
+	    	   //accumulateAlertWeight(rootAlert, alertCount);
 	       }
 	       
 	       System.out.println("get most weighted alarm!");
-	       getMostWeightedAlert(alertModel);
+	        getMostWeightedAlert(alertModel);
 	        
 	}
 	
@@ -77,6 +82,26 @@ public class AttackConstruction {
 	
 	}
 
+	private static  void accumulateAlertWeight(String process, HashMap<String, Integer> alertCount) {
+		System.out.println(process);
+		if(!process.isEmpty()) {
+			if(alertCount.containsKey(process)) {
+				int w = alertCount.get(process);
+				alertCount.remove(process);
+				alertCount.put(process, w+1);
+			}
+		}
+	}
+	
+	private static void printTopProcess(HashMap<String, Integer> alertCount) {
+		Map<String, Integer> hm1 = sortByValue(alertCount); 
+		  
+        // print the sorted hashmap 
+        for (Map.Entry<String, Integer> en : hm1.entrySet()) { 
+            System.out.println("Key = " + en.getKey() +  
+                          ", Value = " + en.getValue()); 
+        } 
+	}
 	private static void addAlertWeighted(Model alertModel, String rootAlert) {
 		//System.out.println("add weigh on alert "+rootAlert);
 		if(!rootAlert.isEmpty()) {
@@ -130,4 +155,30 @@ public class AttackConstruction {
     return root;
    }
 
+	
+	
+	// function to sort hashmap by values 
+    public static HashMap<String, Integer> sortByValue(HashMap<String, Integer> hm) 
+    { 
+        // Create a list from elements of HashMap 
+        List<Map.Entry<String, Integer> > list = 
+               new LinkedList<Map.Entry<String, Integer> >(hm.entrySet()); 
+  
+        // Sort the list 
+        Collections.sort(list, new Comparator<Map.Entry<String, Integer> >() { 
+            public int compare(Map.Entry<String, Integer> o1,  
+                               Map.Entry<String, Integer> o2) 
+            { 
+                return (o1.getValue()).compareTo(o2.getValue()); 
+            } 
+        }); 
+          
+        // put data from sorted list to hashmap  
+        HashMap<String, Integer> temp = new LinkedHashMap<String, Integer>(); 
+        for (Map.Entry<String, Integer> aa : list) { 
+            temp.put(aa.getKey(), aa.getValue()); 
+        } 
+        return temp; 
+    } 
+  
 }
