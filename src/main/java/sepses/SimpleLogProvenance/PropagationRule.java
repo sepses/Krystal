@@ -52,9 +52,11 @@ public class PropagationRule {
 	
 	
 	
-	public void readTag(Model jsonModel, String subject, String exec, String objectString) {
-		intRead(jsonModel, subject, exec, objectString);
+	public boolean readTag(Model jsonModel, String subject, String exec, String objectString) {
+		boolean newMalicious = intRead(jsonModel, subject, exec, objectString);
 		confRead(jsonModel, subject, exec, objectString);
+		return newMalicious;
+		
 	}
 	
 	public void writeTag(Model jsonModel, String subject, String exec, String objectString) {
@@ -62,9 +64,10 @@ public class PropagationRule {
 		intWrite(jsonModel, subject, exec, objectString);
 	}
 	
-	public void receiveTag(Model jsonModel, String subject, String exec, String objectString) {
-		intReceive(jsonModel, subject, exec, objectString);
+	public boolean receiveTag(Model jsonModel, String subject, String exec, String objectString) {
+		boolean newMalicious =  intReceive(jsonModel, subject, exec, objectString);
 		confReceive(jsonModel, subject, exec, objectString);
+		return newMalicious;
 	}
 	
 	public void sendTag(Model jsonModel, String subject, String exec, String objectString) {
@@ -99,8 +102,8 @@ public class PropagationRule {
 	}
 	
 		
-	public  void intRead(Model jsonModel,String subject, String exec, String objectString) {
-		
+	public  boolean intRead(Model jsonModel,String subject, String exec, String objectString) {
+		boolean newMalicious = false;
 		process = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
 		file = "http://w3id.org/sepses/resource/file#"+objectString;
 		Resource respro = jsonModel.createResource(process);
@@ -113,8 +116,12 @@ public class PropagationRule {
 	         double nit = min(roit,rsit);
 	         jsonModel.removeAll(respro, intTag, null);
 	         jsonModel.addLiteral(respro, intTag, nit);
+	         if(nit == roit && nit < 0.5) {
+	        	 newMalicious = true;
+	         }
 	    }
 		
+		return newMalicious;
 	}
 	
 	//===================ONLY LOAD ==============================
@@ -161,8 +168,8 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 	}
 	
 		
-	public  void intReceive(Model jsonModel,String subject, String exec, String objectString) {
-		
+	public  boolean intReceive(Model jsonModel,String subject, String exec, String objectString) {
+		boolean newMalicius = false;
 		process = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
 		net = "http://w3id.org/sepses/resource/soc#"+objectString;
 		Resource respro = jsonModel.createResource(process);
@@ -175,8 +182,11 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 	         double nit = min(roit,rsit);
 	         jsonModel.removeAll(respro, intTag, null);
 	         jsonModel.addLiteral(respro, intTag, nit);
+	         if(nit == roit && nit < 0.5) {
+	        	 newMalicius = true;
+	         }
 	    }
-		
+		return newMalicius;
 	}
 				  
 	//================SEND===========================
@@ -532,6 +542,7 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 	//=============add time for subject======================
 	public void putProcessTime(Model jsonModel, String subject, String exec, long ts) {
 		process = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
+//		System.out.println("init!"+process+ts);
 		Resource respro = jsonModel.createResource(process);		
 	    jsonModel.removeAll(respro, timestamp, null);
 	    jsonModel.addLiteral(respro, timestamp, ts);

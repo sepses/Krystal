@@ -59,6 +59,7 @@ public class LogParser {
 				String stime = getSubjectTime(subject, SubjectTime);
 				
 				PropagationRule prop = new PropagationRule();
+				//time initialization for each process
 				if(!stime.isEmpty()) {
 					prop.putProcessTime(jsonModel, subject, exec, Long.parseLong(stime));
 				}else {
@@ -158,7 +159,11 @@ public class LogParser {
 									  prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
 									}
 								
-									prop.readTag(jsonModel, subject, exec, objectString);										
+									boolean nm = prop.readTag(jsonModel, subject, exec, objectString);
+									if(nm) {
+										putNewSubjectTime(subject, sts, SubjectTime);
+									}
+							
 									
 									lastAccess = curRead;
 									
@@ -309,7 +314,10 @@ public class LogParser {
 									 prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
 									}
 								
-								prop.receiveTag(jsonModel, subject, exec, IPAddress);
+								    boolean nm = prop.receiveTag(jsonModel, subject, exec, IPAddress);
+								    if(nm) {
+								    	putNewSubjectTime(subject, sts, SubjectTime);
+								    }
 								
 									lastAccess=curReceive;
 							}
@@ -565,7 +573,9 @@ public class LogParser {
 		if(!subject.isEmpty() && !time.isEmpty()) {
 			if(!SubjectTime.containsKey(subject)) {
 				SubjectTime.put(subject, time);
-				
+			}else {
+				SubjectTime.remove(subject);
+				SubjectTime.put(subject,time);
 			}
 		}
 		 

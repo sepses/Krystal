@@ -205,9 +205,9 @@ public class LogParserLinux {
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 								
 								PropagationRule prop = new PropagationRule();
-								if(decayrule!="false") {
-								 prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
-								}
+								//if(decayrule!="false") {
+								// prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
+								//}
 								prop.receiveTag(jsonModel, subject, exec, IPAddress);
 								lastAccess=curReceive;
 							}													 

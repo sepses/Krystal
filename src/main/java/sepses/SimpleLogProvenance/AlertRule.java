@@ -35,6 +35,8 @@ public class AlertRule {
 		timestamp = "<http://w3id.org/sepses/vocab/event/log#timestamp>";
 		
 	}	
+
+
 	
 	public void execAlert(Model jsonModel, Model alertModel, String proc, String objectString, String ts) {
 		process = "<http://w3id.org/sepses/resource/proc"+proc+">";
