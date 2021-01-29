@@ -64,10 +64,16 @@ public class LogParserLinux {
 				object = shortenUUID(eventNode.get("predicateObject").get("com.bbn.tc.schema.avro.cdm18.UUID").toString(),uuIndex);
 				String networkMap="";
 				
+				PropagationRule prop = new PropagationRule();
+				
 				//initial value for tag decay
 				double period = 0.25;
 				double Tb = 0.75;
 				double Te = 0.45;
+				
+				if(decayrule!="false") {
+					  prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
+					}
 				
 				  if(eventType.contains("EVENT_WRITE")) {
 					 
@@ -80,12 +86,6 @@ public class LogParserLinux {
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 		
-								
-								PropagationRule prop = new PropagationRule();
-								if(decayrule!="false") {
-									prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
-								}
-								
 								AlertRule alert = new AlertRule();
 								alert.corruptFileAlert(jsonModel, alertModel, subject+"#"+exec, fileName, strTime);
 
@@ -105,10 +105,6 @@ public class LogParserLinux {
 									Reader targetReader = new StringReader(mapper);
 									jsonModel.read(targetReader, null, "N-TRIPLE");
 																
-									PropagationRule prop = new PropagationRule();
-									if(decayrule!="false") {
-									  prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
-									}
 									prop.readTag(jsonModel, subject, exec, fileName);										
 									lastAccess = curRead;
 								}
@@ -116,9 +112,6 @@ public class LogParserLinux {
 						
 					
 					}else if(eventType.contains("EVENT_EXECUTE")) {	
-						
-						
-						
 						String fileName = getFileName(object, FileObject);
 						//use new cmd line from file execution
 						String newSubjCmd = eventNode.get("properties").get("map").get("cmdLine").toString();
@@ -130,7 +123,6 @@ public class LogParserLinux {
 								String newProcessMap = lm.initialProcessTagMap(subject+"#"+newExec);
 									Reader targetReader2 = new StringReader(newSubj+newProcessMap);
 							  	    jsonModel.read(targetReader2, null, "N-TRIPLE");
-							  	    PropagationRule prop = new PropagationRule();  //these are for 
 									prop.putProcessTime(jsonModel, subject, newExec, ts);	
 						  }
 						}
@@ -142,7 +134,6 @@ public class LogParserLinux {
 							 				
 							storeEntity(subject+"#"+newExec, Process);
 							
-							PropagationRule prop = new PropagationRule();
 							if(decayrule!="false") {
 							  prop.decayIndividualProcess(jsonModel,  subject+"#"+newExec, ts, period, Tb, Te);
 							}
@@ -174,11 +165,6 @@ public class LogParserLinux {
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 								
-								PropagationRule prop = new PropagationRule();
-								if(decayrule!="false") {
-								 prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
-								}
-								
 								AlertRule alert = new AlertRule();
 								alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, strTime);
 								
@@ -196,21 +182,14 @@ public class LogParserLinux {
 								networkMap = lm.initialNetworkTagMap(IPAddress);
 							}
 							
-							String curReceive = subject+exec+IPAddress+"receive";
-							if	(!lastAccess.contains(curReceive)) {								
 								storeEntity(IPAddress, Network);
 	
 								mapper = lm.receiveMap(subject,exec,IPAddress,hostId,userId, timestamp) + networkMap;
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 								
-								PropagationRule prop = new PropagationRule();
-								//if(decayrule!="false") {
-								// prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
-								//}
 								prop.receiveTag(jsonModel, subject, exec, IPAddress);
-								lastAccess=curReceive;
-							}													 
+					
 						}
 					}
 				}

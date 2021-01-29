@@ -69,6 +69,7 @@ public class LogParser {
 				}
 			
 				
+				
 				userId = getUserId(subject, UserObject);
 				objectString = cleanLine(eventNode.get("predicateObjectPath").get("string").toString());	
 				object = shortenUUID(eventNode.get("predicateObject").get("com.bbn.tc.schema.avro.cdm18.UUID").toString(),uuIndex);
@@ -81,7 +82,12 @@ public class LogParser {
 				double period = 0.25;
 				double Tb = 0.75;
 				double Te = 0.45;
-
+				
+				if(decayrule!="false") {
+					if(ts!=0){
+						prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
+					}
+				}
 				
 				//is file new
 				if(isEntityNew(objectString, File)) {
@@ -126,9 +132,6 @@ public class LogParser {
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 								
-								if(decayrule!="false") {
-									prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
-								}
 								
 								AlertRule alert = new AlertRule();
 								alert.corruptFileAlert(jsonModel, alertModel, subject+"#"+exec, objectString, strTime);
@@ -154,16 +157,7 @@ public class LogParser {
 									Reader targetReader = new StringReader(mapper);
 									jsonModel.read(targetReader, null, "N-TRIPLE");
 									
-									
-									if(decayrule!="false") {
-									  prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
-									}
-								
-									boolean nm = prop.readTag(jsonModel, subject, exec, objectString);
-									if(nm) {
-										putNewSubjectTime(subject, sts, SubjectTime);
-									}
-							
+									prop.readTag(jsonModel, subject, exec, objectString);
 									
 									lastAccess = curRead;
 									
@@ -172,8 +166,6 @@ public class LogParser {
 					
 					}else if(eventType.contains("EVENT_EXECUTE")) {	
 						
-						
-					
 						 cmdline = eventNode.get("properties").get("map").get("cmdLine").toString();
 						 cmdline = cleanCmd(cmdline);
 						 
@@ -195,9 +187,6 @@ public class LogParser {
 
 						 if(!process2.isEmpty()) {
 							
-							 //if prevProcess not empty => entity is new
-							 //if prevProcess is empty => entity can be new or not
-							 
 							 if(prevProcess.isEmpty()) {
 								 putNewForkObject(subject+"#"+exec, subject, ForkObject);
 								 prevProcess = getPreviousForkProcess(subject, ForkObject);
@@ -216,7 +205,6 @@ public class LogParser {
 								 storeEntity(subject+"#"+exec, Process);
 								 storeEntity(subject+"#"+process2, Process);
 								 
-								// System.out.print("execute");
 								 Reader targetReader2 = new StringReader(mapper);
 								 jsonModel.read(targetReader2, null, "N-TRIPLE");
 								 
@@ -240,7 +228,6 @@ public class LogParser {
 						
 						storeEntity(subject+"#"+exec, Process);
 						
-						// System.out.println("fork");
 						Reader targetReader = new StringReader(processMap);
 						jsonModel.read(targetReader, null, "N-TRIPLE");
 						 
@@ -263,16 +250,10 @@ public class LogParser {
 								storeEntity(IPAddress, Network);
 								storeEntity(subject+"#"+exec, Process);
 								
-								// System.out.println("sendto"+subject+"#"+exec+IPAddress);
-								 
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");
-							
-						
-								if(decayrule!="false") {
-								 prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
-								}
-
+													
+								
 								AlertRule alert = new AlertRule();
 								alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, strTime);
 								
@@ -288,8 +269,7 @@ public class LogParser {
 						
 					}else if(eventType.contains("EVENT_RECVFROM")) {
 					
-				
-						
+									
 						String IPAddress = getIpAddress(object, NetworkObject);
 					
 						
@@ -299,29 +279,20 @@ public class LogParser {
 								networkMap = lm.initialNetworkTagMap(IPAddress);
 							}
 							
-							String curReceive = subject+exec+IPAddress+"receive";
-							if	(!lastAccess.contains(curReceive)) {
-								
-								mapper = lm.receiveMap(subject,exec,IPAddress,hostId,userId, timestamp) + networkMap+processMap;
+							mapper = lm.receiveMap(subject,exec,IPAddress,hostId,userId, timestamp) + networkMap+processMap;
 								
 								storeEntity(IPAddress, Network);
 								storeEntity(subject+"#"+exec, Process);
-								//System.out.println("receivefrom"+subject+"#"+exec+IPAddress);
+							
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");
+
+								//every connection is evil, hence update the new time to avoid decay
+								putNewSubjectTime(subject, sts, SubjectTime);
 								
-								if(decayrule!="false") {
-									 prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
-									}
+								prop.receiveTag(jsonModel, subject, exec, IPAddress);
 								
-								    boolean nm = prop.receiveTag(jsonModel, subject, exec, IPAddress);
-								    if(nm) {
-								    	putNewSubjectTime(subject, sts, SubjectTime);
-								    }
-								
-									lastAccess=curReceive;
-							}
-														 
+																						 
 						}
 					}
 				}

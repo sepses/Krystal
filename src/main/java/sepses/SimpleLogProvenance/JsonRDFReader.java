@@ -14,8 +14,6 @@ import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.InfModel;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.reasoner.Reasoner;
-import org.apache.jena.reasoner.ReasonerRegistry;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.tdb.TDBFactory;
 
@@ -71,7 +69,6 @@ public class JsonRDFReader {
 		HashMap<String, String> UserObject = new HashMap<String, String>();
 		HashMap<String, String> SubjectCmd = new HashMap<String, String>();
 		HashMap<String, String> SubjectTime = new HashMap<String, String>();
-		HashMap<String, String> SubjProcessTime = new HashMap<String, String>();
 		HashMap<String, String> CloneObject = new HashMap<String, String>();
 		HashMap<String, String> RegistryObject = new HashMap<String, String>();
 		String lastAccess = "";
@@ -179,7 +176,7 @@ public class JsonRDFReader {
 	     AlertRule.generateAlertFromRuleDir(infModel,alertModel, ruledir);
 		  
 	     System.out.println("Finish!, get the primary alarm.. ");
-	     AttackConstruction.getMostWeightedAlert(infModel,alertModel);
+//	     AttackConstruction.getMostWeightedAlert(infModel,alertModel);
 		     
 	     if(backupfile!="false") {
 	    	 	String rdfFile = Utility.saveToRDF(infModel, outputdir, namegraph);
