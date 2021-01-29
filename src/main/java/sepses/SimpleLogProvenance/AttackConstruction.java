@@ -5,7 +5,6 @@ import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
-import org.apache.jena.rdf.model.InfModel;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.riot.RDFDataMgr;
@@ -15,18 +14,19 @@ import org.apache.jena.update.UpdateRequest;
 
 public class AttackConstruction {
 	
+	
 	public static void main(String[] args) {
 		
-		Model alertModel = RDFDataMgr.loadModel("experiment/output/fd10000_alert_output.ttl") ;
-		Model jsonModel = RDFDataMgr.loadModel("experiment/output/fd10000_output.ttl") ;
+		Model alertModel = RDFDataMgr.loadModel("experiment/input/rdfsample/fd10000_alert_output.ttl") ;
+		Model jsonModel = RDFDataMgr.loadModel("experiment/input/rdfsample/fd10000_output.ttl") ;
 		getMostWeightedAlert(jsonModel,alertModel);
 		
 	}
 	public static void getMostWeightedAlert(Model jsonModel, Model alertModel){
-		
+		System.out.println("Start attack construction");
 		String q = "PREFIX sepses: <http://w3id.org/sepses/vocab/event/log#>\r\n"
 				+ "PREFIX rule: <http://w3id.org/sepses/vocab/rule#>\r\n" + 
-				"SELECT ?s WHERE { \r\n" + 
+				"SELECT distinct ?s WHERE { \r\n" + 
 				"	<< ?s ?p ?o >> rule:hasDetectedRule ?a;\r\n"
 				+ "				   rule:alertType \"internal\". \r\n" + 
 				"} \r\n";
@@ -39,12 +39,12 @@ public class AttackConstruction {
 	        String s ="";
 	        
 	        while (rs.hasNext()) {
+	        	
 	            QuerySolution qs = rs.nextSolution();
 	            RDFNode ns = qs.get("?s");            
 	            s = ns.toString();
-                alert.add(s);
+	            alert.add(s);
 	        }
-	    	
 	       for(int i=0; i<alert.size();i++) {
 	    	   String rootAlert =  findRootAlert(alertModel.union(jsonModel), alert.get(i));
 	    	   addAlertWeighted(alertModel,rootAlert);
@@ -56,13 +56,14 @@ public class AttackConstruction {
 	}
 	
 	private static void getMostWeightedAlert(Model alertModel) {
+		System.out.println("Top 10 process");
 		String q = "PREFIX sepses: <http://w3id.org/sepses/vocab/event/log#>\r\n"
 				+ "PREFIX rule: <http://w3id.org/sepses/vocab/rule#>\r\n" + 
-				"SELECT ?s ?aw WHERE { \r\n" + 
+				"SELECT distinct ?s ?aw WHERE { \r\n" + 
 				"	<< ?s ?p ?o >> rule:hasDetectedRule ?a; \r\n"
 				+ "                rule:alertWeight ?aw \r\n" + 
 				"} ORDER by DESC(?aw)\r\n"
-				+ "LIMIT 5";
+				+ "LIMIT 10";
 		    
 		  	QueryExecution qe = QueryExecutionFactory.create(q, alertModel);
 	        ResultSet rs = qe.execSelect();
@@ -70,7 +71,7 @@ public class AttackConstruction {
 	            QuerySolution qs = rs.nextSolution();
 	            RDFNode ns = qs.get("?s");            
 	            RDFNode nw = qs.get("?aw");            
-	            System.out.println(ns +" : "+nw);
+	            System.out.println(ns +" : "+nw.asLiteral().getInt());
                 
 	        }
 	
