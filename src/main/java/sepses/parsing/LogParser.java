@@ -40,7 +40,7 @@ public class LogParser {
 			datumNode = jsonNode.get("datum");
 	}
 	
-	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject, HashMap<String, String> SubjectTime,  String decayrule) throws IOException{	
+	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject, HashMap<String, Long> SubjectTime,  String decayrule) throws IOException{	
 		//filter is the line is an event or not
 		eventNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.Event");
 		if(eventNode.toBoolean()) {
@@ -56,15 +56,15 @@ public class LogParser {
 				
 				String strTime = new Timestamp(ts/1000000).toString();
 				String timestamp = eventNode.get("timestampNanos").toString();
-				String stime = getSubjectTime(subject, SubjectTime);
+				String stime = Long.toString(getSubjectTime(subject, SubjectTime));
 				
 				PropagationRule prop = new PropagationRule();
 				//time initialization for each process
 				if(!stime.isEmpty()) {
 					prop.putProcessTime(jsonModel, subject, exec, Long.parseLong(stime));
 				}else {
-					putNewSubjectTime(subject, sts, SubjectTime);
-					String nstime = getSubjectTime(subject, SubjectTime);
+					putNewSubjectTime(subject, ts, SubjectTime);
+					String nstime = Long.toString(getSubjectTime(subject, SubjectTime));
 					prop.putProcessTime(jsonModel, subject, exec, Long.parseLong(nstime));
 				}
 			
@@ -288,7 +288,7 @@ public class LogParser {
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 
 								//every connection is evil, hence update the new time to avoid decay
-								putNewSubjectTime(subject, sts, SubjectTime);
+								putNewSubjectTime(subject, ts, SubjectTime);
 								
 								prop.receiveTag(jsonModel, subject, exec, IPAddress);
 								
@@ -317,8 +317,8 @@ public class LogParser {
 			subject = shortenUUID(subjectNode.get("uuid").toString(),uuIndex); 
 			String userId = shortenUUID(subjectNode.get("localPrincipal").toString(),uuIndex); 
 			putNewUserObject(subject, userId, UserObject);
-			String time = subjectNode.get("startTimestampNanos").toString();
-			if(!time.equals("0")  && !time.equals("")) {
+			long time = subjectNode.get("startTimestampNanos").toLong();
+			if(time!=0) {
 				//System.out.println(subject+" : "+time);
 				putNewSubjectTime(subject, time, SubjectTime);
 			}
@@ -539,9 +539,9 @@ public class LogParser {
 	}
 	
 	
-	private  static void putNewSubjectTime(String subject, String time, HashMap<String, String> SubjectTime) {
+	private  static void putNewSubjectTime(String subject, long time, HashMap<String, Long> SubjectTime) {
 		//process
-		if(!subject.isEmpty() && !time.isEmpty()) {
+		if(!subject.isEmpty()) {
 			if(!SubjectTime.containsKey(subject)) {
 				SubjectTime.put(subject, time);
 			}else {
@@ -552,9 +552,9 @@ public class LogParser {
 		 
 	}
 	
-	private  static String getSubjectTime(String subject, HashMap<String, String> SubjectTime) {
+	private  static long getSubjectTime(String subject, HashMap<String, Long> SubjectTime) {
 		//process
-		String time="";
+		long time=0;
 		if(!subject.isEmpty()) {
 			if(SubjectTime.containsKey(subject)) {
 				time = SubjectTime.get(subject);

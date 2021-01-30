@@ -236,6 +236,15 @@ public  String hostMap(String hostObject,String hostName, String hostOS, String 
 		return subjMap;
 	}
 	
+	public  String subjectWinMap(String subject,String exec, String cmd) {
+		process = "<http://w3id.org/sepses/resource/proc"+subject+"#"+exec+">";
+		String subjMap = process +s+ cmdLine +s+ "\""+cmd+"\"" +dot;    	
+		return subjMap;
+
+	}
+	
+	
+	
 	public  String executeWinMap(String subject, String exec, String objectString, String hostId, String userId, String ts) {
 
 		file = "<http://w3id.org/sepses/resource/file#"+objectString+">";

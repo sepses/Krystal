@@ -27,7 +27,6 @@ public class LogParserWin {
 	public String exec;
 	public String hostId;
 	public String userId;
-	public String timestamp; 
 	public String subject;
 	public String object;
 	public String netObject;
@@ -43,7 +42,7 @@ public class LogParserWin {
 			datumNode = jsonNode.get("datum");
 	}
 	
-	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject,  Set<String> Registry, HashMap<String, String> RegistryObject, HashMap<String, String> SubjectCmd, String file, String decayrule ) throws IOException{	
+	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject,  Set<String> Registry, HashMap<String, String> RegistryObject, HashMap<String, String> SubjectCmd, String file, HashMap<String, Long> SubjectTime, String decayrule ) throws IOException{	
 		//filter is the line is an event or not
 		eventNode = datumNode.get("Event");
 		if(eventNode.toBoolean()) {
@@ -52,28 +51,30 @@ public class LogParserWin {
 				String mapper = "";
 				LogMapper lm = new LogMapper();	
 				subject = shortenUUID(eventNode.get("subject").get("UUID").toString(),uuIndex);
-				String subjCmd = getSubjectCmd(subject, SubjectCmd);
-			    exec = getExecFromCmdLine(subjCmd);
-			  
-			    hostId = eventNode.get("hostId").toString();
-				long ts = eventNode.get("timestampNanos").toLong();
-				String sts = eventNode.get("timestampNanos").toString();
-				String timestamp = eventNode.get("timestampNanos").toString();
+				hostId = eventNode.get("hostId").toString();
 				userId = getUserId(subject, UserObject);
 				objectString = cleanLine(eventNode.get("predicateObjectPath").get("string").toString());	
 				object = shortenUUID(eventNode.get("predicateObject").get("UUID").toString(),uuIndex);
+				//event time
+			    long ts = eventNode.get("timestampNanos").toLong();
+				String sts = eventNode.get("timestampNanos").toString();
+				
+				//get exec from original subject because no exec in the event
+				String subjCmd = getSubjectCmd(subject,SubjectCmd);
+			    exec = getExecFromCmdLine(subjCmd);
+				//use subj time for event
+				String stime = Long.toString(getSubjectTime(subject, SubjectTime));
+			    //to do : add cmdLine 
+				PropagationRule prop = new PropagationRule();
+				
+			    
 				String fileMap = "";
 				String networkMap="";
 				
-				PropagationRule prop = new PropagationRule();
-				
 				//initial value for tag decay
-				double period = 0.25;
+				double period = 0.1;
 				double Tb = 0.75;
 				double Te = 0.45;
-				
-		
-			
 				
 				//is file new
 				if(isEntityNew(objectString, File)) {
@@ -86,9 +87,16 @@ public class LogParserWin {
 					
 				}
 				
-				
-		
 				if(!exec.isEmpty()) {
+					//time initialization for each process
+					if(!stime.isEmpty()) {
+						prop.putProcessTime(jsonModel, subject, exec, Long.parseLong(stime));
+					}else {
+						//if subject has no time, use event time instead
+						putNewSubjectTime(subject, ts, SubjectTime);
+						String nstime = Long.toString(getSubjectTime(subject, SubjectTime));
+						prop.putProcessTime(jsonModel, subject, exec, Long.parseLong(nstime));
+					}
 					
 					if (decayrule!="false") {
 						  if(ts!=0 && !eventType.contains("EVENT_FORK")) {
@@ -103,25 +111,19 @@ public class LogParserWin {
 							
 							if	(!lastAccess.contains(curWrite)) {				
 
-								mapper = lm.writeMap(subject,exec,objectString,hostId,userId, timestamp)+fileMap;
+								mapper = lm.writeMap(subject,exec,objectString,hostId,userId, sts)+fileMap;
 								
 								storeEntity(objectString, File);
-								storeEntity(subject+"#"+exec, Process);
 						
-								
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 								
 								AlertRule alert = new AlertRule();
 								alert.corruptFileAlert(jsonModel, alertModel, subject+"#"+exec, objectString, sts);
 								
-								
 								prop.writeTag(jsonModel, subject, exec, objectString);
 								
 								lastAccess = curWrite;
-								
-								//System.out.println("write: "+curWrite);
-								
 								
 							}
 					  }
@@ -132,20 +134,17 @@ public class LogParserWin {
 						String curRead = subject+exec+objectString+"read";
 							if(objectString!="" && !objectString.contains("<unknown>")) {
 								if	(!lastAccess.contains(curRead)) {
-									mapper = lm.readMap(subject,exec,objectString,hostId,userId,timestamp)+fileMap;
+									mapper = lm.readMap(subject,exec,objectString,hostId,userId,sts)+fileMap;
 						
 									storeEntity(objectString, File);
-									storeEntity(subject+"#"+exec, Process);
 									
 									Reader targetReader = new StringReader(mapper);
 									jsonModel.read(targetReader, null, "N-TRIPLE");
-																
 									
 									prop.readTag(jsonModel, subject, exec, objectString);										
 									
 									lastAccess = curRead;
-									
-									//System.out.println("read: "+curRead);
+					
 								}
 							}
 					
@@ -155,23 +154,19 @@ public class LogParserWin {
 						String curExe = subject+exec+objectString+"execute";
 							if(objectString!="" && !objectString.contains("<unknown>")) {
 								if	(!lastAccess.contains(curExe)) {
-									mapper = lm.executeWinMap(subject,exec,objectString,hostId,userId,timestamp)+fileMap;
+									mapper = lm.executeWinMap(subject,exec,objectString,hostId,userId,sts)+fileMap;
 						
 									storeEntity(objectString, File);
-									storeEntity(subject+"#"+exec, Process);
 									
-									// System.out.print("execute");
 									 Reader targetReader2 = new StringReader(mapper);
 									 jsonModel.read(targetReader2, null, "N-TRIPLE");
 									 
-									AlertRule alert = new AlertRule();
+									 AlertRule alert = new AlertRule();
 									 alert.execAlert(jsonModel,alertModel, subject+"#"+exec, objectString, sts);
-									 
 									 
 									 prop.execTag(jsonModel, subject, exec, objectString);									
 									 lastAccess = curExe;
 									
-									//System.out.println("read: "+curRead);
 								}
 							
 							
@@ -184,12 +179,10 @@ public class LogParserWin {
 						String curLoad = subject+exec+objectString+"execute";
 							if(objectString!="" && !objectString.contains("<unknown>")) {
 								if	(!lastAccess.contains(curLoad)) {
-									mapper = lm.loadLibraryMap(subject,exec,objectString,hostId,userId,timestamp)+fileMap;
+									mapper = lm.loadLibraryMap(subject,exec,objectString,hostId,userId,sts)+fileMap;
 						
 									storeEntity(objectString, File);
-									storeEntity(subject+"#"+exec, Process);
 									
-									// System.out.print("execute");
 									 Reader targetReader2 = new StringReader(mapper);
 									 jsonModel.read(targetReader2, null, "N-TRIPLE");
 									 
@@ -201,7 +194,6 @@ public class LogParserWin {
 									 
 									 lastAccess = curLoad;
 									
-									//System.out.println("read: "+curRead);
 								}
 							
 							
@@ -210,15 +202,14 @@ public class LogParserWin {
 					
 					}else if(eventType.contains("EVENT_FORK")) { 
 						
-						String forkMap = lm.forkMap(subject+"#"+exec, object+"#", timestamp);
+						String forkMap = lm.forkMap(subject+"#"+exec, object+"#", sts);
 				  
 						Reader targetReader = new StringReader(forkMap);
 						jsonModel.read(targetReader, null, "N-TRIPLE");
 						
 						prop.forkTag(jsonModel, subject+"#"+exec, object+"#");	
 						
-						
-						
+					
 					}else if(eventType.contains("EVENT_SENDTO")) {
 					
 						String IPAddress = getIpAddress(object, NetworkObject);
@@ -229,22 +220,18 @@ public class LogParserWin {
 							}
 							
 							String curSend = subject+exec+IPAddress+"send";
+							//System.out.println("RECEIVE: "+IPAddress);
 							if	(!lastAccess.contains(curSend)) {
 								
-								mapper = lm.sendMap(subject,exec,IPAddress,hostId,userId, timestamp) + networkMap;	
+								mapper = lm.sendMap(subject,exec,IPAddress,hostId,userId, sts) + networkMap;	
 								
 								storeEntity(IPAddress, Network);
-								storeEntity(subject+"#"+exec, Process);
 								
-								// System.out.println("sendto"+subject+"#"+exec+IPAddress);
-								 
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 								
 								AlertRule alert = new AlertRule();
 								alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
-								
-								
 								
 								prop.sendTag(jsonModel, subject, exec, IPAddress);
 								
@@ -257,27 +244,25 @@ public class LogParserWin {
 						
 						
 					}else if(eventType.contains("EVENT_RECVFROM")) {
-					
-				
 						
 						String IPAddress = getIpAddress(object, NetworkObject);
-					
-						
+						//System.out.println("RECEIVE: "+IPAddress);
 						if(!IPAddress.isEmpty()) {
 							
 							if(isEntityNew(IPAddress, Network)) {
 								networkMap = lm.initialNetworkTagMap(IPAddress);
 							}
 							
-								mapper = lm.receiveMap(subject,exec,IPAddress,hostId,userId, timestamp) + networkMap;
+								mapper = lm.receiveMap(subject,exec,IPAddress,hostId,userId, sts) + networkMap;
 								
 								storeEntity(IPAddress, Network);
-								storeEntity(subject+"#"+exec, Process);
-								//System.out.println("receivefrom"+subject+"#"+exec+IPAddress);
+								
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");			
 								
 								prop.receiveTag(jsonModel, subject, exec, IPAddress);
+								
+								putNewSubjectTime(subject, ts, SubjectTime);
 								
 						  }	 
 						}
@@ -302,26 +287,25 @@ public class LogParserWin {
 		}else if(datumNode.get("Subject").toBoolean()) {
 		    subjectNode = datumNode.get("Subject");
 			subject = shortenUUID(subjectNode.get("uuid").toString(),uuIndex); 
+			String userId = shortenUUID(subjectNode.get("localPrincipal").toString(),uuIndex); 
+			putNewUserObject(subject, userId, UserObject);
 			long time = subjectNode.get("startTimestampNanos").toLong();
-			//System.out.println(time);
 			String cmdLine = subjectNode.get("cmdLine").get("string").toString(); 
-			//System.out.println(cleanCmd(cmdLine));
 			
 			if(!cmdLine.isEmpty()) {
 				putNewSubjectCmd(subject, cmdLine, SubjectCmd);
+				if(time!=0) {
+					putNewSubjectTime(subject, time, SubjectTime);
+				}
 				String exec = getExecFromCmdLine(cmdLine);
-				LogMapper lm = new LogMapper();	
-				String processMap = lm.initialProcessTagMap(subject+"#"+exec); //initial tag for process
-			    String mapper = lm.subjectMap(subject,exec,cmdLine);	
-				Reader targetReader = new StringReader(processMap);
-				jsonModel.read(targetReader, null, "N-TRIPLE");	
-				PropagationRule prop = new PropagationRule();  //these are for decay
-				prop.putProcessTime(jsonModel, subject, exec, time);	
+				if(!exec.isEmpty()) {
+					LogMapper lm = new LogMapper();	
+					String processMap = lm.initialProcessTagMap(subject+"#"+exec); //initial tag for process
+					String subjMap = lm.subjectWinMap(subject, exec, cleanCmd(cmdLine)); //initial tag for process
+				    Reader targetReader = new StringReader(subjMap+processMap);
+					jsonModel.read(targetReader, null, "N-TRIPLE");
+				}
 			}
-			
-				
-			String userId = shortenUUID(subjectNode.get("localPrincipal").toString(),uuIndex); 
-			putNewUserObject(subject, userId, UserObject);
 			
 			
 		}else if(datumNode.get("Principal").toBoolean()) {
@@ -330,24 +314,18 @@ public class LogParserWin {
 				LogMapper lm = new LogMapper();	
 			    userNode = datumNode.get("Principal");
 				userId = shortenUUID(userNode.get("uuid").toString(),uuIndex); 
-				//String usert = userNode.get("userId").toString();
 				String usert="0";
 				String userType = getUserType(usert);
 				String userName = userNode.get("username").get("string").toString();
-				
-				
 				mapper = lm.userMap(userId,userType,userName);	
-		
 				Reader targetReader = new StringReader(mapper);
 				jsonModel.read(targetReader, null, "N-TRIPLE");
-			
 		
 		}else if(datumNode.get("Host").toBoolean()) {
 			String mapper="";
 			LogMapper lm = new LogMapper();	
 		    hostNode = datumNode.get("Host");
 			hostId = hostNode.get("uuid").toString(); 
-			//String hostType = hostNode.get("hostType").toString();
 			String hostName = hostNode.get("hostName").toString();
 			String hostOS = hostNode.get("osDetails").toString();
 			String hostIP = hostNode.get("interfaces").get(1).get("ipAddresses").get(1).toString();
@@ -363,13 +341,6 @@ public class LogParserWin {
 	}
 	
 	
-
-	
-
-
-	
-
-
 	private  static String shortenUUID(String uuid, HashMap<String, String> uuIndex) {
 		String id="";
 		if(!uuid.isEmpty()) {
@@ -491,13 +462,15 @@ public class LogParserWin {
 		 return registryKey;	
 	}
 	
+	
+	
 	private static String cleanLine(String line) {
-		line = line.replaceAll("[#{}%\\]\\[\\s\\n$=()]", "");
-		line = line.replace("C:", "\\Device\\HarddiskVolume2");
-		line = line.replace("\\SystemRoot", "\\Device\\HarddiskVolume2");
+		line = line.replaceAll("[#{}%\\]\\[\\n$=()]", "");
+		line = line.replace("\\Device\\HarddiskVolume2","C:");
+		line = line.replace("\\SystemRoot", "C:");
 		line = line.replace("\\", "/");
-		//line = line.toLowerCase();
-		
+		line = line.replace(" ", "_");
+		line = line.toLowerCase();
 		return line;
 	}
 	
@@ -543,28 +516,27 @@ public class LogParserWin {
 		 
 	}
 	
-	private String getExecFromCmdLine(String cmdLine) {
+	
+	private String getExecFromCmdLine(String cmdLine) {	
+	if(!cmdLine.isEmpty()) {
+		if(cmdLine.contains(" ") && cmdLine.contains(".")) {
+			String cmdLine0 = cmdLine.substring(0,cmdLine.indexOf(".")); //get until first space
+			String ext =cmdLine.substring(cmdLine.indexOf("."),cmdLine.indexOf(".")+4); //get until first space
+			cmdLine = cmdLine0+ext;
+			cmdLine = cmdLine.replace(" ", "_");
+			cmdLine = cmdLine.replace("\\", "/");
+			cmdLine = cmdLine.replaceAll("[;\\\"]", "");
+			cmdLine = cmdLine.toLowerCase();
+		}else {
+			cmdLine = cmdLine.replace(" ", "_");
+			cmdLine = cmdLine.replace("\\", "/");
+			cmdLine = cmdLine.replaceAll("[;\\\"]", "");
+			cmdLine = cmdLine.toLowerCase();
+		}
 		//System.out.println(cmdLine);
-		String exec ="";
-		  if(cmdLine.contains(" ")) {
-				String newproc = cmdLine.substring(0,cmdLine.indexOf(" ")); //get until first space
-					String[] nnewproc = newproc.split("\\\\"); //incase there is full path e.g. "/tmp/vUgefal"
-					if(nnewproc.length>1) {
-						exec = nnewproc[nnewproc.length-1];
-					}else {
-						exec = newproc;
-					}
-				}else {
-					String[] nnewproc = cmdLine.split("\\\\"); //incase there is full path e.g. "/tmp/vUgefal"
-					if(nnewproc.length>1) {
-						exec = nnewproc[nnewproc.length-1];
-					}else {
-						exec = cmdLine;
-					}
-				}
-		exec = exec.replace("\"", "");
-		return exec;
-
+	}
+		//System.exit(0);
+		return cmdLine;
 	}
 	
 	private  static void putNewSubjectCmd(String subject, String cmdLine, HashMap<String, String> SubjectCmd) {
@@ -579,11 +551,9 @@ public class LogParserWin {
 	}
 	
 	private static String cleanCmd(String line) {
-		
+		line = line.replace("\\", "\\\\");
 		line = line.replace("\"", "");
-		line = line.replace(":", "");
-		line = line.replace("\\\\", "\\");
-		line = line.replace("%", "");
+		
 		
 		return line;
 	}
@@ -597,5 +567,30 @@ public class LogParserWin {
 		}
 	
 		 return exec;	
+	}
+
+	private  static void putNewSubjectTime(String subject, long time, HashMap<String, Long> SubjectTime) {
+		//process
+		if(!subject.isEmpty()) {
+			if(!SubjectTime.containsKey(subject)) {
+				SubjectTime.put(subject, time);
+			}else {
+				SubjectTime.remove(subject);
+				SubjectTime.put(subject,time);
+			}
+		}
+		 
+	}
+	
+	private  static long getSubjectTime(String subject, HashMap<String, Long> SubjectTime) {
+		//process
+		long time=0;
+		if(!subject.isEmpty()) {
+			if(SubjectTime.containsKey(subject)) {
+				time = SubjectTime.get(subject);
+			}
+		}
+	
+		 return time;	
 	}
 }

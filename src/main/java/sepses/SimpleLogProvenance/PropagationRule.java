@@ -609,15 +609,18 @@ public void decayIndividualProcess(Model jsonModel, String proc,long timer, doub
 	double rsst = getEntityTag(jsonModel, subjTag, s);
 	long t = getTimer(jsonModel, timestamp, s);
 	long age = timer - t;
+	
 	double periodNano = period*1000000000;
-	//System.out.println(process +" : "+timer+ " : "+t);
+	
 	
 	//1. decay data integrity
 	double rsit = getEntityTag(jsonModel, intTag, s); 
 	if(rsit<0.5) { //get only low data tag integrity of subj 
+		//System.out.println(age);
+		//System.out.println(process +" : "+timer+" - "+t+" : "+age);
 	    if(rsst>=0.5) {  //if subject is benign   
 		  if(age >= periodNano) {
-			  System.out.println(s+" benign adult! "+age);
+			  //System.out.println(s+" benign adult! "+age);
 		    double decayRateIntTag = (rsit*period)+((1-period)*Tb); //add decay rate
 		    if(rsit<decayRateIntTag) { 
 			  jsonModel.removeAll(s, intTag, null);
@@ -628,6 +631,7 @@ public void decayIndividualProcess(Model jsonModel, String proc,long timer, doub
 		  boolean rsEnv = getSuspEnvTag(jsonModel, suspEnv, s);
 		  if(rsEnv) { //if suspect in environment
 		    if(age >= periodNano) {
+		    	//System.out.println(s+" benign adult! "+age);
 		 	  double decayRateIntTag = (rsit*period)+((1-period)*Te);
 			  if(rsit<decayRateIntTag) {
 				 jsonModel.removeAll(s, intTag, null);

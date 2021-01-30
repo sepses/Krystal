@@ -12,7 +12,7 @@ os-platform: windows
 
 triple-store: graphdb
 
-decay-rule: yes
+decay-rule: no
 
 live-store: no
 
@@ -22,8 +22,7 @@ confidential-dir:
  - /etc/passwd
  - /var/log
  - /etc/shadow
- - /Documents/
-
+ - /documents/
 
 field-filter:
  - EVENT_EXIT
