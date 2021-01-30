@@ -2,11 +2,12 @@ package sepses.parsing;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
+
 import org.apache.jena.rdf.model.Model;
+
 import com.jsoniter.JsonIterator;
 import com.jsoniter.any.Any;
 
@@ -42,7 +43,7 @@ public class LogParserWin {
 			datumNode = jsonNode.get("datum");
 	}
 	
-	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject,  Set<String> Registry, HashMap<String, String> RegistryObject, HashMap<String, String> SubjExecObject, String file ) throws IOException{	
+	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject,  Set<String> Registry, HashMap<String, String> RegistryObject, HashMap<String, String> SubjectCmd, String file, String decayrule ) throws IOException{	
 		//filter is the line is an event or not
 		eventNode = datumNode.get("Event");
 		if(eventNode.toBoolean()) {
@@ -51,22 +52,28 @@ public class LogParserWin {
 				String mapper = "";
 				LogMapper lm = new LogMapper();	
 				subject = shortenUUID(eventNode.get("subject").get("UUID").toString(),uuIndex);
-				
-				//exec = getSubjExec(subject, SubjExecObject);
-				exec = eventNode.get("properties").get("map").get("exec").toString();
-				
-				hostId = eventNode.get("hostId").toString();
-				int ts = eventNode.get("timestampNanos").toInt();
+				String subjCmd = getSubjectCmd(subject, SubjectCmd);
+			    exec = getExecFromCmdLine(subjCmd);
+			  
+			    hostId = eventNode.get("hostId").toString();
+				long ts = eventNode.get("timestampNanos").toLong();
 				String sts = eventNode.get("timestampNanos").toString();
-				
 				String timestamp = eventNode.get("timestampNanos").toString();
 				userId = getUserId(subject, UserObject);
 				objectString = cleanLine(eventNode.get("predicateObjectPath").get("string").toString());	
 				object = shortenUUID(eventNode.get("predicateObject").get("UUID").toString(),uuIndex);
-				String processMap = "";
 				String fileMap = "";
 				String networkMap="";
 				
+				PropagationRule prop = new PropagationRule();
+				
+				//initial value for tag decay
+				double period = 0.25;
+				double Tb = 0.75;
+				double Te = 0.45;
+				
+		
+			
 				
 				//is file new
 				if(isEntityNew(objectString, File)) {
@@ -80,23 +87,23 @@ public class LogParserWin {
 				}
 				
 				
-				//is process new
-				if(isEntityNew(subject+"#"+exec, Process)) {
-					     //tag new process
-							processMap = lm.initialProcessTagMap(subject+"#"+exec);
+		
+				if(!exec.isEmpty()) {
 					
-				}
-				
-				
-				  if(eventType.contains("EVENT_WRITE")) {
+					if (decayrule!="false") {
+						  if(ts!=0 && !eventType.contains("EVENT_FORK")) {
+							prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
+						   }
+						}
+					
+					if(eventType.contains("EVENT_WRITE")) {
+					  
 					  String curWrite = subject+exec+objectString+"write";
 						if(objectString!="" && !objectString.contains("<unknown>")) {
 							
 							if	(!lastAccess.contains(curWrite)) {				
-								
-								
-								
-								mapper = lm.writeMap(subject,exec,objectString,hostId,userId, timestamp)+fileMap+processMap;
+
+								mapper = lm.writeMap(subject,exec,objectString,hostId,userId, timestamp)+fileMap;
 								
 								storeEntity(objectString, File);
 								storeEntity(subject+"#"+exec, Process);
@@ -105,12 +112,10 @@ public class LogParserWin {
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 								
-								//AlertRule alert = new AlertRule();
-								//alert.corruptFileAlert(jsonModel, subject+"#"+exec, objectString, timestamp);
+								AlertRule alert = new AlertRule();
+								alert.corruptFileAlert(jsonModel, alertModel, subject+"#"+exec, objectString, sts);
 								
-
 								
-								PropagationRule prop = new PropagationRule();
 								prop.writeTag(jsonModel, subject, exec, objectString);
 								
 								lastAccess = curWrite;
@@ -119,39 +124,7 @@ public class LogParserWin {
 								
 								
 							}
-					  }else {
-				//			couldbe registry
-//							String registryKey = getRegistryKey(object, RegistryObject);
-//							registryKey = cleanLine(registryKey);
-//							
-//							
-//							if(!registryKey.isEmpty()) {
-//								
-//								if(isEntityNew(registryKey, Registry)) {
-//									registryMap = lm.initialRegistryTagMap(registryKey);
-//								}
-//								
-//								 curWrite = subject+exec+registryKey+"write";
-//								if	(!lastAccess.contains(curWrite)) {
-//									
-//									mapper = lm.writeMap(subject,exec,registryKey,hostId,userId, timestamp) + registryMap+processMap;
-//									
-//									storeEntity(registryKey, Registry);
-//									storeEntity(subject+"#"+exec, Process);
-//									
-//									Reader targetReader = new StringReader(mapper);
-//									jsonModel.read(targetReader, null, "N-TRIPLE");
-//									
-//									PropagationRule prop = new PropagationRule();
-//									prop.writeTag(jsonModel, subject, exec, registryKey);
-//									
-//										lastAccess=curWrite;
-//								}
-//															 
-//							}
-							
-						}
-				
+					  }
 					  
 					}else if(eventType.contains("EVENT_READ")) {
 					
@@ -159,7 +132,7 @@ public class LogParserWin {
 						String curRead = subject+exec+objectString+"read";
 							if(objectString!="" && !objectString.contains("<unknown>")) {
 								if	(!lastAccess.contains(curRead)) {
-									mapper = lm.readMap(subject,exec,objectString,hostId,userId,timestamp)+fileMap+processMap;
+									mapper = lm.readMap(subject,exec,objectString,hostId,userId,timestamp)+fileMap;
 						
 									storeEntity(objectString, File);
 									storeEntity(subject+"#"+exec, Process);
@@ -167,45 +140,14 @@ public class LogParserWin {
 									Reader targetReader = new StringReader(mapper);
 									jsonModel.read(targetReader, null, "N-TRIPLE");
 																
-									PropagationRule prop = new PropagationRule();
+									
 									prop.readTag(jsonModel, subject, exec, objectString);										
 									
 									lastAccess = curRead;
 									
 									//System.out.println("read: "+curRead);
 								}
-							}else {
-								//couldbe registry
-//								String registryKey = getRegistryKey(object, RegistryObject);
-//								registryKey = cleanLine(registryKey);	
-//								
-//								if(!registryKey.isEmpty()) {
-//									
-//									if(isEntityNew(registryKey, Registry)) {
-//										registryMap = lm.initialRegistryTagMap(registryKey);
-//									}
-//									
-//									 curRead = subject+exec+registryKey+"read";
-//									if	(!lastAccess.contains(curRead)) {
-//										
-//										mapper = lm.readMap(subject,exec,registryKey,hostId,userId, timestamp) + registryMap+processMap;
-//										
-//										storeEntity(registryKey, Registry);
-//										storeEntity(subject+"#"+exec, Process);
-//										
-//										Reader targetReader = new StringReader(mapper);
-//										jsonModel.read(targetReader, null, "N-TRIPLE");
-//										
-//										PropagationRule prop = new PropagationRule();
-//										prop.readTag(jsonModel, subject, exec, registryKey);
-//										
-//											lastAccess=curRead;
-//									}
-//																 
-//								}
-//								
 							}
-					
 					
 					}else if(eventType.contains("EVENT_EXECUTE")) {
 						
@@ -213,7 +155,7 @@ public class LogParserWin {
 						String curExe = subject+exec+objectString+"execute";
 							if(objectString!="" && !objectString.contains("<unknown>")) {
 								if	(!lastAccess.contains(curExe)) {
-									mapper = lm.executeWinMap(subject,exec,objectString,hostId,userId,timestamp)+fileMap+processMap;
+									mapper = lm.executeWinMap(subject,exec,objectString,hostId,userId,timestamp)+fileMap;
 						
 									storeEntity(objectString, File);
 									storeEntity(subject+"#"+exec, Process);
@@ -226,9 +168,8 @@ public class LogParserWin {
 									 alert.execAlert(jsonModel,alertModel, subject+"#"+exec, objectString, sts);
 									 
 									 
-									 
-									 PropagationRule prop = new PropagationRule();
-									 prop.execTag(jsonModel, subject, exec, objectString);									lastAccess = curExe;
+									 prop.execTag(jsonModel, subject, exec, objectString);									
+									 lastAccess = curExe;
 									
 									//System.out.println("read: "+curRead);
 								}
@@ -243,7 +184,7 @@ public class LogParserWin {
 						String curLoad = subject+exec+objectString+"execute";
 							if(objectString!="" && !objectString.contains("<unknown>")) {
 								if	(!lastAccess.contains(curLoad)) {
-									mapper = lm.loadLibraryMap(subject,exec,objectString,hostId,userId,timestamp)+fileMap+processMap;
+									mapper = lm.loadLibraryMap(subject,exec,objectString,hostId,userId,timestamp)+fileMap;
 						
 									storeEntity(objectString, File);
 									storeEntity(subject+"#"+exec, Process);
@@ -256,7 +197,6 @@ public class LogParserWin {
 									alert.execAlert(jsonModel,alertModel, subject+"#"+exec, objectString, sts);
 									 
 									 
-									 PropagationRule prop = new PropagationRule();
 									 prop.loadTag(jsonModel, subject, exec, objectString);	
 									 
 									 lastAccess = curLoad;
@@ -274,7 +214,7 @@ public class LogParserWin {
 				  
 						Reader targetReader = new StringReader(forkMap);
 						jsonModel.read(targetReader, null, "N-TRIPLE");
-						PropagationRule prop = new PropagationRule();
+						
 						prop.forkTag(jsonModel, subject+"#"+exec, object+"#");	
 						
 						
@@ -291,7 +231,7 @@ public class LogParserWin {
 							String curSend = subject+exec+IPAddress+"send";
 							if	(!lastAccess.contains(curSend)) {
 								
-								mapper = lm.sendMap(subject,exec,IPAddress,hostId,userId, timestamp) + networkMap+processMap;	
+								mapper = lm.sendMap(subject,exec,IPAddress,hostId,userId, timestamp) + networkMap;	
 								
 								storeEntity(IPAddress, Network);
 								storeEntity(subject+"#"+exec, Process);
@@ -306,7 +246,6 @@ public class LogParserWin {
 								
 								
 								
-								PropagationRule prop = new PropagationRule();
 								prop.sendTag(jsonModel, subject, exec, IPAddress);
 								
 								lastAccess=curSend;
@@ -330,23 +269,17 @@ public class LogParserWin {
 								networkMap = lm.initialNetworkTagMap(IPAddress);
 							}
 							
-							String curReceive = subject+exec+IPAddress+"receive";
-							if	(!lastAccess.contains(curReceive)) {
-								
-								mapper = lm.receiveMap(subject,exec,IPAddress,hostId,userId, timestamp) + networkMap+processMap;
+								mapper = lm.receiveMap(subject,exec,IPAddress,hostId,userId, timestamp) + networkMap;
 								
 								storeEntity(IPAddress, Network);
 								storeEntity(subject+"#"+exec, Process);
 								//System.out.println("receivefrom"+subject+"#"+exec+IPAddress);
 								Reader targetReader = new StringReader(mapper);
-								jsonModel.read(targetReader, null, "N-TRIPLE");
+								jsonModel.read(targetReader, null, "N-TRIPLE");			
 								
-								PropagationRule prop = new PropagationRule();
 								prop.receiveTag(jsonModel, subject, exec, IPAddress);
 								
-									lastAccess=curReceive;
-							}
-														 
+						  }	 
 						}
 					}
 				}
@@ -370,22 +303,23 @@ public class LogParserWin {
 		    subjectNode = datumNode.get("Subject");
 			subject = shortenUUID(subjectNode.get("uuid").toString(),uuIndex); 
 			long time = subjectNode.get("startTimestampNanos").toLong();
-			String exec = subjectNode.get("cmdLine").get("string").toString(); 
-			exec = exec.replace("\\", "\\\\");
-			exec = exec.replace("\"", "\\\"");
+			//System.out.println(time);
+			String cmdLine = subjectNode.get("cmdLine").get("string").toString(); 
+			//System.out.println(cleanCmd(cmdLine));
 			
-			if(!exec.isEmpty()) {
-				//System.out.println(exec);
-				String mapper="";
+			if(!cmdLine.isEmpty()) {
+				putNewSubjectCmd(subject, cmdLine, SubjectCmd);
+				String exec = getExecFromCmdLine(cmdLine);
 				LogMapper lm = new LogMapper();	
-			    
-				mapper = lm.subjectMap(subject,"",exec);	
-				
-				Reader targetReader = new StringReader(mapper);
-				jsonModel.read(targetReader, null, "N-TRIPLE");
+				String processMap = lm.initialProcessTagMap(subject+"#"+exec); //initial tag for process
+			    String mapper = lm.subjectMap(subject,exec,cmdLine);	
+				Reader targetReader = new StringReader(processMap);
+				jsonModel.read(targetReader, null, "N-TRIPLE");	
+				PropagationRule prop = new PropagationRule();  //these are for decay
+				prop.putProcessTime(jsonModel, subject, exec, time);	
 			}
-			//putNewSubjExecObject(subject, exec, SubjExecObject);
 			
+				
 			String userId = shortenUUID(subjectNode.get("localPrincipal").toString(),uuIndex); 
 			putNewUserObject(subject, userId, UserObject);
 			
@@ -423,26 +357,7 @@ public class LogParserWin {
 			jsonModel.read(targetReader, null, "N-TRIPLE");
 		
 	
-	}else if(datumNode.get("RegistryKeyObject").toBoolean()) {
-		
-		registryNode = datumNode.get("RegistryKeyObject");
-		String registryId = shortenUUID(registryNode.get("uuid").toString(),uuIndex); 
-		String registryKey = cleanLine(registryNode.get("key").toString());
-		//System.out.println(registryKey);
-		putNewRegistryObject(registryId, registryKey, RegistryObject);		
-		
-//		String registryValueName = registryNode.get("value").get("name").toString();
-//		String registryValueType = registryNode.get("value").get("type").toString();
-//		
-//		String mapper="";
-//		LogMapper lm = new LogMapper();	
-//		mapper = lm.registryMap(registryId,registryKey,registryValueType,registryValueName);	
-//
-//		Reader targetReader = new StringReader(mapper);
-//		jsonModel.read(targetReader, null, "N-TRIPLE");
-
-	}
-		
+	}		
 		return lastAccess;
 	
 	}
@@ -628,4 +543,59 @@ public class LogParserWin {
 		 
 	}
 	
+	private String getExecFromCmdLine(String cmdLine) {
+		//System.out.println(cmdLine);
+		String exec ="";
+		  if(cmdLine.contains(" ")) {
+				String newproc = cmdLine.substring(0,cmdLine.indexOf(" ")); //get until first space
+					String[] nnewproc = newproc.split("\\\\"); //incase there is full path e.g. "/tmp/vUgefal"
+					if(nnewproc.length>1) {
+						exec = nnewproc[nnewproc.length-1];
+					}else {
+						exec = newproc;
+					}
+				}else {
+					String[] nnewproc = cmdLine.split("\\\\"); //incase there is full path e.g. "/tmp/vUgefal"
+					if(nnewproc.length>1) {
+						exec = nnewproc[nnewproc.length-1];
+					}else {
+						exec = cmdLine;
+					}
+				}
+		exec = exec.replace("\"", "");
+		return exec;
+
+	}
+	
+	private  static void putNewSubjectCmd(String subject, String cmdLine, HashMap<String, String> SubjectCmd) {
+		//process
+		if(!subject.isEmpty() && !cmdLine.isEmpty()) {
+			if(!SubjectCmd.containsKey(subject)) {
+				SubjectCmd.put(subject, cmdLine);
+				
+			}
+		}
+		 
+	}
+	
+	private static String cleanCmd(String line) {
+		
+		line = line.replace("\"", "");
+		line = line.replace(":", "");
+		line = line.replace("\\\\", "\\");
+		line = line.replace("%", "");
+		
+		return line;
+	}
+	private  static String getSubjectCmd(String subject, HashMap<String, String> SubjectCmd) {
+		//process
+		String exec="";
+		if(!subject.isEmpty()) {
+			if(SubjectCmd.containsKey(subject)) {
+				exec = SubjectCmd.get(subject);
+			}
+		}
+	
+		 return exec;	
+	}
 }

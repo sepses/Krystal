@@ -104,7 +104,7 @@ public class JsonRDFReader {
 										}	
 										LogParserWin lp = new LogParserWin(line); //fivedirection
 										lastAccess = lp.parseJSONtoRDF(jsonModel,alertModel,fieldfilter, confidentialdir, uuIndex, Process, File, 
-								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, Registry, RegistryObject, SubjectCmd, file);
+								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, Registry, RegistryObject, SubjectCmd, file, decayrule);
 									}else if (os.equals("linux")){
 										LogParserLinux lp = new LogParserLinux(line); //ubuntu
 										lastAccess = lp.parseJSONtoRDF(jsonModel,alertModel,fieldfilter, confidentialdir, uuIndex, Process, File, 
