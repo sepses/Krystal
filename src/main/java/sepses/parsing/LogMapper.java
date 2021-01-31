@@ -67,9 +67,11 @@ public class LogMapper {
 	public  String writeMap(String subject, String exec, String objectString, String hostId, String userId, String ts) {	
 		process = "<http://w3id.org/sepses/resource/proc"+subject+"#"+exec+">";
 		file = "<http://w3id.org/sepses/resource/file#"+objectString+">";
+		//ts = "\""+ts+"\"^^<http://www.w3.org/2001/XMLSchema#long>";
 		
-		return  process +s+ writes +s+ file +dot 
-				+ addTriple(process, exec, hostId, userId);
+		return  process +s+ writes +s+ file +dot +
+				//"<< " +process +s+ writes +s+ file +" >> "+timestamp +s+ ts +s+ dot
+				 addTriple(process, exec, hostId, userId);
 		}
 	
 	

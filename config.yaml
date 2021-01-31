@@ -8,11 +8,11 @@ ontology: experiment/ontology/log-ontology.ttl
 
 rule-dir : experiment/rule/
 
-os-platform: windows
+os-platform: linux
 
 triple-store: graphdb
 
-decay-rule: no
+decay-rule: yes
 
 live-store: no
 

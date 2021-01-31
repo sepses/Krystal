@@ -533,7 +533,6 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 	//=============add time for subject======================
 	public void putProcessTime(Model jsonModel, String subject, String exec, long ts) {
 		process = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
-//		System.out.println("init!"+process+ts);
 		Resource respro = jsonModel.createResource(process);		
 	    jsonModel.removeAll(respro, timestamp, null);
 	    jsonModel.addLiteral(respro, timestamp, ts);
@@ -604,23 +603,18 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 
 public void decayIndividualProcess(Model jsonModel, String proc,long timer, double period, double Tb, double Te) {
 	process = "http://w3id.org/sepses/resource/proc"+proc;
-	//System.out.println(process);
+
 	Resource s = jsonModel.createResource(process);
 	double rsst = getEntityTag(jsonModel, subjTag, s);
 	long t = getTimer(jsonModel, timestamp, s);
 	long age = timer - t;
-	
 	double periodNano = period*1000000000;
-	
 	
 	//1. decay data integrity
 	double rsit = getEntityTag(jsonModel, intTag, s); 
 	if(rsit<0.5) { //get only low data tag integrity of subj 
-		//System.out.println(age);
-		//System.out.println(process +" : "+timer+" - "+t+" : "+age);
 	    if(rsst>=0.5) {  //if subject is benign   
 		  if(age >= periodNano) {
-			  //System.out.println(s+" benign adult! "+age);
 		    double decayRateIntTag = (rsit*period)+((1-period)*Tb); //add decay rate
 		    if(rsit<decayRateIntTag) { 
 			  jsonModel.removeAll(s, intTag, null);

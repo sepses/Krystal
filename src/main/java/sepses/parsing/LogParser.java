@@ -2,7 +2,6 @@ package sepses.parsing;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
@@ -53,19 +52,18 @@ public class LogParser {
 				hostId = eventNode.get("hostId").toString();
 				long ts = eventNode.get("timestampNanos").toLong();
 				String sts = eventNode.get("timestampNanos").toString();
-				
-				String strTime = new Timestamp(ts/1000000).toString();
+				//String strTime = new Timestamp(ts/1000000).toString();
 				String timestamp = eventNode.get("timestampNanos").toString();
-				String stime = Long.toString(getSubjectTime(subject, SubjectTime));
+				long stime = getSubjectTime(subject, SubjectTime);
 				
 				PropagationRule prop = new PropagationRule();
 				//time initialization for each process
-				if(!stime.isEmpty()) {
-					prop.putProcessTime(jsonModel, subject, exec, Long.parseLong(stime));
+				if(stime!=0) {
+					prop.putProcessTime(jsonModel, subject, exec, stime);
 				}else {
 					putNewSubjectTime(subject, ts, SubjectTime);
-					String nstime = Long.toString(getSubjectTime(subject, SubjectTime));
-					prop.putProcessTime(jsonModel, subject, exec, Long.parseLong(nstime));
+					long nstime = getSubjectTime(subject, SubjectTime);
+					prop.putProcessTime(jsonModel, subject, exec, nstime);
 				}
 			
 				
@@ -208,8 +206,8 @@ public class LogParser {
 								 Reader targetReader2 = new StringReader(mapper);
 								 jsonModel.read(targetReader2, null, "N-TRIPLE");
 								 
-								 if(!stime.isEmpty()) {
-										prop.putProcessTime(jsonModel, subject, process2, Long.parseLong(stime));
+								 if(stime!=0) {
+										prop.putProcessTime(jsonModel, subject, process2, stime);
 								}
 									if(decayrule!="false") {
 									  prop.decayIndividualProcess(jsonModel,  subject+"#"+process2, ts, period, Tb, Te);

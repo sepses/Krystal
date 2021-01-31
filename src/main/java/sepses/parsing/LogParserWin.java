@@ -50,11 +50,13 @@ public class LogParserWin {
 			if(!filterLine(eventType, fieldfilter)){
 				String mapper = "";
 				LogMapper lm = new LogMapper();	
-				subject = shortenUUID(eventNode.get("subject").get("UUID").toString(),uuIndex);
+				//subject = shortenUUID(eventNode.get("subject").get("UUID").toString(),uuIndex);
+				subject = eventNode.get("subject").get("UUID").toString();
 				hostId = eventNode.get("hostId").toString();
 				userId = getUserId(subject, UserObject);
 				objectString = cleanLine(eventNode.get("predicateObjectPath").get("string").toString());	
-				object = shortenUUID(eventNode.get("predicateObject").get("UUID").toString(),uuIndex);
+				//object = shortenUUID(eventNode.get("predicateObject").get("UUID").toString(),uuIndex);
+				object = eventNode.get("predicateObject").get("UUID").toString();
 				//event time
 			    long ts = eventNode.get("timestampNanos").toLong();
 				String sts = eventNode.get("timestampNanos").toString();
@@ -63,7 +65,7 @@ public class LogParserWin {
 				String subjCmd = getSubjectCmd(subject,SubjectCmd);
 			    exec = getExecFromCmdLine(subjCmd);
 				//use subj time for event
-				String stime = Long.toString(getSubjectTime(subject, SubjectTime));
+				long stime = getSubjectTime(subject, SubjectTime);
 			    //to do : add cmdLine 
 				PropagationRule prop = new PropagationRule();
 				
@@ -72,7 +74,7 @@ public class LogParserWin {
 				String networkMap="";
 				
 				//initial value for tag decay
-				double period = 0.1;
+				double period = 0.25;
 				double Tb = 0.75;
 				double Te = 0.45;
 				
@@ -89,13 +91,13 @@ public class LogParserWin {
 				
 				if(!exec.isEmpty()) {
 					//time initialization for each process
-					if(!stime.isEmpty()) {
-						prop.putProcessTime(jsonModel, subject, exec, Long.parseLong(stime));
+					if(stime!=0) {
+						prop.putProcessTime(jsonModel, subject, exec, stime);
 					}else {
 						//if subject has no time, use event time instead
 						putNewSubjectTime(subject, ts, SubjectTime);
-						String nstime = Long.toString(getSubjectTime(subject, SubjectTime));
-						prop.putProcessTime(jsonModel, subject, exec, Long.parseLong(nstime));
+						long nstime = getSubjectTime(subject, SubjectTime);
+						prop.putProcessTime(jsonModel, subject, exec, nstime);
 					}
 					
 					if (decayrule!="false") {
@@ -148,7 +150,8 @@ public class LogParserWin {
 								}
 							}
 					
-					}else if(eventType.contains("EVENT_EXECUTE")) {
+					}
+					else if(eventType.contains("EVENT_EXECUTE")) {
 						
 						//check last read to reduce unnecessary duplicate event processing			
 						String curExe = subject+exec+objectString+"execute";
@@ -262,8 +265,11 @@ public class LogParserWin {
 								
 								prop.receiveTag(jsonModel, subject, exec, IPAddress);
 								
-								putNewSubjectTime(subject, ts, SubjectTime);
+								if(ts>stime) {
+									putNewSubjectTime(subject, ts, SubjectTime);
+								}
 								
+											
 						  }	 
 						}
 					}
@@ -271,7 +277,8 @@ public class LogParserWin {
 			 
 		}else if(datumNode.get("NetFlowObject").toBoolean()) {
 			    networkNode = datumNode.get("NetFlowObject");
-				netObject = shortenUUID(networkNode.get("uuid").toString(),uuIndex); 
+				//netObject = shortenUUID(networkNode.get("uuid").toString(),uuIndex); 
+				netObject = networkNode.get("uuid").toString(); 
 				String ip = networkNode.get("remoteAddress").toString();
 				String port =networkNode.get("remotePort").toString();
 				netAddress = ip+":"+port;
@@ -286,8 +293,10 @@ public class LogParserWin {
 
 		}else if(datumNode.get("Subject").toBoolean()) {
 		    subjectNode = datumNode.get("Subject");
-			subject = shortenUUID(subjectNode.get("uuid").toString(),uuIndex); 
-			String userId = shortenUUID(subjectNode.get("localPrincipal").toString(),uuIndex); 
+			//subject = shortenUUID(subjectNode.get("uuid").toString(),uuIndex);
+		    subject = subjectNode.get("uuid").toString();
+			//String userId = shortenUUID(subjectNode.get("localPrincipal").toString(),uuIndex);
+			String userId = subjectNode.get("localPrincipal").toString();
 			putNewUserObject(subject, userId, UserObject);
 			long time = subjectNode.get("startTimestampNanos").toLong();
 			String cmdLine = subjectNode.get("cmdLine").get("string").toString(); 
@@ -313,7 +322,8 @@ public class LogParserWin {
 				String mapper="";
 				LogMapper lm = new LogMapper();	
 			    userNode = datumNode.get("Principal");
-				userId = shortenUUID(userNode.get("uuid").toString(),uuIndex); 
+				//userId = shortenUUID(userNode.get("uuid").toString(),uuIndex); 
+				userId = userNode.get("uuid").toString(); 
 				String usert="0";
 				String userType = getUserType(usert);
 				String userName = userNode.get("username").get("string").toString();
@@ -505,17 +515,6 @@ public class LogParserWin {
 	}
 	
 	
-	private  static void putNewRegistryObject(String registryId, String registryKey, HashMap<String, String> RegistryObject) {
-		//process
-		if(!registryId.isEmpty() && !registryKey.isEmpty()) {
-			if(!RegistryObject.containsKey(registryId)) {
-				RegistryObject.put(registryId, registryKey);
-				
-			}
-		}
-		 
-	}
-	
 	
 	private String getExecFromCmdLine(String cmdLine) {	
 	if(!cmdLine.isEmpty()) {
@@ -524,11 +523,13 @@ public class LogParserWin {
 			String ext =cmdLine.substring(cmdLine.indexOf("."),cmdLine.indexOf(".")+4); //get until first space
 			cmdLine = cmdLine0+ext;
 			cmdLine = cmdLine.replace(" ", "_");
+			cmdLine = cmdLine.replace("\\\\", "/");
 			cmdLine = cmdLine.replace("\\", "/");
 			cmdLine = cmdLine.replaceAll("[;\\\"]", "");
 			cmdLine = cmdLine.toLowerCase();
 		}else {
 			cmdLine = cmdLine.replace(" ", "_");
+			cmdLine = cmdLine.replace("\\\\", "/");
 			cmdLine = cmdLine.replace("\\", "/");
 			cmdLine = cmdLine.replaceAll("[;\\\"]", "");
 			cmdLine = cmdLine.toLowerCase();
