@@ -38,6 +38,35 @@ public class AlertRule {
 	}	
 
 
+	public void dataCollectionAlert(Model jsonModel, Model alertModel, String proc, String objectString, String ts) {
+		process = "<http://w3id.org/sepses/resource/proc"+proc+">";
+		file = "<http://w3id.org/sepses/resource/file#"+objectString+">";
+		String time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#long>";
+		
+		String q ="CONSTRUCT { << "+file+" sepses:isReadBy "+process+" >> "
+					+ "rule:hasDetectedRule <http://w3id.org/sepses/resource/rule/data-collection-rule>; \r\n"
+					+ "rule:alertWeight 0; \r\n"
+					+ "rule:timestamp "+time+";\r\n"
+					+ "rule:alertType \"internal\" .\r\n"
+					+file+" sepses:isReadBy "+process
+						+ " \r\n}"+
+				   "WHERE { \r\n" + 
+				    file+" rule:intTag  ?oit.\r\n"+
+					file+" sepses:isReadBy "+process+" .\r\n"
+					+file+" rule:confTag  ?oct.\r\n"
+					+process+" rule:intTag  ?sit.\r\n"
+					+"FILTER (?oct < 0.5).\r\n"
+					+"FILTER (?sit < 0.5).\r\n"
+					+ "\r\n"+
+				"}";
+		
+	    QueryExecution qe = QueryExecutionFactory.create(prefix+q, jsonModel);
+        Model currentAlert = qe.execConstruct();
+        alertModel.add(currentAlert);
+        currentAlert.close();
+	    
+	}
+	
 	
 	public void execAlert(Model jsonModel, Model alertModel, String proc, String objectString, String ts) {
 		process = "<http://w3id.org/sepses/resource/proc"+proc+">";
@@ -66,6 +95,7 @@ public class AlertRule {
         currentAlert.close();
 	    
 	}
+	
 	
 	public void dataLeakAlert(Model jsonModel, Model alertModel, String proc, String net, String ts) {
 		
@@ -115,6 +145,31 @@ public class AlertRule {
 					+process+" rule:intTag  ?sit.\r\n"
 					+"FILTER (?oit >= 0.5).\r\n"
 					+"FILTER (?sit < 0.5).\r\n"
+					+ "\r\n"+
+				"}";
+	
+		QueryExecution qe = QueryExecutionFactory.create(prefix+q, jsonModel);
+        Model currentAlert = qe.execConstruct();
+        alertModel.add(currentAlert);
+	    
+	}
+	
+	public void changePermAlert(Model jsonModel, Model alertModel, String proc, String objectString, String ts) {
+		process = "<http://w3id.org/sepses/resource/proc"+proc+">";
+		file = "<http://w3id.org/sepses/resource/file#"+objectString+">";
+		String time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#long>";
+		
+		String q ="CONSTRUCT { << ?p sepses:changesPermission "+file+" >> "
+								+ "rule:hasDetectedRule <http://w3id.org/sepses/resource/rule/changes-permission-rule>;\r\n"+
+								  "rule:alertWeight 0; \r\n"+
+						  		"sepses:timestamp "+time+";\r\n"+
+						  		"rule:alertType \"internal\" .\r\n"+
+						   " \r\n}"+
+				   "WHERE { \r\n" +
+				   "?p sepses:changesPermission "+file+" .\r\n"+
+				   file+" sepses:isExecutedBy "+process+" .\r\n"+
+					file+" rule:intTag  ?oit.\r\n"
+					+"FILTER (?oit < 0.5).\r\n"
 					+ "\r\n"+
 				"}";
 	

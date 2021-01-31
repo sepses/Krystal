@@ -8,7 +8,7 @@ ontology: experiment/ontology/log-ontology.ttl
 
 rule-dir : experiment/rule/
 
-os-platform: linux
+os-platform: freebsd
 
 triple-store: graphdb
 
@@ -34,7 +34,7 @@ field-filter:
  - EVENT_ACCEPT
  - EVENT_SENDMSG
  #- EVENT_SENDTO
- - EVENT_MODIFY_FILE_ATTRIBUTES
+ #- EVENT_MODIFY_FILE_ATTRIBUTES
  - EVENT_RENAME
  #- EVENT_RECVFROM
  - EVENT_MODIFY_PROCESS

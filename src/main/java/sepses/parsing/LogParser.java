@@ -155,7 +155,13 @@ public class LogParser {
 									Reader targetReader = new StringReader(mapper);
 									jsonModel.read(targetReader, null, "N-TRIPLE");
 									
+									 AlertRule alert = new AlertRule();							
+									 alert.dataCollectionAlert(jsonModel,alertModel, subject+"#"+exec, objectString, sts);
+
+									
 									prop.readTag(jsonModel, subject, exec, objectString);
+									
+									
 									
 									lastAccess = curRead;
 									
@@ -213,7 +219,10 @@ public class LogParser {
 									  prop.decayIndividualProcess(jsonModel,  subject+"#"+process2, ts, period, Tb, Te);
 									}
 									
+								 
 								 AlertRule alert = new AlertRule();
+								 
+								 alert.changePermAlert(jsonModel, alertModel, subject+"#"+process2, objectString, sts);
 								 alert.execAlert(jsonModel,alertModel, subject+"#"+process2, objectString, sts);
 								 
 								 prop.execTag(jsonModel, subject, process2, objectString);
@@ -231,6 +240,16 @@ public class LogParser {
 						 
 						
 						
+					}else if(eventType.contains("EVENT_MODIFY_FILE_ATTRIBUTES")) {
+						String curCh = subject+exec+objectString+"change";
+						if	(!lastAccess.contains(curCh)) {				
+
+							mapper = lm.changePerm(subject,exec,objectString,hostId,userId, timestamp);
+								
+							Reader targetReader = new StringReader(mapper);
+							jsonModel.read(targetReader, null, "N-TRIPLE");
+					}
+					
 					}else if(eventType.contains("EVENT_SENDTO")) {
 					
 						String IPAddress = getIpAddress(object, NetworkObject);

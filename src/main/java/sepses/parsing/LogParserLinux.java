@@ -82,8 +82,11 @@ public class LogParserLinux {
 				  if(eventType.contains("EVENT_WRITE")) {
 					 
 					  String fileName = getFileName(object, FileObject);
+					
 						
-						if(!fileName.isEmpty()) {						
+					  
+						if(!fileName.isEmpty()) {
+							 
 							String curWrite = subject+exec+fileName+"write";
 							if	(!lastAccess.contains(curWrite)) {				
 								mapper = lm.writeMap(subject,exec,fileName,hostId,userId, timestamp);
@@ -154,7 +157,22 @@ public class LogParserLinux {
 						String objExec = getExecFromCmdLine(objCmd);
 						forkEvent(lm, subject+"#"+exec, object+"#"+objExec, timestamp, jsonModel);
 											
-					}else if(eventType.contains("EVENT_SENDTO")) {
+					}else if(eventType.contains("EVENT_MODIFY_FILE_ATTRIBUTES")) {
+						
+						String fileName = getFileName(object, FileObject);
+						
+						if(!fileName.isEmpty()) {						
+							mapper = lm.changePerm(subject,exec,fileName,hostId,userId, timestamp);
+								
+								Reader targetReader = new StringReader(mapper);
+								jsonModel.read(targetReader, null, "N-TRIPLE");
+								
+								AlertRule alert = new AlertRule();
+								alert.changePermAlert(jsonModel, alertModel, subject+"#"+exec, fileName, sts);
+								
+						}
+					}
+					else if(eventType.contains("EVENT_SENDTO")) {
 						String IPAddress = getIpAddress(object, NetworkObject);
 						if(!IPAddress.isEmpty() && !IPAddress.equals("NA:0") && !IPAddress.equals("NETLINK:0") ) {
 							if(isEntityNew(IPAddress, Network)) {

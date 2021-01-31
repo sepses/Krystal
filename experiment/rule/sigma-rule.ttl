@@ -1033,3 +1033,9 @@ FILTER (regex(str(?cmd),"rm .*bash_history")\r
 
 <http://w3id.org/sepses/resource/rule/data-leak-rule> a ns2:CustomRule ;
                  ns2:hasAttackTechnique  <http://w3id.org/sepses/resource/attack/technique/T1020> .
+
+<http://w3id.org/sepses/resource/rule/change-permission-rule> a ns2:CustomRule ;
+                 ns2:hasAttackTechnique  <http://w3id.org/sepses/resource/attack/technique/T1222> .
+
+<http://w3id.org/sepses/resource/rule/data-collection-rule> a ns2:CustomRule ;
+                 ns2:hasAttackTechnique  <http://w3id.org/sepses/resource/attack/technique/T1005> .
