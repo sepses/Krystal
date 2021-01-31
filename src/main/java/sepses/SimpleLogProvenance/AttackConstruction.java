@@ -64,7 +64,7 @@ public class AttackConstruction {
 		System.out.println("Top 10 process");
 		String q = "PREFIX sepses: <http://w3id.org/sepses/vocab/event/log#>\r\n"
 				+ "PREFIX rule: <http://w3id.org/sepses/vocab/rule#>\r\n" + 
-				"SELECT distinct ?s ?aw WHERE { \r\n" + 
+				"SELECT distinct ?s ?o ?aw WHERE { \r\n" + 
 				"	<< ?s ?p ?o >> rule:hasDetectedRule ?a; \r\n"
 				+ "                rule:alertWeight ?aw \r\n" + 
 				"} ORDER by DESC(?aw)\r\n"
@@ -74,9 +74,10 @@ public class AttackConstruction {
 	        ResultSet rs = qe.execSelect();
 	        while (rs.hasNext()) {
 	            QuerySolution qs = rs.nextSolution();
-	            RDFNode ns = qs.get("?s");            
+	            RDFNode ns = qs.get("?s");     
+	            RDFNode no = qs.get("?o");   
 	            RDFNode nw = qs.get("?aw");            
-	            System.out.println(ns +" : "+nw.asLiteral().getInt());
+	            System.out.println(ns +" "+no+" : "+nw.asLiteral().getInt());
                 
 	        }
 	

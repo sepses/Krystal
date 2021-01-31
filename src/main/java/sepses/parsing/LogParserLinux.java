@@ -146,6 +146,7 @@ public class LogParserLinux {
 							}
 							
 							AlertRule alert = new AlertRule();
+							alert.changePermAlert(jsonModel, alertModel, subject+"#"+exec, fileName, sts);
 							alert.execAlert(jsonModel,alertModel, subject+"#"+newExec, fileName, sts);
 							
 							prop.execTag(jsonModel, subject, newExec, fileName);	
@@ -167,8 +168,6 @@ public class LogParserLinux {
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 								
-								AlertRule alert = new AlertRule();
-								alert.changePermAlert(jsonModel, alertModel, subject+"#"+exec, fileName, sts);
 								
 						}
 					}
@@ -209,6 +208,12 @@ public class LogParserLinux {
 								mapper = lm.receiveMap(subject,exec,IPAddress,hostId,userId, timestamp) + networkMap;
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");
+								
+								
+								
+								AlertRule alert = new AlertRule();
+								alert.reconnaissanceAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
+					
 								
 								prop.receiveTag(jsonModel, subject, exec, IPAddress);
 					

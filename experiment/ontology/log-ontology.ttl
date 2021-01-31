@@ -129,11 +129,11 @@
               rdfs:comment "This property represents connection received by Process from a Socket" .
 
 ###  http://w3id.org/sepses/vocab/event/log#receives
-:receives rdf:type owl:ObjectProperty ;
-              rdfs:subPropertyOf :provRel ;
-              rdfs:domain :Process ;
-              rdfs:range :Socket ;
-              rdfs:comment "This property represents connection received by Process from a Socket" .
+#:receives rdf:type owl:ObjectProperty ;
+#              rdfs:subPropertyOf :provRel ;
+#              rdfs:domain :Process ;
+#              rdfs:range :Socket ;
+#              rdfs:comment "This property represents connection received by Process from a Socket" .
 
 
 ###  http://w3id.org/sepses/vocab/event/log#originatesFrom

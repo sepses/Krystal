@@ -68,6 +68,36 @@ public class AlertRule {
 	}
 	
 	
+	public void reconnaissanceAlert(Model jsonModel, Model alertModel, String proc, String net, String ts) {
+		process = "<http://w3id.org/sepses/resource/proc"+proc+">";
+		net = "<http://w3id.org/sepses/resource/soc#"+net+">";
+		String time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#long>";
+		
+		String q ="CONSTRUCT { << "+net+" sepses:isReceivedBy "+process+" >> "
+					+ "rule:hasDetectedRule <http://w3id.org/sepses/resource/rule/reconnaissance-rule>; \r\n"
+					+ "rule:alertWeight 0; \r\n"
+					+ "rule:timestamp "+time+";\r\n"
+					+ "rule:alertType \"internal\" .\r\n"
+					+net+" sepses:isReceivedBy "+process
+						+ " \r\n}"+
+				   "WHERE { \r\n" + 
+				     net+" sepses:isReceivedBy "+process+" .\r\n"
+					 + "?f sepses:isReadBy "+process+" .\r\n"+
+					process+ " rule:subjTag  ?sst.\r\n"+
+					"?f rule:confTag  ?oct.\r\n"
+					+"FILTER (?oct < 0.5).\r\n"
+					+"FILTER (?sst >= 0.5).\r\n"
+					+ "\r\n"+
+				"}";
+		
+	    QueryExecution qe = QueryExecutionFactory.create(prefix+q, jsonModel);
+        Model currentAlert = qe.execConstruct();
+        alertModel.add(currentAlert);
+        currentAlert.close();
+	    
+	}
+	
+	
 	public void execAlert(Model jsonModel, Model alertModel, String proc, String objectString, String ts) {
 		process = "<http://w3id.org/sepses/resource/proc"+proc+">";
 		file = "<http://w3id.org/sepses/resource/file#"+objectString+">";
@@ -160,7 +190,7 @@ public class AlertRule {
 		String time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#long>";
 		
 		String q ="CONSTRUCT { << ?p sepses:changesPermission "+file+" >> "
-								+ "rule:hasDetectedRule <http://w3id.org/sepses/resource/rule/changes-permission-rule>;\r\n"+
+								+ "rule:hasDetectedRule <http://w3id.org/sepses/resource/rule/change-permission-rule>;\r\n"+
 								  "rule:alertWeight 0; \r\n"+
 						  		"sepses:timestamp "+time+";\r\n"+
 						  		"rule:alertType \"internal\" .\r\n"+
