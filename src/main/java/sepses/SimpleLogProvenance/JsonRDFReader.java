@@ -14,6 +14,8 @@ import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.InfModel;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.reasoner.Reasoner;
+import org.apache.jena.reasoner.ReasonerRegistry;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.tdb.TDBFactory;
 
@@ -165,10 +167,10 @@ public class JsonRDFReader {
 	   }
 	       //end of folder
 	    // System.out.println("Perform reasoning...");
-	    // Reasoner reasoner = ReasonerRegistry.getOWLReasoner();
-	     //reasoner = reasoner.bindSchema(RDFDataMgr.loadModel(ontology));
-	     //InfModel infModel = ModelFactory.createInfModel(reasoner, jsonModel);
-	     InfModel infModel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), jsonModel);
+	     Reasoner reasoner = ReasonerRegistry.getOWLMicroReasoner();
+	     reasoner = reasoner.bindSchema(RDFDataMgr.loadModel(ontology));
+	     InfModel infModel = ModelFactory.createInfModel(reasoner, jsonModel);
+	     //InfModel infModel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), jsonModel);
 		    
 	     
 	     

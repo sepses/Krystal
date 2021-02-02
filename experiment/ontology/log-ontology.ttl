@@ -46,8 +46,8 @@
 
 ###  http://w3id.org/sepses/vocab/event/log#provRel
 :provRel rdf:type owl:ObjectProperty ;
-          rdfs:domain :SystemObject ;
-          rdfs:range :SystemObject ;
+#         rdfs:domain :SystemObject ;
+#          rdfs:range :SystemObject ;
           rdfs:comment "The property to represent general connection between event entities e.g. Process to Process, Process to File, Process to Socket etc." .
 
 
@@ -129,11 +129,11 @@
               rdfs:comment "This property represents connection received by Process from a Socket" .
 
 ###  http://w3id.org/sepses/vocab/event/log#receives
-#:receives rdf:type owl:ObjectProperty ;
+:receives rdf:type owl:ObjectProperty ;
 #              rdfs:subPropertyOf :provRel ;
-#              rdfs:domain :Process ;
-#              rdfs:range :Socket ;
-#              rdfs:comment "This property represents connection received by Process from a Socket" .
+              rdfs:domain :Process ;
+              rdfs:range :Socket ;
+              rdfs:comment "This property represents connection received by Process from a Socket" .
 
 
 ###  http://w3id.org/sepses/vocab/event/log#originatesFrom
@@ -216,8 +216,8 @@
 #################################################################
 
 ###  http://w3id.org/sepses/vocab/event/log#SystemObject
-:SystemObject rdf:type owl:Class ;
-             rdfs:comment "The main class of event entity, represents any entity in an event e.g. process, file, socket etc." .
+#:SystemObject rdf:type owl:Class ;
+#             rdfs:comment "The main class of event entity, represents any entity in an event e.g. process, file, socket etc." .
 
 
 ###  http://w3id.org/sepses/vocab/event/log#Executable
@@ -227,7 +227,7 @@
 
 ###  http://w3id.org/sepses/vocab/event/log#File
 :File rdf:type owl:Class ;
-      rdfs:subClassOf :SystemObject ;
+#      rdfs:subClassOf :SystemObject ;
       rdfs:comment "The class to represent a file" .
 
 
@@ -249,13 +249,13 @@
 
 ###  http://w3id.org/sepses/vocab/event/log#Socket
 :Socket rdf:type owl:Class ;
-         rdfs:subClassOf :SystemObject ;
+#         rdfs:subClassOf :SystemObject ;
          rdfs:comment "This class represent network connection (socket), a combination of IPAddress and Port e.g. 127.0.0.1:80" .
 
 
 ###  http://w3id.org/sepses/vocab/event/log#Process
 :Process rdf:type owl:Class ;
-         rdfs:subClassOf :SystemObject ;
+#         rdfs:subClassOf :SystemObject ;
          rdfs:comment "This class represent an running process" .
 
 
