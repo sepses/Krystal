@@ -179,7 +179,7 @@ public class JsonRDFReader {
 	     if(backupfile!="false") {
 	    	 	String rdfFile = Utility.saveToRDF(infModel, outputdir, namegraph);
 			    String alertFile = Utility.saveToRDF(alertModel, outputdir, namegraph+"_alert");
-			   // Utility.exportHDT(rdfFile, outputdir, namegraph);
+			    Utility.exportHDT(rdfFile, outputdir, namegraph);
 				if(livestore=="false") {
 					//Utility.storeFileInRepo(triplestore, rdfFile, sparqlEp, namegraph, "dba", "dba");
 					//Utility.storeFileInRepo(triplestore, alertFile, sparqlEp, namegraph, "dba", "dba");
