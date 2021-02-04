@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.jena.atlas.lib.Alarm;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.InfModel;
 import org.apache.jena.rdf.model.Model;
@@ -75,6 +76,7 @@ public class JsonRDFReader {
 		HashMap<String, String> CloneObject = new HashMap<String, String>();
 		HashMap<String, String> RegistryObject = new HashMap<String, String>();
 		ArrayList<Integer> counter = new ArrayList<Integer>(); 
+		counter.add(0);
 		String lastAccess = "";
 		
 		
@@ -179,6 +181,7 @@ public class JsonRDFReader {
 	     //detect alert from rule dir (i.e. sigma rule)
 	     AlertRule.generateAlertFromRuleDir(infModel,alertModel, ruledir);
 		  
+	     System.out.println("number of events :"+counter.get(0));
 	     Statistic.countAlarm(alertModel);
 	         
 	     if(backupfile!="false") {
