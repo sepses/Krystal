@@ -46,10 +46,11 @@ public class LogParserLinux {
 			}
 	}
 	
-	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject, HashMap<String, String> FileObject, HashMap<String, String> SubjectCmd, String file, HashMap<String, String> CloneObject, String decayrule) throws IOException{	
+	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject, HashMap<String, String> FileObject, HashMap<String, String> SubjectCmd, String file, HashMap<String, String> CloneObject, String decayrule, ArrayList<Integer> counter) throws IOException{	
 		//filter is the line is an event or not
 		eventNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.Event");
 		if(eventNode.toBoolean()) {
+			updateCounter(counter);
 			eventType = eventNode.toString();
 			if(!filterLine(eventType, fieldfilter)){
 				String mapper = "";
@@ -507,5 +508,11 @@ public class LogParserLinux {
 
 	}
 	
-	
+    private  static void updateCounter(ArrayList<Integer> counter) {
+		
+		int lastCounter = counter.get(0);
+		counter.remove(0);
+		counter.add(lastCounter+1);
+		 
+	}	
 }

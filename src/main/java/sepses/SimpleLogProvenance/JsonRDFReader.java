@@ -74,6 +74,7 @@ public class JsonRDFReader {
 		HashMap<String, Long> SubjectTime = new HashMap<String, Long>();
 		HashMap<String, String> CloneObject = new HashMap<String, String>();
 		HashMap<String, String> RegistryObject = new HashMap<String, String>();
+		ArrayList<Integer> counter = new ArrayList<Integer>(); 
 		String lastAccess = "";
 		
 		
@@ -107,15 +108,15 @@ public class JsonRDFReader {
 										}	
 										LogParserWin lp = new LogParserWin(line); //fivedirection
 										lastAccess = lp.parseJSONtoRDF(jsonModel,alertModel,fieldfilter, confidentialdir, uuIndex, Process, File, 
-								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, Registry, RegistryObject, SubjectCmd, file, SubjectTime, decayrule);
+								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, Registry, RegistryObject, SubjectCmd, file, SubjectTime, decayrule, counter);
 									}else if (os.equals("linux")){
 										LogParserLinux20 lp = new LogParserLinux20(line); //ubuntu
 										lastAccess = lp.parseJSONtoRDF(jsonModel,alertModel,fieldfilter, confidentialdir, uuIndex, Process, File, 
-								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, FileObject, SubjectCmd, file, CloneObject, decayrule);
+								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, FileObject, SubjectCmd, file, CloneObject, decayrule, counter);
 									}else {
 										LogParser lp = new LogParser(line); //freebsd
 										lastAccess = lp.parseJSONtoRDF(jsonModel,alertModel,fieldfilter, confidentialdir, uuIndex, Process, File, 
-								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, SubjectTime, decayrule);
+								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, SubjectTime, decayrule, counter);
 									}
 									
 							} catch (Exception e) {
