@@ -155,14 +155,10 @@ public class LogParser {
 									Reader targetReader = new StringReader(mapper);
 									jsonModel.read(targetReader, null, "N-TRIPLE");
 									
-									 //AlertRule alert = new AlertRule();							
-									 //alert.dataCollectionAlert(jsonModel,alertModel, subject+"#"+exec, objectString, sts);
-
-									
+									AlertRule alert = new AlertRule();
+									alert.reconnaissanceAlert(jsonModel,alertModel, subject+"#"+exec, objectString, sts);
+																	
 									prop.readTag(jsonModel, subject, exec, objectString);
-									
-									
-									
 									lastAccess = curRead;
 									
 								}
@@ -307,8 +303,6 @@ public class LogParser {
 								//every connection is evil, hence update the new time to avoid decay
 								putNewSubjectTime(subject, ts, SubjectTime);
 								
-								AlertRule alert = new AlertRule();
-								alert.reconnaissanceAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
 								
 								
 								prop.receiveTag(jsonModel, subject, exec, IPAddress);

@@ -143,7 +143,11 @@ public class LogParserWin {
 									Reader targetReader = new StringReader(mapper);
 									jsonModel.read(targetReader, null, "N-TRIPLE");
 									
-									prop.readTag(jsonModel, subject, exec, objectString);										
+									prop.readTag(jsonModel, subject, exec, objectString);		
+									
+
+									AlertRule alert = new AlertRule();
+									alert.reconnaissanceAlert(jsonModel,alertModel, subject+"#"+exec, objectString, sts);
 									
 									lastAccess = curRead;
 					
@@ -166,6 +170,7 @@ public class LogParserWin {
 									 
 									 AlertRule alert = new AlertRule();
 									 alert.execAlert(jsonModel,alertModel, subject+"#"+exec, objectString, sts);
+									 alert.changePermAlert(jsonModel, alertModel, subject+"#"+exec, objectString, sts);
 									 
 									 prop.execTag(jsonModel, subject, exec, objectString);									
 									 lastAccess = curExe;
@@ -192,6 +197,7 @@ public class LogParserWin {
 									AlertRule alert = new AlertRule();
 									alert.execAlert(jsonModel,alertModel, subject+"#"+exec, objectString, sts);
 									 
+									alert.changePermAlert(jsonModel, alertModel, subject+"#"+exec, objectString, sts);
 									 
 									 prop.loadTag(jsonModel, subject, exec, objectString);	
 									 
@@ -213,6 +219,16 @@ public class LogParserWin {
 						prop.forkTag(jsonModel, subject+"#"+exec, object+"#");	
 						
 					
+					}else if(eventType.contains("EVENT_MODIFY_FILE_ATTRIBUTES")) {
+						String curCh = subject+exec+objectString+"change";
+						if	(!lastAccess.contains(curCh)) {				
+	
+							mapper = lm.changePerm(subject,exec,objectString,hostId,userId, sts);
+								
+							Reader targetReader = new StringReader(mapper);
+							jsonModel.read(targetReader, null, "N-TRIPLE");
+					
+						 }
 					}else if(eventType.contains("EVENT_SENDTO")) {
 					
 						String IPAddress = getIpAddress(object, NetworkObject);
@@ -263,11 +279,15 @@ public class LogParserWin {
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");			
 								
+								
+								
 								prop.receiveTag(jsonModel, subject, exec, IPAddress);
 								
 								if(ts>stime) {
 									putNewSubjectTime(subject, ts, SubjectTime);
 								}
+								
+								
 								
 											
 						  }	 

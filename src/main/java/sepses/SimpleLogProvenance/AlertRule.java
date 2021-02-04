@@ -78,11 +78,39 @@ public class AlertRule {
 					+ "rule:alertWeight 0; \r\n"
 					+ "rule:timestamp "+time+";\r\n"
 					+ "rule:alertType \"internal\" .\r\n"
-					+net+" sepses:isReceivedBy "+process
 						+ " \r\n}"+
 				   "WHERE { \r\n" + 
 				     net+" sepses:isReceivedBy "+process+" .\r\n"
 					 + "?f sepses:isReadBy "+process+" .\r\n"+
+					process+ " rule:subjTag  ?sst.\r\n"+
+					"?f rule:confTag  ?oct.\r\n"
+					+"FILTER (?oct < 0.5).\r\n"
+					+"FILTER (?sst >= 0.5).\r\n"
+					+ "\r\n"+
+				"}";
+		
+	    QueryExecution qe = QueryExecutionFactory.create(prefix+q, jsonModel);
+        Model currentAlert = qe.execConstruct();
+        alertModel.add(currentAlert);
+        currentAlert.close();
+	    
+	}
+	
+
+	public void reconnaissanceReadAlert(Model jsonModel, Model alertModel, String proc, String file, String ts) {
+		process = "<http://w3id.org/sepses/resource/proc"+proc+">";
+		file = "<http://w3id.org/sepses/resource/file#"+file+">";
+		String time = "\""+ts + "\"^^<http://www.w3.org/2001/XMLSchema#long>";
+		
+		String q ="CONSTRUCT { << ?n sepses:isReceivedBy "+process+" >> "
+					+ "rule:hasDetectedRule <http://w3id.org/sepses/resource/rule/reconnaissance-rule>; \r\n"
+					+ "rule:alertWeight 0; \r\n"
+					+ "rule:timestamp "+time+";\r\n"
+					+ "rule:alertType \"internal\" .\r\n"
+						+ " \r\n}"+
+				   "WHERE { \r\n" + 
+				     "?n sepses:isReceivedBy "+process+" .\r\n"
+					 +file+" sepses:isReadBy "+process+" .\r\n"+
 					process+ " rule:subjTag  ?sst.\r\n"+
 					"?f rule:confTag  ?oct.\r\n"
 					+"FILTER (?oct < 0.5).\r\n"

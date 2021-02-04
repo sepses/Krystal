@@ -23,6 +23,7 @@ import helper.Utility;
 import sepses.parsing.LogParser;
 import sepses.parsing.LogParserWin;
 import sepses.parsing.LogParserLinux;
+import sepses.parsing.LogParserLinux20;
 
 public class JsonRDFReader {
 	
@@ -108,7 +109,7 @@ public class JsonRDFReader {
 										lastAccess = lp.parseJSONtoRDF(jsonModel,alertModel,fieldfilter, confidentialdir, uuIndex, Process, File, 
 								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, Registry, RegistryObject, SubjectCmd, file, SubjectTime, decayrule);
 									}else if (os.equals("linux")){
-										LogParserLinux lp = new LogParserLinux(line); //ubuntu
+										LogParserLinux20 lp = new LogParserLinux20(line); //ubuntu
 										lastAccess = lp.parseJSONtoRDF(jsonModel,alertModel,fieldfilter, confidentialdir, uuIndex, Process, File, 
 								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, FileObject, SubjectCmd, file, CloneObject, decayrule);
 									}else {
@@ -177,6 +178,7 @@ public class JsonRDFReader {
 	     //detect alert from rule dir (i.e. sigma rule)
 	     AlertRule.generateAlertFromRuleDir(infModel,alertModel, ruledir);
 		  
+	     Statistic.countAlarm(alertModel);
 	         
 	     if(backupfile!="false") {
 	    	 	String rdfFile = Utility.saveToRDF(infModel, outputdir, namegraph);
@@ -188,10 +190,10 @@ public class JsonRDFReader {
 				}	
 			} 
 	     
-	   System.out.println("Finish!, get the primary alarm.. ");
-	   AttackConstruction.getMostWeightedAlert(infModel,alertModel);
+	   //System.out.println("Finish!, get the primary alarm.. ");
+	  // AttackConstruction.getMostWeightedAlert(infModel,alertModel);
 	
-	   Statistic.countAlarm(alertModel);
+	   
 	}
 
 }

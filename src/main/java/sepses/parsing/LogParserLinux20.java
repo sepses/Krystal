@@ -13,7 +13,7 @@ import com.jsoniter.any.Any;
 import sepses.SimpleLogProvenance.AlertRule;
 import sepses.SimpleLogProvenance.PropagationRule;
 
-public class LogParserLinux {
+public class LogParserLinux20 {
 	public String eventType;
 	public Any eventNode;
 	public Any networkNode;
@@ -37,10 +37,10 @@ public class LogParserLinux {
 	public ArrayList<String> confidentialdir;
 	public long logTimer;
 	
-	public LogParserLinux(String line) {
+	public LogParserLinux20(String line) {
 			Any jsonNode=JsonIterator.deserialize(line);
 			datumNode = jsonNode.get("datum");
-			long timer  = datumNode.get("com.bbn.tc.schema.avro.cdm18.Event").get("timestampNanos").toLong();
+			long timer  = datumNode.get("com.bbn.tc.schema.avro.cdm20.Event").get("timestampNanos").toLong();
 			if(timer > 0) {
 				this.logTimer = timer;
 			}
@@ -48,13 +48,13 @@ public class LogParserLinux {
 	
 	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject, HashMap<String, String> FileObject, HashMap<String, String> SubjectCmd, String file, HashMap<String, String> CloneObject, String decayrule) throws IOException{	
 		//filter is the line is an event or not
-		eventNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.Event");
+		eventNode = datumNode.get("com.bbn.tc.schema.avro.cdm20.Event");
 		if(eventNode.toBoolean()) {
 			eventType = eventNode.toString();
 			if(!filterLine(eventType, fieldfilter)){
 				String mapper = "";
 				LogMapper lm = new LogMapper();	
-				subject = shortenUUID(eventNode.get("subject").get("com.bbn.tc.schema.avro.cdm18.UUID").toString(),uuIndex);
+				subject = shortenUUID(eventNode.get("subject").get("com.bbn.tc.schema.avro.cdm20.UUID").toString(),uuIndex);
 				hostId = eventNode.get("hostId").toString();
 			    String subjCmd = getSubjectCmd(subject, SubjectCmd);
 			    exec = getExecFromCmdLine(subjCmd);
@@ -62,7 +62,7 @@ public class LogParserLinux {
 				String sts = eventNode.get("timestampNanos").toString();
 				String strTime = new Timestamp(ts/1000000).toString();
 				userId = getUserId(subject, UserObject);
-				object = shortenUUID(eventNode.get("predicateObject").get("com.bbn.tc.schema.avro.cdm18.UUID").toString(),uuIndex);
+				object = shortenUUID(eventNode.get("predicateObject").get("com.bbn.tc.schema.avro.cdm20.UUID").toString(),uuIndex);
 				String networkMap="";
 				
 				PropagationRule prop = new PropagationRule();
@@ -211,7 +211,6 @@ public class LogParserLinux {
 								mapper = lm.receiveMap(subject,exec,IPAddress,hostId,userId, timestamp) + networkMap;
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");
-					
 								
 								prop.receiveTag(jsonModel, subject, exec, IPAddress);
 					
@@ -219,11 +218,11 @@ public class LogParserLinux {
 					}
 				}
 			 
-		}else if(datumNode.get("com.bbn.tc.schema.avro.cdm18.NetFlowObject").toBoolean()) {
-			networkNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.NetFlowObject");
+		}else if(datumNode.get("com.bbn.tc.schema.avro.cdm20.NetFlowObject").toBoolean()) {
+			networkNode = datumNode.get("com.bbn.tc.schema.avro.cdm20.NetFlowObject");
 			netObject = shortenUUID(networkNode.get("uuid").toString(),uuIndex); 
-			String ip = networkNode.get("remoteAddress").toString();
-			String port =networkNode.get("remotePort").toString();
+			String ip = networkNode.get("remoteAddress").get("String").toString();
+			String port =networkNode.get("remotePort").get("int").toString();
 			netAddress = ip+":"+port;
 			
 			putNewNetworkObject(netObject, netAddress, NetworkObject);
@@ -232,8 +231,8 @@ public class LogParserLinux {
 			Reader targetReader = new StringReader(mapper);
 			jsonModel.read(targetReader, null, "N-TRIPLE");
 
-		}else if(datumNode.get("com.bbn.tc.schema.avro.cdm18.Subject").toBoolean()) {
-		    subjectNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.Subject");
+		}else if(datumNode.get("com.bbn.tc.schema.avro.cdm20.Subject").toBoolean()) {
+		    subjectNode = datumNode.get("com.bbn.tc.schema.avro.cdm20.Subject");
 			subject = shortenUUID(subjectNode.get("uuid").toString(),uuIndex);
 			String userId = shortenUUID(subjectNode.get("localPrincipal").toString(),uuIndex); 
 			String cmdLine = subjectNode.get("cmdLine").get("string").toString();
@@ -251,8 +250,8 @@ public class LogParserLinux {
 			PropagationRule prop = new PropagationRule();  //these are for deca
 			prop.putProcessTime(jsonModel, subject, exec, time);	
 	
-		}else if(datumNode.get("com.bbn.tc.schema.avro.cdm18.FileObject").toBoolean()) {
-		    fileNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.FileObject");
+		}else if(datumNode.get("com.bbn.tc.schema.avro.cdm20.FileObject").toBoolean()) {
+		    fileNode = datumNode.get("com.bbn.tc.schema.avro.cdm20.FileObject");
 			String fileObject = shortenUUID(fileNode.get("uuid").toString(),uuIndex); 
 			String fileName = cleanLine(fileNode.get("baseObject").get("properties").get("map").get("filename").toString()); 
 			
@@ -269,8 +268,8 @@ public class LogParserLinux {
 			Reader targetReader = new StringReader(fileMap);
 			jsonModel.read(targetReader, null, "N-TRIPLE");
 			
-		}else if(datumNode.get("com.bbn.tc.schema.avro.cdm18.Principal").toBoolean()) {
-			userNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.Principal");
+		}else if(datumNode.get("com.bbn.tc.schema.avro.cdm20.Principal").toBoolean()) {
+			userNode = datumNode.get("com.bbn.tc.schema.avro.cdm20.Principal");
 			userId = shortenUUID(userNode.get("uuid").toString(),uuIndex); 
 			String userType = getUserType(userNode.get("userId").toInt());
 			String userName = userNode.get("username").get("string").toString(); 
@@ -280,8 +279,8 @@ public class LogParserLinux {
 			Reader targetReader = new StringReader(mapper);
 			jsonModel.read(targetReader, null, "N-TRIPLE");
 			
-		}else if(datumNode.get("com.bbn.tc.schema.avro.cdm18.Host").toBoolean()) {
-		    hostNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.Host");
+		}else if(datumNode.get("com.bbn.tc.schema.avro.cdm20.Host").toBoolean()) {
+		    hostNode = datumNode.get("com.bbn.tc.schema.avro.cdm20.Host");
 			hostId = hostNode.get("uuid").toString(); 
 			//String hostType = hostNode.get("hostType").toString();
 			String hostName = hostNode.get("hostName").toString();
