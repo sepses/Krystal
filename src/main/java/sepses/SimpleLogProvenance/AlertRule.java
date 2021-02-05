@@ -283,8 +283,9 @@ public class AlertRule {
 			 Statement s = iter.next();
 			 Resource subj = s.getSubject();
 			 String ruleQuery = s.getObject().asLiteral().toString().replace("\\\"","\"");
-			  ruleQuery = ruleQuery.replace("\\\\","\\\\\\\\");
-			
+			 if(ruledir.contains("rule_win")) {
+				 ruleQuery = ruleQuery.replace("\\\\","\\\\\\\\");
+			 }
 			 
 				//apply (iteratively) rule query from infModel
 			 if(!ruleQuery.isEmpty()) {

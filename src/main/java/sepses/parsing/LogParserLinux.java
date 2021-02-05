@@ -103,9 +103,10 @@ public class LogParserLinux {
 							}
 						}
 					  
-					}else if(eventType.contains("EVENT_READ")) {
+					}else if(eventType.contains("EVENT_READ")) {	
 						
 						  String fileName = getFileName(object, FileObject);
+						  
 						  	if(!fileName.isEmpty()) {						
 						  		String curRead = subject+exec+fileName+"read";
 								if	(!lastAccess.contains(curRead)) {				
@@ -113,9 +114,6 @@ public class LogParserLinux {
 									Reader targetReader = new StringReader(mapper);
 									jsonModel.read(targetReader, null, "N-TRIPLE");
 																
-									AlertRule alert = new AlertRule();
-									alert.reconnaissanceReadAlert(jsonModel,alertModel, subject+"#"+exec, fileName, sts);
-									
 									prop.readTag(jsonModel, subject, exec, fileName);										
 									lastAccess = curRead;
 								}
@@ -225,6 +223,8 @@ public class LogParserLinux {
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 					
+								AlertRule alert = new AlertRule();
+								alert.reconnaissanceReadAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
 								
 								prop.receiveTag(jsonModel, subject, exec, IPAddress);
 					

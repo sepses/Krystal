@@ -10,7 +10,7 @@ rule-dir : experiment/rule/
 
 rule-dir-win : experiment/rule_win/
 
-os-platform: windows
+os-platform: linux
 
 triple-store: graphdb
 
