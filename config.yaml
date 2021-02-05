@@ -8,7 +8,7 @@ ontology: experiment/ontology/log-ontology.ttl
 
 rule-dir : experiment/rule/
 
-os-platform: linux
+os-platform: windows
 
 triple-store: graphdb
 

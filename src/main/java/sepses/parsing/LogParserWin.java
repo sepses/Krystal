@@ -282,6 +282,8 @@ public class LogParserWin {
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");			
 								
+								AlertRule alert = new AlertRule();
+								alert.reconnaissanceAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
 								
 								
 								prop.receiveTag(jsonModel, subject, exec, IPAddress);
