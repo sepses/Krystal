@@ -162,7 +162,9 @@ public class LogParserLinux {
 					}else if(eventType.contains("EVENT_MODIFY_FILE_ATTRIBUTES")) {
 						
 						String fileName = getFileName(object, FileObject);	
-						if(!fileName.isEmpty()) {						
+						String curCh = subject+exec+fileName+"change";
+						if(!fileName.isEmpty()) {				
+							if	(!lastAccess.contains(curCh)) {		
 							mapper = lm.changePerm(subject,exec,fileName,hostId,userId, timestamp);
 								
 								Reader targetReader = new StringReader(mapper);
@@ -170,9 +172,10 @@ public class LogParserLinux {
 								
 								AlertRule alert = new AlertRule();
 								alert.changePermAlert(jsonModel, alertModel, subject+"#"+exec, fileName, sts);
-									
-								
+								lastAccess=curCh;
+						  }
 						}
+						
 //					}else if(eventType.contains("EVENT_MPROTECT")) {
 //						
 //						String fileName = getFileName(object, FileObject);
