@@ -170,8 +170,10 @@ public class LogParserWin {
 									 jsonModel.read(targetReader2, null, "N-TRIPLE");
 									 
 									 AlertRule alert = new AlertRule();
-									 alert.execAlert(jsonModel,alertModel, subject+"#"+exec, objectString, sts);
+									 
 									 alert.changePermAlert(jsonModel, alertModel, subject+"#"+exec, objectString, sts);
+									 alert.execAlert(jsonModel,alertModel, subject+"#"+exec, objectString, sts);
+									 
 									 
 									 prop.execTag(jsonModel, subject, exec, objectString);									
 									 lastAccess = curExe;

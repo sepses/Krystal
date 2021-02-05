@@ -150,7 +150,7 @@ public class LogParserLinux {
 							}
 							
 							AlertRule alert = new AlertRule();
-							alert.changePermAlert(jsonModel, alertModel, subject+"#"+exec, fileName, sts);
+							alert.changePermAlert(jsonModel, alertModel, subject+"#"+newExec, fileName, sts);
 							alert.execAlert(jsonModel,alertModel, subject+"#"+newExec, fileName, sts);
 							
 							prop.execTag(jsonModel, subject, newExec, fileName);	
