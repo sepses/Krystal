@@ -217,7 +217,6 @@ public class LogParser {
 								 
 								 AlertRule alert = new AlertRule();
 								 
-								 alert.changePermAlert(jsonModel, alertModel, subject+"#"+process2, objectString, sts);
 								 alert.execAlert(jsonModel,alertModel, subject+"#"+process2, objectString, sts);
 								 
 								 prop.execTag(jsonModel, subject, process2, objectString);
@@ -243,8 +242,28 @@ public class LogParser {
 								
 							Reader targetReader = new StringReader(mapper);
 							jsonModel.read(targetReader, null, "N-TRIPLE");
-					}
-					
+							
+							 AlertRule alert = new AlertRule();
+							 alert.changePermAlert(jsonModel, alertModel, subject+"#"+exec, objectString, sts);
+							lastAccess = curCh;
+								
+						}
+						
+//						
+//					} else if(eventType.contains("EVENT_MPROTECT")) {
+//						String curPro = subject+exec+objectString+"mprotect";
+//						if	(!lastAccess.contains(curPro)) {				
+//
+//							mapper = lm.mprotect(subject,exec,objectString,hostId,userId, timestamp);
+//								
+//							Reader targetReader = new StringReader(mapper);
+//							jsonModel.read(targetReader, null, "N-TRIPLE");
+//							
+//							AlertRule alert = new AlertRule();
+//							alert.memExec(jsonModel, alertModel, subject+"#"+exec, objectString, sts); 
+//							lastAccess = curPro;
+//						}
+//						
 					}else if(eventType.contains("EVENT_SENDTO")) {
 					
 						String IPAddress = getIpAddress(object, NetworkObject);
@@ -277,9 +296,7 @@ public class LogParser {
 							
 						}
 						
-						
-						
-					}else if(eventType.contains("EVENT_RECVFROM")) {
+				}else if(eventType.contains("EVENT_RECVFROM")) {
 					
 									
 						String IPAddress = getIpAddress(object, NetworkObject);

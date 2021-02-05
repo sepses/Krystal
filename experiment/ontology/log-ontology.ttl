@@ -164,6 +164,13 @@
         rdfs:range :File ;
         rdfs:comment "This property represents change permission of a File by a Process" .
 
+###  http://w3id.org/sepses/vocab/event/log#mprotect
+:mprotect rdf:type owl:ObjectProperty ;
+        rdfs:domain :Process ;
+        rdfs:range :File ;
+        rdfs:comment "This property represents create execution in memory of a File by a Process" .
+
+
 ###  http://w3id.org/sepses/vocab/event/log#hasPotentialAttackTechnique
 :hasPotentialAttackTechnique rdf:type owl:ObjectProperty ;
         		     rdfs:range attack:Technique ;

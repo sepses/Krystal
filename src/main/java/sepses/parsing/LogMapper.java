@@ -5,6 +5,7 @@ public class LogMapper {
 	public  String timestamp;
 	public  String counter;
 	public  String writes;
+	public  String mprotect;
 	public  String changePerm;
 	public  String sends;
 	public  String isExecutedBy;
@@ -52,6 +53,7 @@ public class LogMapper {
 		cmdLine = "<http://w3id.org/sepses/vocab/event/log#cmdLine>";
 		timestamp = "<http://w3id.org/sepses/vocab/event/log#timestamp>";
 		changePerm = "<http://w3id.org/sepses/vocab/event/log#changesPermission>";
+		mprotect = "<http://w3id.org/sepses/vocab/event/log#mprotect>";
 		a = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>";
 	//tag-property
 		intTag = "<http://w3id.org/sepses/vocab/rule#intTag>";
@@ -136,6 +138,16 @@ public class LogMapper {
 		//ts = "\""+ts+"\"^^<http://www.w3.org/2001/XMLSchema#long>";
 		
 		return  process +s+ changePerm +s+ file +dot +
+				//"<< " +process +s+ writes +s+ file +" >> "+timestamp +s+ ts +s+ dot
+				 addTriple(process, exec, hostId, userId);
+		}
+	
+	public  String mprotect(String subject, String exec, String objectString, String hostId, String userId, String ts) {	
+		process = "<http://w3id.org/sepses/resource/proc"+subject+"#"+exec+">";
+		file = "<http://w3id.org/sepses/resource/file#"+objectString+">";
+		//ts = "\""+ts+"\"^^<http://www.w3.org/2001/XMLSchema#long>";
+		
+		return  process +s+ mprotect +s+ file +dot +
 				//"<< " +process +s+ writes +s+ file +" >> "+timestamp +s+ ts +s+ dot
 				 addTriple(process, exec, hostId, userId);
 		}
