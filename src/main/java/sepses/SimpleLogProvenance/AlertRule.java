@@ -264,7 +264,7 @@ public class AlertRule {
 	
 	
 	public static void generateAlertFromRuleDir(Model jsonModel, Model alertModel, String ruledir) {
-		System.out.println("generate alert from community rule");
+		System.out.println("generate alert from community rule"+ruledir);
 		
 		//get rule-query from ruledir
 		File rulefolder = new File(ruledir);
@@ -283,6 +283,8 @@ public class AlertRule {
 			 Statement s = iter.next();
 			 Resource subj = s.getSubject();
 			 String ruleQuery = s.getObject().asLiteral().toString().replace("\\\"","\"");
+			  ruleQuery = ruleQuery.replace("\\\\","\\\\\\\\");
+			
 			 
 				//apply (iteratively) rule query from infModel
 			 if(!ruleQuery.isEmpty()) {

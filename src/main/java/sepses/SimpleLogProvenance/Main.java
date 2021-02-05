@@ -19,6 +19,7 @@ public class Main {
 	       String outputdir= s.get("output-dir").toString();
 	       String inputdir= s.get("input-dir").toString();
 	       String ruledir= s.get("rule-dir").toString();
+	       String ruledirwin= s.get("rule-dir-win").toString();
 	       String osplatform= s.get("os-platform").toString();
 	       String triplestore= s.get("triple-store").toString();
 	       String backupfile= s.get("backup-file").toString();
@@ -49,7 +50,12 @@ public class Main {
 	    //=====end commandline argument===========
 	      
 	  	//====== only for experiment in IDE, please uncomment this lines when you compile ========= 
-
+	      
+	      if(osplatform.contains("windows")) {
+	    	  ruledir = ruledirwin;
+	    	  
+	      }
+//	      System.out.println("using rule dir:"+ruledir);
 //	      type = "darpa";
 //	      filefolder = inputdir+"darpa/";
 //	  	  line = "100000";
