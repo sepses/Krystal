@@ -188,7 +188,7 @@ public class LogParserUbuntu12 {
 //								alert.memExec(jsonModel, alertModel, subject+"#"+exec, fileName, sts);
 //								
 //						}
-					}else if(eventType.contains("EVENT_SENDTO")||eventType.contains("EVENT_SENDMSG")) {
+					}else if(eventType.contains("EVENT_SENDTO")) {
 						String IPAddress = getIpAddress(object, NetworkObject);
 						if(!IPAddress.isEmpty() && !IPAddress.equals("NA:0") && !IPAddress.equals("NETLINK:0") ) {
 							if(isEntityNew(IPAddress, Network)) {
@@ -212,7 +212,7 @@ public class LogParserUbuntu12 {
 							}
 						}
 						
-					}else if(eventType.contains("EVENT_RECVFROM")||eventType.contains("EVENT_RECVMSG")) {
+					}else if(eventType.contains("EVENT_RECVFROM")) {
 						String IPAddress = getIpAddress(object, NetworkObject);
 						
 						if(!IPAddress.isEmpty() && !IPAddress.equals("NA:0") && !IPAddress.equals("NETLINK:0")) {
