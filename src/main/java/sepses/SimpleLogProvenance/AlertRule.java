@@ -225,7 +225,6 @@ public class AlertRule {
 						   " \r\n}"+
 				   "WHERE { \r\n" +
 				   "?p sepses:changesPermission "+file+" .\r\n"+
-				  // file+" sepses:isExecutedBy "+process+" .\r\n"+
 					file+" rule:intTag  ?oit.\r\n"
 					+"FILTER (?oit < 0.5).\r\n"
 					+ "\r\n"+

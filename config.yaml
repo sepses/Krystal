@@ -10,7 +10,7 @@ rule-dir : experiment/rule/
 
 rule-dir-win : experiment/rule_win/
 
-os-platform: linux
+os-platform: ubuntu14
 
 triple-store: graphdb
 
@@ -27,6 +27,7 @@ confidential-dir:
  - /documents/
 
 field-filter:
+ #- EVENT_FORK
  - EVENT_EXIT
  - EVENT_MPROTECT
  - EVENT_LOGIN
@@ -34,7 +35,8 @@ field-filter:
  #- EVENT_LOADLIBRARY
  #- EVENT_EXECUTE
  - EVENT_ACCEPT
- - EVENT_SENDMSG
+ #- EVENT_RECVMSG
+ #- EVENT_SENDMSG
  #- EVENT_SENDTO
  #- EVENT_MODIFY_FILE_ATTRIBUTES
  - EVENT_CHECK_FILE_ATTRIBUTES

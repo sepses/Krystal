@@ -21,9 +21,10 @@ import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.tdb.TDBFactory;
 
 import helper.Utility;
-import sepses.parsing.LogParser;
+import sepses.parsing.LogParserFreeBSD;
 import sepses.parsing.LogParserWin;
-import sepses.parsing.LogParserLinux;
+import sepses.parsing.LogParserUbuntu12;
+import sepses.parsing.LogParserUbuntu14;
 import sepses.parsing.LogParserLinux20;
 
 public class JsonRDFReader {
@@ -111,12 +112,16 @@ public class JsonRDFReader {
 										LogParserWin lp = new LogParserWin(line); //fivedirection
 										lastAccess = lp.parseJSONtoRDF(jsonModel,alertModel,fieldfilter, confidentialdir, uuIndex, Process, File, 
 								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, Registry, RegistryObject, SubjectCmd, file, SubjectTime, decayrule, counter);
-									}else if (os.equals("linux")){
-										LogParserLinux lp = new LogParserLinux(line); //ubuntu
+									}else if (os.equals("ubuntu12")){
+										LogParserUbuntu12 lp = new LogParserUbuntu12(line); //ubuntu
 										lastAccess = lp.parseJSONtoRDF(jsonModel,alertModel,fieldfilter, confidentialdir, uuIndex, Process, File, 
 								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, FileObject, SubjectCmd, file, CloneObject, decayrule, counter);
+									}else  if (os.equals("ubuntu14")){
+										LogParserUbuntu14 lp = new LogParserUbuntu14(line); //freebsd
+										lastAccess = lp.parseJSONtoRDF(jsonModel,alertModel,fieldfilter, confidentialdir, uuIndex, Process, File, 
+								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, SubjectTime, decayrule, counter, SubjectCmd);
 									}else {
-										LogParser lp = new LogParser(line); //freebsd
+										LogParserFreeBSD lp = new LogParserFreeBSD(line); //freebsd
 										lastAccess = lp.parseJSONtoRDF(jsonModel,alertModel,fieldfilter, confidentialdir, uuIndex, Process, File, 
 								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, SubjectTime, decayrule, counter);
 									}

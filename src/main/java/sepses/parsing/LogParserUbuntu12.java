@@ -13,7 +13,7 @@ import com.jsoniter.any.Any;
 import sepses.SimpleLogProvenance.AlertRule;
 import sepses.SimpleLogProvenance.PropagationRule;
 
-public class LogParserLinux {
+public class LogParserUbuntu12 {
 	public String eventType;
 	public Any eventNode;
 	public Any networkNode;
@@ -37,7 +37,7 @@ public class LogParserLinux {
 	public ArrayList<String> confidentialdir;
 	public long logTimer;
 	
-	public LogParserLinux(String line) {
+	public LogParserUbuntu12(String line) {
 			Any jsonNode=JsonIterator.deserialize(line);
 			datumNode = jsonNode.get("datum");
 			long timer  = datumNode.get("com.bbn.tc.schema.avro.cdm18.Event").get("timestampNanos").toLong();
@@ -188,7 +188,7 @@ public class LogParserLinux {
 //								alert.memExec(jsonModel, alertModel, subject+"#"+exec, fileName, sts);
 //								
 //						}
-					}else if(eventType.contains("EVENT_SENDTO")) {
+					}else if(eventType.contains("EVENT_SENDTO")||eventType.contains("EVENT_SENDMSG")) {
 						String IPAddress = getIpAddress(object, NetworkObject);
 						if(!IPAddress.isEmpty() && !IPAddress.equals("NA:0") && !IPAddress.equals("NETLINK:0") ) {
 							if(isEntityNew(IPAddress, Network)) {
@@ -212,7 +212,7 @@ public class LogParserLinux {
 							}
 						}
 						
-					}else if(eventType.contains("EVENT_RECVFROM")) {
+					}else if(eventType.contains("EVENT_RECVFROM")||eventType.contains("EVENT_RECVMSG")) {
 						String IPAddress = getIpAddress(object, NetworkObject);
 						
 						if(!IPAddress.isEmpty() && !IPAddress.equals("NA:0") && !IPAddress.equals("NETLINK:0")) {

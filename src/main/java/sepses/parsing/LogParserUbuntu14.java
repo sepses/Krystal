@@ -12,7 +12,7 @@ import com.jsoniter.any.Any;
 import sepses.SimpleLogProvenance.AlertRule;
 import sepses.SimpleLogProvenance.PropagationRule;
 
-public class LogParser {
+public class LogParserUbuntu14 {
 	public String eventType;
 	public Any eventNode;
 	public Any networkNode;
@@ -34,12 +34,12 @@ public class LogParser {
 	public ArrayList<String> fieldfilter;
 	public ArrayList<String> confidentialdir;
 	
-	public LogParser(String line) {
+	public LogParserUbuntu14(String line) {
 			Any jsonNode=JsonIterator.deserialize(line);
 			datumNode = jsonNode.get("datum");
 	}
 	
-	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject, HashMap<String, Long> SubjectTime,  String decayrule, ArrayList<Integer> counter) throws IOException{	
+	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject, HashMap<String, Long> SubjectTime,  String decayrule, ArrayList<Integer> counter,HashMap<String, String> SubjectCmd ) throws IOException{	
 		//filter is the line is an event or not
 		eventNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.Event");
 		if(eventNode.toBoolean()) {
@@ -49,7 +49,9 @@ public class LogParser {
 				String mapper = "";
 				LogMapper lm = new LogMapper();	
 				subject = shortenUUID(eventNode.get("subject").get("com.bbn.tc.schema.avro.cdm18.UUID").toString(),uuIndex);
-				exec = eventNode.get("properties").get("map").get("exec").toString();
+				//exec = eventNode.get("properties").get("map").get("exec").toString();
+				exec =  getSubjectCmd(subject, SubjectCmd);
+						
 				hostId = eventNode.get("hostId").toString();
 				long ts = eventNode.get("timestampNanos").toLong();
 				String sts = eventNode.get("timestampNanos").toString();
@@ -264,7 +266,7 @@ public class LogParser {
 //							lastAccess = curPro;
 //						}
 //						
-					}else if(eventType.contains("EVENT_SENDTO")) {
+					}else if(eventType.contains("EVENT_SENDTO")||eventType.contains("EVENT_SENDMSG")) {
 					
 						String IPAddress = getIpAddress(object, NetworkObject);
 						
@@ -296,7 +298,7 @@ public class LogParser {
 							
 						}
 						
-				}else if(eventType.contains("EVENT_RECVFROM")) {
+				}else if(eventType.contains("EVENT_RECVFROM")||eventType.contains("EVENT_RECVMSG")) {
 					
 									
 						String IPAddress = getIpAddress(object, NetworkObject);
@@ -355,6 +357,11 @@ public class LogParser {
 				//System.out.println(subject+" : "+time);
 				putNewSubjectTime(subject, time, SubjectTime);
 			}
+			
+			exec = subjectNode.get("properties").get("map").get("name").toString();
+			putNewSubjectCmd(subject, exec, SubjectCmd);
+			
+			
 			
 			
 		}else if(datumNode.get("com.bbn.tc.schema.avro.cdm18.Principal").toBoolean()) {
@@ -603,5 +610,27 @@ public class LogParser {
 		counter.remove(0);
 		counter.add(lastCounter+1);
 		 
+	}
+
+  private  static void putNewSubjectCmd(String subject, String cmdLine, HashMap<String, String> SubjectCmd) {
+		//process
+		if(!subject.isEmpty() && !cmdLine.isEmpty()) {
+			if(!SubjectCmd.containsKey(subject)) {
+				SubjectCmd.put(subject, cmdLine);
+				
+			}
+		}
+		 
+	}
+	private  static String getSubjectCmd(String subject, HashMap<String, String> SubjectCmd) {
+		//process
+		String exec="";
+		if(!subject.isEmpty()) {
+			if(SubjectCmd.containsKey(subject)) {
+				exec = SubjectCmd.get(subject);
+			}
+		}
+	
+		 return exec;	
 	}
 }
