@@ -227,7 +227,7 @@ public class LogParserUbuntu12 {
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 					
 								AlertRule alert = new AlertRule();
-								alert.reconnaissanceReadAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
+								alert.reconnaissanceAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
 								
 								prop.receiveTag(jsonModel, subject, exec, IPAddress);
 					
