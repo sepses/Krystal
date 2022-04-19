@@ -12,7 +12,7 @@ There are some configuration should be made prior running the application. Pleas
 
 
 ```bash
-input-dir: experiment/input/ #log-sources directort
+input-dir: experiment/input/ #log-sources directory
 output-dir: experiment/output/ #output directory 
 tdb-dir: experiment/tdb #Jena TDB directiry
 ontology: experiment/ontology/log-ontology.ttl #Krystal ontology
@@ -21,7 +21,7 @@ rule-dir-win : experiment/rule_win/ #Rule directory for windows i.e. Sigma Rule 
 os-platform: ubuntu14 #OS platform
 triple-store: graphdb #Triple Store directory
 decay-rule: yes #Option to perform decay
-live-store: no #Option for storing output data continuosly
+live-store: no #Option for storing output data continuously
 backup-file: yes #Backup RDF output in .HDT
 
 confidential-dir: #Setting for any confidential directories
