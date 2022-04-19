@@ -1,7 +1,7 @@
 # Krystal Framework
 KRYSTAL is a modular framework for tactical attack discovery in audit data. The proposed framework integrates a variety of attack discovery mechanisms and takes advantage of its semantic model to include internal and external knowledge in the analysis. Figure 5 gives an overview of the KRYSTAL attack discovery framework which consists of three main parts, i.e., (i) provenance graph building, (ii) threat detection and alerting, and (iii) attack graph and scenario reconstruction.
 
-![ ](https://raw.githubusercontent.com/kabulkurniawan/Krystal/architecture-latest3.png)<p align="center"> **Figure 1** Krystal Architecture.
+![ ](https://raw.githubusercontent.com/kabulkurniawan/Krystal/main/architecture-latest3.png)<p align="center"> **Figure 1** Krystal Architecture.
 
 KRYSTAL imports each log event in sequence from potentially heterogeneous hosts (e.g., Linux, Windows, FreeBSD), i.e., in an online mode. It then generates an RDF-based provenance graph, taking advantage of the defined ontology and background knowledge in the Provenance Graph Building module. Subsequently, a number of threat detection and alerting approaches can be applied on the provenance graphs, including (i) tag propagation, (ii) attenuation & decay, and (iii) signature-based detection based on Indicators of Compromise (IoCs). These techniques are provided by the Threat Detection & Alerting module. The Attack Graph Reconstruction module then facilitates (offline) attack graph generation via Backward-forward chaining and attack pattern matching via Graph Querying over the provenance graph. 
 
