@@ -1,0 +1,944 @@
+@prefix sepses: <http://w3id.org/sepses/vocab/event/log#> .
+@prefix rule:  <http://w3id.org/sepses/vocab/rule#> .
+
+<< <http://w3id.org/sepses/resource/proc6336#imapd> sepses:writes <http://w3id.org/sepses/resource/file#/home/charles/Sent> >>
+        sepses:timestamp      "1523484289737799407"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc55199#imapd> sepses:writes <http://w3id.org/sepses/resource/file#/tmp/.31.29b4b> >>
+        sepses:timestamp      "1523545267946429592"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc4682#nginx> sepses:sends <http://w3id.org/sepses/resource/soc#155.162.39.48:80> >>
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/data-leak-rule> ;
+        rule:timestamp        "1523556038476188133"^^<http://www.w3.org/2001/XMLSchema#long> .
+
+<< <http://w3id.org/sepses/resource/proc4682#nginx> sepses:writes <http://w3id.org/sepses/resource/file#/dev/null> >>
+        sepses:timestamp      "1523556361886181978"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<http://w3id.org/sepses/resource/proc52586#route>
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/sigma/sigma-444ade84-c362-4260-b1f3-e45e20e1a905> .
+
+<< <http://w3id.org/sepses/resource/file#/tmp/test> sepses:isExecutedBy <http://w3id.org/sepses/resource/proc63165#test> >>
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/exec-rule> ;
+        rule:timestamp        "1523557951986146784"^^<http://www.w3.org/2001/XMLSchema#long> .
+
+<< <http://w3id.org/sepses/resource/file#/tmp/minions> sepses:isExecutedBy <http://w3id.org/sepses/resource/proc62200#minions> >>
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/exec-rule> ;
+        rule:timestamp        "1523556762536176905"^^<http://www.w3.org/2001/XMLSchema#long> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/images/header2006/headerV2_05.jpg> >>
+        sepses:timestamp      "1523482079287847444"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/images/header2006/ironmanFooter.gif> >>
+        sepses:timestamp      "1523482080177851912"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<http://w3id.org/sepses/resource/proc62772#imapd>
+        sepses:writes  <http://w3id.org/sepses/resource/file#/home/frank/Sent> .
+
+<http://w3id.org/sepses/resource/proc16182#pkg>
+        sepses:writes  <http://w3id.org/sepses/resource/file#/tmp/periodic.Gu2SGveu5C> .
+
+<http://w3id.org/sepses/resource/proc62618#XIM>
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/sigma/sigma-a39d7fa7-3fbd-4dc2-97e1-d87f546b1bbc> .
+
+<http://w3id.org/sepses/resource/file#/tmp/XIM>
+        sepses:isExecutedBy  <http://w3id.org/sepses/resource/proc62785#XIM> , <http://w3id.org/sepses/resource/proc62618#XIM> .
+
+<http://w3id.org/sepses/resource/proc14539#wget>
+        sepses:writes  <http://w3id.org/sepses/resource/file#www.a7.org/index.html> .
+
+<http://w3id.org/sepses/resource/proc264#imapd>
+        sepses:writes  <http://w3id.org/sepses/resource/file#/var/mail/henry> , <http://w3id.org/sepses/resource/file#/tmp/.31.29b43> .
+
+<http://w3id.org/sepses/resource/proc74982#wget>
+        sepses:writes  <http://w3id.org/sepses/resource/file#www.tourism.gov.pk/index.html> .
+
+<< <http://w3id.org/sepses/resource/proc67624#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.igodigital.com/images/shaddow.gif> >>
+        sepses:timestamp      "1523565986105969570"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<http://w3id.org/sepses/resource/proc4759#wget>
+        sepses:writes  <http://w3id.org/sepses/resource/file#www.samhsa.gov/Include/buckets/images/bucketEventsConferences.gif> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/images/header2006/pc15plus.gif> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/images/header2006/ironmanFooter.gif> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/Spotlights/images/niuSpotlight.gif> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/Include/buckets/images/titleSpotlights.gif> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/Include/buckets/images/bucket_suicide.gif> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/images/header2006/headerV2_01.jpg> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/index.html> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/Include/buckets/images/moreBucket.gif> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/Include/buckets/images/bucketCentersOffices.gif> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/images/header2006/footerSep.gif> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/Include/buckets/images/titleProgramsCampaigns.gif> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/images/header2006/headerV2_03.jpg> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/css/redesignScreen.css> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/Include/buckets/images/bucketSearchSAMHSA.gif> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/Include/buckets/images/searchButton.gif> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/images/logos/SBIRT.jpg> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/Include/buckets/images/bucketSAMHSAMatrix.gif> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/Include/buckets/images/bulletArrowSM.gif> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/Spotlights/images/mh_spotlight.jpg> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/images/logos/helpingyouth.gif> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/Include/buckets/images/bucketBrowseByTopic.gif> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/images/header2006/headerV2_05.jpg> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/Include/buckets/images/titleLatestHeadlines.gif> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/Include/buckets/images/moreContent23px.gif> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/Include/buckets/images/bucketNewsletter.gif> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/Include/buckets/images/join_button_grey.gif> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/Spotlights/images/spotlightAlcohol.jpg> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/Include/buckets/images/bucketEmailUpdates.gif> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/images/header2006/headerV2_04.jpg> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/Include/buckets/images/bucketINeedHelpWith.gif> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/Spotlights/images/nreppSpotlight.gif> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/Include/buckets/images/matrixImage.gif> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/Spotlights/images/nomsSpotlight.gif> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/images/header2006/bulletRoundOrange.gif> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/images/header2006/headerV2_07.jpg> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/Include/buckets/images/newsletter2.jpg> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/images/header2006/footerSides.gif> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/images/header2006/headerV2_06.jpg> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/css/buckets.css> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/Spotlights/images/recovery2007spotlight.jpg> , <http://w3id.org/sepses/resource/file#www.samhsa.gov/Spotlights/images/suicideHotlineSpotlight.gif> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/Include/buckets/images/bucket_suicide.gif> >>
+        sepses:timestamp      "1523482079967865208"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc1413#imapd> sepses:writes <http://w3id.org/sepses/resource/file#/tmp/.31.29791> >>
+        sepses:timestamp      "1523480106477887416"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/file#/tmp/font> sepses:isExecutedBy <http://w3id.org/sepses/resource/proc62535#font> >>
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/exec-rule> ;
+        rule:timestamp        "1523557044046166780"^^<http://www.w3.org/2001/XMLSchema#long> .
+
+<http://w3id.org/sepses/resource/proc55190#imapd>
+        sepses:writes  <http://w3id.org/sepses/resource/file#/tmp/.31.2979c> .
+
+<http://w3id.org/sepses/resource/proc79894#route>
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/sigma/sigma-444ade84-c362-4260-b1f3-e45e20e1a905> .
+
+<< <http://w3id.org/sepses/resource/proc52950#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.sako.fi/index.html> >>
+        sepses:timestamp      "1523541978476506084"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc62785#XIM> sepses:changesPermission <http://w3id.org/sepses/resource/file#/tmp/main> >>
+        sepses:timestamp      "1523557737406150415"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/change-permission-rule> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/Include/buckets/images/bucketCentersOffices.gif> >>
+        sepses:timestamp      "1523482080037843456"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/Include/buckets/images/matrixImage.gif> >>
+        sepses:timestamp      "1523482079417845146"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc4682#nginx> sepses:changesPermission <http://w3id.org/sepses/resource/file#/tmp/tmux-1002> >>
+        sepses:timestamp      "1523556600036180575"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556405396185538"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556194106186440"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/change-permission-rule> .
+
+<< <http://w3id.org/sepses/resource/proc67624#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.igodigital.com/images/bg.gif> >>
+        sepses:timestamp      "1523565986125974411"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc67624#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.igodigital.com/images/b_viewDemos.gif> >>
+        sepses:timestamp      "1523565986095969189"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc51877#imapd> sepses:writes <http://w3id.org/sepses/resource/file#/tmp/tmp.93c8va> >>
+        sepses:timestamp      "1523540672996547787"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc67624#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.igodigital.com/images/customers.gif> >>
+        sepses:timestamp      "1523565986075968668"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<http://w3id.org/sepses/resource/proc37827#sendmail>
+        sepses:writes  <http://w3id.org/sepses/resource/file#./qfw3C3wmKo008236> , <http://w3id.org/sepses/resource/file#./dfw3C3wmKo008236> .
+
+<http://w3id.org/sepses/resource/proc55199#imapd>
+        sepses:writes  <http://w3id.org/sepses/resource/file#/tmp/.31.29b4b> .
+
+<< <http://w3id.org/sepses/resource/proc6336#imapd> sepses:writes <http://w3id.org/sepses/resource/file#/tmp/tmp.MjxSN7> >>
+        sepses:timestamp      "1523484289717807200"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc16182#pkg> sepses:writes <http://w3id.org/sepses/resource/file#/tmp/periodic.Gu2SGveu5C> >>
+        sepses:timestamp      "1523505345897320304"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc55190#imapd> sepses:writes <http://w3id.org/sepses/resource/file#/tmp/.31.2979c> >>
+        sepses:timestamp      "1523545267566436259"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<http://w3id.org/sepses/resource/proc62480#minions>
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/sigma/sigma-a39d7fa7-3fbd-4dc2-97e1-d87f546b1bbc> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/Include/buckets/images/join_button_grey.gif> >>
+        sepses:timestamp      "1523482079947845540"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<http://w3id.org/sepses/resource/proc79888#route>
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/sigma/sigma-444ade84-c362-4260-b1f3-e45e20e1a905> .
+
+<< <http://w3id.org/sepses/resource/proc986#imapd> sepses:writes <http://w3id.org/sepses/resource/file#/var/mail/bob> >>
+        sepses:timestamp      "1523479933847897805"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/images/header2006/headerV2_06.jpg> >>
+        sepses:timestamp      "1523482079307851612"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/images/header2006/footerSides.gif> >>
+        sepses:timestamp      "1523482080107851304"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<http://w3id.org/sepses/resource/proc62200#minions>
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/sigma/sigma-a39d7fa7-3fbd-4dc2-97e1-d87f546b1bbc> .
+
+<< <http://w3id.org/sepses/resource/proc6904#imapd> sepses:writes <http://w3id.org/sepses/resource/file#/tmp/tmp.o2GSlR> >>
+        sepses:timestamp      "1523485437537787507"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc52740#imapd> sepses:writes <http://w3id.org/sepses/resource/file#/tmp/tmp.xxjEV0> >>
+        sepses:timestamp      "1523541746056514159"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc67624#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.igodigital.com/index.html> >>
+        sepses:timestamp      "1523565985825969281"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<http://w3id.org/sepses/resource/proc51695#imapd>
+        sepses:writes  <http://w3id.org/sepses/resource/file#/home/henry/Sent> .
+
+<< <http://w3id.org/sepses/resource/soc#155.162.39.48:80> sepses:isReceivedBy <http://w3id.org/sepses/resource/proc4682#nginx> >>
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/reconnaissance-rule> ;
+        rule:timestamp        "1523556489566180088"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556924066168918"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557144366165864"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556506166178939"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557196066166095"^^<http://www.w3.org/2001/XMLSchema#long> , "1523558356466140194"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557035266181040"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556130066188906"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557195566162716"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556657396175929"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556750266174671"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557035066168564"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556516656179061"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556361866182556"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557207866162244"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557195766163343"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557034966166535"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557196766162251"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556658666178964"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557036266167182"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556129866187349"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556451456180046"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557196666164088"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557196266153302"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557041666167385"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556750366173050"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556045356187312"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556750466173988"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556750766174303"^^<http://www.w3.org/2001/XMLSchema#long> , "1523558358286140661"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557195966161841"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556750666173615"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556044656190753"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556060756187788"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557197066163963"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557207906163999"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557035766171181"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557036166166574"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557036066167406"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556386766182584"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556129566187604"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556130366188161"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557035666171483"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556144956186756"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556657366176477"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557035166167892"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556045396189705"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557144406167227"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557196966163289"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556750866172801"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556163356186521"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556130266187153"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556129466188455"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556053856190738"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556750566171316"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556144996186020"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556053896190371"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557196866162335"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556129966188157"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556130166187694"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557035366172658"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556750166174953"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556129766187490"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556757766172331"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556058256188708"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557035466172026"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557034866166707"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557196466164910"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557041706167548"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557195666164819"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556129666189442"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557035966170327"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556750966173689"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557195866162767"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557035866176059"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556322456182355"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557034766166929"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556751066175108"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556658706176618"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556516666178552"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557268866160601"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557196566162014"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557196366163866"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557196166162779"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557035566192615"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556327156183387"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556924106169851"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556451496180689"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557142266165852"^^<http://www.w3.org/2001/XMLSchema#long> .
+
+<< <http://w3id.org/sepses/resource/proc4682#nginx> sepses:writes <http://w3id.org/sepses/resource/file#/tmp/minions> >>
+        sepses:timestamp      "1523556751146174254"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc14539#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.a7.org/index.html> >>
+        sepses:timestamp      "1523501410137415116"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc63438#test> sepses:sends <http://w3id.org/sepses/resource/soc#192.113.144.28:80> >>
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/data-leak-rule> ;
+        rule:timestamp        "1523558131826144515"^^<http://www.w3.org/2001/XMLSchema#long> .
+
+<http://w3id.org/sepses/resource/proc14951#netstat>
+        sepses:writes  <http://w3id.org/sepses/resource/file#/tmp/periodic.GlW9DzIYuc> .
+
+<http://w3id.org/sepses/resource/proc76906#bzip2>
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/sigma/sigma-a3b5e3e9-1b49-4119-8b8e-0344a01f21ee> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/images/logos/helpingyouth.gif> >>
+        sepses:timestamp      "1523482079897847720"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/Spotlights/images/spotlightAlcohol.jpg> >>
+        sepses:timestamp      "1523482079777845681"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<http://w3id.org/sepses/resource/proc63438#/tmp/test>
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/sigma/sigma-a39d7fa7-3fbd-4dc2-97e1-d87f546b1bbc> .
+
+<http://w3id.org/sepses/resource/proc63440#uname>
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/sigma/sigma-444ade84-c362-4260-b1f3-e45e20e1a905> .
+
+<http://w3id.org/sepses/resource/proc52950#wget>
+        sepses:writes  <http://w3id.org/sepses/resource/file#www.sako.fi/index.html> .
+
+<< <http://w3id.org/sepses/resource/file#/tmp/tmux-1002> sepses:isExecutedBy <http://w3id.org/sepses/resource/proc61867#tmux-1002> >>
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/exec-rule> ;
+        rule:timestamp        "1523556405396185538"^^<http://www.w3.org/2001/XMLSchema#long> .
+
+<http://w3id.org/sepses/resource/proc6336#imapd>
+        sepses:writes  <http://w3id.org/sepses/resource/file#/home/charles/Sent> , <http://w3id.org/sepses/resource/file#/tmp/tmp.MjxSN7> .
+
+<http://w3id.org/sepses/resource/proc305#imapd>
+        sepses:writes  <http://w3id.org/sepses/resource/file#/tmp/.31.3022e> .
+
+<http://w3id.org/sepses/resource/proc62785#XIM>
+        sepses:sends          <http://w3id.org/sepses/resource/soc#53.158.101.118:80> ;
+        sepses:writes         <http://w3id.org/sepses/resource/file#/tmp/test> , <http://w3id.org/sepses/resource/file#/tmp/main> ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/sigma/sigma-a39d7fa7-3fbd-4dc2-97e1-d87f546b1bbc> .
+
+<http://w3id.org/sepses/resource/proc342#imapd>
+        sepses:writes  <http://w3id.org/sepses/resource/file#/tmp/.31.29ada> .
+
+<< <http://w3id.org/sepses/resource/proc62785#XIM> sepses:changesPermission <http://w3id.org/sepses/resource/file#/var/log/netlog> >>
+        sepses:timestamp      "1523557500026158747"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/change-permission-rule> .
+
+<< <http://w3id.org/sepses/resource/proc59731#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.ebay.ca/index.html> >>
+        sepses:timestamp      "1523554012906246288"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/Include/buckets/images/bucketSearchSAMHSA.gif> >>
+        sepses:timestamp      "1523482079367852126"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<http://w3id.org/sepses/resource/proc6904#imapd>
+        sepses:writes  <http://w3id.org/sepses/resource/file#/tmp/tmp.o2GSlR> .
+
+<< <http://w3id.org/sepses/resource/proc14951#netstat> sepses:writes <http://w3id.org/sepses/resource/file#/tmp/periodic.GlW9DzIYuc> >>
+        sepses:timestamp      "1523502069337403523"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/Include/buckets/images/titleLatestHeadlines.gif> >>
+        sepses:timestamp      "1523482079657843593"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<http://w3id.org/sepses/resource/proc986#imapd>
+        sepses:writes  <http://w3id.org/sepses/resource/file#/var/mail/bob> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/css/buckets.css> >>
+        sepses:timestamp      "1523482079217843326"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc753#imapd> sepses:writes <http://w3id.org/sepses/resource/file#/var/mail/frank> >>
+        sepses:timestamp      "1523479792267895973"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/Include/buckets/images/bulletArrowSM.gif> >>
+        sepses:timestamp      "1523482080207851754"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/css/redesignScreen.css> >>
+        sepses:timestamp      "1523482079187847524"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/Include/buckets/images/bucketEventsConferences.gif> >>
+        sepses:timestamp      "1523482080097843090"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc4682#nginx> sepses:writes <http://w3id.org/sepses/resource/file#/tmp/tmux-1002> >>
+        sepses:timestamp      "1523556130376185722"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/file#/tmp/XIM> sepses:isExecutedBy <http://w3id.org/sepses/resource/proc62618#XIM> >>
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/exec-rule> ;
+        rule:timestamp        "1523557208576163772"^^<http://www.w3.org/2001/XMLSchema#long> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/Include/buckets/images/bucketSAMHSAMatrix.gif> >>
+        sepses:timestamp      "1523482079397842868"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<http://w3id.org/sepses/resource/proc54665#imapd>
+        sepses:writes  <http://w3id.org/sepses/resource/file#/tmp/tmp.D72gxs> .
+
+<< <http://w3id.org/sepses/resource/proc62785#XIM> sepses:changesPermission <http://w3id.org/sepses/resource/file#/tmp/test> >>
+        sepses:timestamp      "1523558131776142868"^^<http://www.w3.org/2001/XMLSchema#long> , "1523558095816150254"^^<http://www.w3.org/2001/XMLSchema#long> , "1523558011166147460"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557951986146784"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/change-permission-rule> .
+
+<http://w3id.org/sepses/resource/proc52604#route>
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/sigma/sigma-444ade84-c362-4260-b1f3-e45e20e1a905> .
+
+<< <http://w3id.org/sepses/resource/proc67624#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.igodigital.com/style.css> >>
+        sepses:timestamp      "1523565985845968243"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/file#/tmp/test> sepses:isExecutedBy <http://w3id.org/sepses/resource/proc63409#test> >>
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/exec-rule> ;
+        rule:timestamp        "1523558095816150254"^^<http://www.w3.org/2001/XMLSchema#long> .
+
+<< <http://w3id.org/sepses/resource/proc5780#wget> sepses:writes <http://w3id.org/sepses/resource/file#index.html> >>
+        sepses:timestamp      "1523483462567813246"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc4682#nginx> sepses:changesPermission <http://w3id.org/sepses/resource/file#/tmp/minions> >>
+        sepses:timestamp      "1523556929346168722"^^<http://www.w3.org/2001/XMLSchema#long> , "1523556762536176905"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/change-permission-rule> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/images/logos/SBIRT.jpg> >>
+        sepses:timestamp      "1523482079877846762"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<http://w3id.org/sepses/resource/proc753#imapd>
+        sepses:writes  <http://w3id.org/sepses/resource/file#/var/mail/frank> , <http://w3id.org/sepses/resource/file#/tmp/.31.29ade> .
+
+<< <http://w3id.org/sepses/resource/file#/var/log/sendmail> sepses:isExecutedBy <http://w3id.org/sepses/resource/proc62988#sendmail> >>
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/exec-rule> ;
+        rule:timestamp        "1523557630696154168"^^<http://www.w3.org/2001/XMLSchema#long> .
+
+<http://w3id.org/sepses/resource/proc63028#main>
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/sigma/sigma-a39d7fa7-3fbd-4dc2-97e1-d87f546b1bbc> .
+
+<http://w3id.org/sepses/resource/proc61609#tmux-1002>
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/sigma/sigma-a39d7fa7-3fbd-4dc2-97e1-d87f546b1bbc> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/Include/buckets/images/moreContent23px.gif> >>
+        sepses:timestamp      "1523482079677850041"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/file#/tmp/test> sepses:isExecutedBy <http://w3id.org/sepses/resource/proc63225#test> >>
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/exec-rule> ;
+        rule:timestamp        "1523558011166147460"^^<http://www.w3.org/2001/XMLSchema#long> .
+
+<http://w3id.org/sepses/resource/proc65753#route>
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/sigma/sigma-444ade84-c362-4260-b1f3-e45e20e1a905> .
+
+<< <http://w3id.org/sepses/resource/proc62785#XIM> sepses:sends <http://w3id.org/sepses/resource/soc#53.158.101.118:80> >>
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/data-leak-rule> ;
+        rule:timestamp        "1523557316606160604"^^<http://www.w3.org/2001/XMLSchema#long> .
+
+<< <http://w3id.org/sepses/resource/proc4682#nginx> sepses:changesPermission <http://w3id.org/sepses/resource/file#/tmp/font> >>
+        sepses:timestamp      "1523557044046166780"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/change-permission-rule> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/Include/buckets/images/bucketINeedHelpWith.gif> >>
+        sepses:timestamp      "1523482079997844820"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<http://w3id.org/sepses/resource/file#/tmp/minions>
+        sepses:isExecutedBy  <http://w3id.org/sepses/resource/proc62480#minions> , <http://w3id.org/sepses/resource/proc62200#minions> .
+
+<< <http://w3id.org/sepses/resource/proc55209#imapd> sepses:writes <http://w3id.org/sepses/resource/file#/tmp/tmp.6P5i65> >>
+        sepses:timestamp      "1523545269906432229"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/images/header2006/headerV2_04.jpg> >>
+        sepses:timestamp      "1523482079277872370"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/Include/buckets/images/newsletter2.jpg> >>
+        sepses:timestamp      "1523482080077843652"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc7892#imapd> sepses:writes <http://w3id.org/sepses/resource/file#/tmp/tmp.tHOv8z> >>
+        sepses:timestamp      "1523487354537726449"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<http://w3id.org/sepses/resource/proc59731#wget>
+        sepses:writes  <http://w3id.org/sepses/resource/file#www.ebay.ca/index.html> .
+
+<< <http://w3id.org/sepses/resource/proc37827#sendmail> sepses:writes <http://w3id.org/sepses/resource/file#./dfw3C3wmKo008236> >>
+        sepses:timestamp      "1523505529107318765"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/images/header2006/headerV2_07.jpg> >>
+        sepses:timestamp      "1523482079317842956"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc264#imapd> sepses:writes <http://w3id.org/sepses/resource/file#/var/mail/henry> >>
+        sepses:timestamp      "1523479312417905260"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<http://w3id.org/sepses/resource/proc42625#route>
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/sigma/sigma-444ade84-c362-4260-b1f3-e45e20e1a905> .
+
+<< <http://w3id.org/sepses/resource/proc55209#imapd> sepses:writes <http://w3id.org/sepses/resource/file#/home/charles/Drafts> >>
+        sepses:timestamp      "1523545269916429787"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc74982#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.tourism.gov.pk/index.html> >>
+        sepses:timestamp      "1523575506745760418"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<http://w3id.org/sepses/resource/proc7892#imapd>
+        sepses:writes  <http://w3id.org/sepses/resource/file#/tmp/tmp.tHOv8z> .
+
+<< <http://w3id.org/sepses/resource/proc51695#imapd> sepses:writes <http://w3id.org/sepses/resource/file#/home/henry/Sent> >>
+        sepses:timestamp      "1523540604976536402"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/images/header2006/headerV2_01.jpg> >>
+        sepses:timestamp      "1523482079237849974"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc62785#XIM> sepses:writes <http://w3id.org/sepses/resource/file#/tmp/main> >>
+        sepses:timestamp      "1523557727956150660"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<http://w3id.org/sepses/resource/proc63225#test>
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/sigma/sigma-a39d7fa7-3fbd-4dc2-97e1-d87f546b1bbc> .
+
+<http://w3id.org/sepses/resource/proc63563#uname>
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/sigma/sigma-444ade84-c362-4260-b1f3-e45e20e1a905> .
+
+<< <http://w3id.org/sepses/resource/proc9083#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.uitp.com/index.html> >>
+        sepses:timestamp      "1523488294057705369"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc264#imapd> sepses:writes <http://w3id.org/sepses/resource/file#/tmp/.31.29b43> >>
+        sepses:timestamp      "1523479312287903409"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/file#/var/log/netlog> sepses:isExecutedBy <http://w3id.org/sepses/resource/proc62928#sh> >>
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/exec-rule> ;
+        rule:timestamp        "1523557500026158747"^^<http://www.w3.org/2001/XMLSchema#long> .
+
+<< <http://w3id.org/sepses/resource/proc62785#XIM> sepses:writes <http://w3id.org/sepses/resource/file#/tmp/test> >>
+        sepses:timestamp      "1523557941296153503"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc317#imapd> sepses:writes <http://w3id.org/sepses/resource/file#/tmp/.31.3023c> >>
+        sepses:timestamp      "1523479318247905401"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<http://w3id.org/sepses/resource/proc67624#wget>
+        sepses:writes  <http://w3id.org/sepses/resource/file#www.igodigital.com/images/bg.gif> , <http://w3id.org/sepses/resource/file#www.igodigital.com/images/shaddow.gif> , <http://w3id.org/sepses/resource/file#www.igodigital.com/images/b_viewDemos.gif> , <http://w3id.org/sepses/resource/file#www.igodigital.com/images/customers.gif> , <http://w3id.org/sepses/resource/file#www.igodigital.com/images/clear.gif> , <http://w3id.org/sepses/resource/file#www.igodigital.com/ieupdate.js> , <http://w3id.org/sepses/resource/file#www.igodigital.com/style.css> , <http://w3id.org/sepses/resource/file#www.igodigital.com/index.html> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/Spotlights/images/niuSpotlight.gif> >>
+        sepses:timestamp      "1523482079747851429"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<http://w3id.org/sepses/resource/proc10679#bzip2>
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/sigma/sigma-a3b5e3e9-1b49-4119-8b8e-0344a01f21ee> .
+
+<http://w3id.org/sepses/resource/proc5780#wget>
+        sepses:writes  <http://w3id.org/sepses/resource/file#index.html> .
+
+<http://w3id.org/sepses/resource/soc#155.162.39.48:80>
+        sepses:isReceivedBy  <http://w3id.org/sepses/resource/proc4682#nginx> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/Spotlights/images/nreppSpotlight.gif> >>
+        sepses:timestamp      "1523482079857848954"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<http://w3id.org/sepses/resource/proc1413#imapd>
+        sepses:writes  <http://w3id.org/sepses/resource/file#/tmp/.31.29791> .
+
+<http://w3id.org/sepses/resource/proc13444#route>
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/sigma/sigma-444ade84-c362-4260-b1f3-e45e20e1a905> .
+
+<http://w3id.org/sepses/resource/proc9083#wget>
+        sepses:writes  <http://w3id.org/sepses/resource/file#www.uitp.com/index.html> .
+
+<http://w3id.org/sepses/resource/proc317#imapd>
+        sepses:writes  <http://w3id.org/sepses/resource/file#/tmp/.31.3023c> .
+
+<< <http://w3id.org/sepses/resource/proc189#bash> sepses:writes <http://w3id.org/sepses/resource/file#/dev/tty> >>
+        sepses:timestamp      "1523479113827909650"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc793#imapd> sepses:writes <http://w3id.org/sepses/resource/file#/tmp/.31.29d0a> >>
+        sepses:timestamp      "1523479811177894514"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/Spotlights/images/suicideHotlineSpotlight.gif> >>
+        sepses:timestamp      "1523482079977842082"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/file#/tmp/tmux-1002> sepses:isExecutedBy <http://w3id.org/sepses/resource/proc61609#tmux-1002> >>
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/exec-rule> ;
+        rule:timestamp        "1523556194106186440"^^<http://www.w3.org/2001/XMLSchema#long> .
+
+<< <http://w3id.org/sepses/resource/proc753#imapd> sepses:writes <http://w3id.org/sepses/resource/file#/tmp/.31.29ade> >>
+        sepses:timestamp      "1523479792187901282"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc127#lsof> sepses:writes <http://w3id.org/sepses/resource/file#/data/gather_stats_uma.txt> >>
+        sepses:timestamp      "1523479048887911196"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/file#/tmp/minions> sepses:isExecutedBy <http://w3id.org/sepses/resource/proc62480#minions> >>
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/exec-rule> ;
+        rule:timestamp        "1523556929346168722"^^<http://www.w3.org/2001/XMLSchema#long> .
+
+<< <http://w3id.org/sepses/resource/file#/tmp/tmux-1002> sepses:isExecutedBy <http://w3id.org/sepses/resource/proc61940#sh> >>
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/exec-rule> ;
+        rule:timestamp        "1523556600036180575"^^<http://www.w3.org/2001/XMLSchema#long> .
+
+<http://w3id.org/sepses/resource/proc42606#route>
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/sigma/sigma-444ade84-c362-4260-b1f3-e45e20e1a905> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/images/header2006/bulletRoundOrange.gif> >>
+        sepses:timestamp      "1523482080187854046"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc62785#XIM> sepses:changesPermission <http://w3id.org/sepses/resource/file#/var/log/sendmail> >>
+        sepses:timestamp      "1523557630696154168"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557617136153757"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/change-permission-rule> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/Include/buckets/images/bucketNewsletter.gif> >>
+        sepses:timestamp      "1523482080057843314"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/Include/buckets/images/bucketEmailUpdates.gif> >>
+        sepses:timestamp      "1523482079937842756"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<http://w3id.org/sepses/resource/proc793#imapd>
+        sepses:writes  <http://w3id.org/sepses/resource/file#/tmp/.31.29d0a> .
+
+<http://w3id.org/sepses/resource/file#/var/log/netlog>
+        sepses:isExecutedBy  <http://w3id.org/sepses/resource/proc62928#sh> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/images/header2006/headerV2_03.jpg> >>
+        sepses:timestamp      "1523482079257842522"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<http://w3id.org/sepses/resource/proc63165#test>
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/sigma/sigma-a39d7fa7-3fbd-4dc2-97e1-d87f546b1bbc> .
+
+<< <http://w3id.org/sepses/resource/proc54665#imapd> sepses:writes <http://w3id.org/sepses/resource/file#/tmp/tmp.D72gxs> >>
+        sepses:timestamp      "1523544589986451357"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/images/header2006/pc15plus.gif> >>
+        sepses:timestamp      "1523482079917844858"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<http://w3id.org/sepses/resource/proc63409#test>
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/sigma/sigma-a39d7fa7-3fbd-4dc2-97e1-d87f546b1bbc> .
+
+<< <http://w3id.org/sepses/resource/file#/var/log/sendmail> sepses:isExecutedBy <http://w3id.org/sepses/resource/proc62965#sendmail> >>
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/exec-rule> ;
+        rule:timestamp        "1523557617136153757"^^<http://www.w3.org/2001/XMLSchema#long> .
+
+<http://w3id.org/sepses/resource/proc63252#imapd>
+        sepses:writes  <http://w3id.org/sepses/resource/file#/tmp/tmp.8w2uoV> .
+
+<http://w3id.org/sepses/resource/file#/tmp/tmux-1002>
+        sepses:isExecutedBy  <http://w3id.org/sepses/resource/proc61940#sh> , <http://w3id.org/sepses/resource/proc61867#tmux-1002> , <http://w3id.org/sepses/resource/proc61609#tmux-1002> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/images/header2006/footerSep.gif> >>
+        sepses:timestamp      "1523482080157843294"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/Include/buckets/images/searchButton.gif> >>
+        sepses:timestamp      "1523482079387854524"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<http://w3id.org/sepses/resource/proc13410#route>
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/sigma/sigma-444ade84-c362-4260-b1f3-e45e20e1a905> .
+
+<< <http://w3id.org/sepses/resource/proc4682#nginx> sepses:changesPermission <http://w3id.org/sepses/resource/file#/tmp/XIM> >>
+        sepses:timestamp      "1523557273216165672"^^<http://www.w3.org/2001/XMLSchema#long> , "1523557208576163772"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/change-permission-rule> .
+
+<http://w3id.org/sepses/resource/proc73#ifconfig>
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/sigma/sigma-444ade84-c362-4260-b1f3-e45e20e1a905> .
+
+<< <http://w3id.org/sepses/resource/proc342#imapd> sepses:writes <http://w3id.org/sepses/resource/file#/tmp/.31.29ada> >>
+        sepses:timestamp      "1523479359867956042"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/Spotlights/images/mh_spotlight.jpg> >>
+        sepses:timestamp      "1523482079807850643"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/file#/tmp/XIM> sepses:isExecutedBy <http://w3id.org/sepses/resource/proc62785#XIM> >>
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/exec-rule> ;
+        rule:timestamp        "1523557273216165672"^^<http://www.w3.org/2001/XMLSchema#long> .
+
+<< <http://w3id.org/sepses/resource/proc67624#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.igodigital.com/ieupdate.js> >>
+        sepses:timestamp      "1523565985875969745"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/Include/buckets/images/bucketBrowseByTopic.gif> >>
+        sepses:timestamp      "1523482079447851929"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc4682#nginx> sepses:writes <http://w3id.org/sepses/resource/file#/tmp/XIM> >>
+        sepses:timestamp      "1523557197146165314"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<http://w3id.org/sepses/resource/proc52740#imapd>
+        sepses:writes  <http://w3id.org/sepses/resource/file#/tmp/tmp.xxjEV0> .
+
+<< <http://w3id.org/sepses/resource/proc67624#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.igodigital.com/images/clear.gif> >>
+        sepses:timestamp      "1523565986065972217"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc305#imapd> sepses:writes <http://w3id.org/sepses/resource/file#/tmp/.31.3022e> >>
+        sepses:timestamp      "1523479317687912840"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/Spotlights/images/recovery2007spotlight.jpg> >>
+        sepses:timestamp      "1523482079817842477"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/file#/tmp/main> sepses:isExecutedBy <http://w3id.org/sepses/resource/proc63028#main> >>
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/exec-rule> ;
+        rule:timestamp        "1523557737406150415"^^<http://www.w3.org/2001/XMLSchema#long> .
+
+<< <http://w3id.org/sepses/resource/proc63252#imapd> sepses:writes <http://w3id.org/sepses/resource/file#/tmp/tmp.8w2uoV> >>
+        sepses:timestamp      "1523558033266186067"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<http://w3id.org/sepses/resource/proc127#lsof>
+        sepses:writes  <http://w3id.org/sepses/resource/file#/data/gather_stats_uma.txt> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/Include/buckets/images/moreBucket.gif> >>
+        sepses:timestamp      "1523482079647854249"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<http://w3id.org/sepses/resource/proc55209#imapd>
+        sepses:writes  <http://w3id.org/sepses/resource/file#/home/charles/Drafts> , <http://w3id.org/sepses/resource/file#/tmp/tmp.6P5i65> , <http://w3id.org/sepses/resource/file#/tmp/.31.29d10> .
+
+<http://w3id.org/sepses/resource/file#/tmp/main>
+        sepses:isExecutedBy  <http://w3id.org/sepses/resource/proc63028#main> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/index.html> >>
+        sepses:timestamp      "1523482079147846838"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc37827#sendmail> sepses:writes <http://w3id.org/sepses/resource/file#./qfw3C3wmKo008236> >>
+        sepses:timestamp      "1523505529107318765"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<http://w3id.org/sepses/resource/proc61867#tmux-1002>
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/sigma/sigma-a39d7fa7-3fbd-4dc2-97e1-d87f546b1bbc> .
+
+<http://w3id.org/sepses/resource/proc189#bash>
+        sepses:writes  <http://w3id.org/sepses/resource/file#/dev/tty> .
+
+<http://w3id.org/sepses/resource/file#/tmp/test>
+        sepses:isExecutedBy  <http://w3id.org/sepses/resource/proc63409#test> , <http://w3id.org/sepses/resource/proc63225#test> , <http://w3id.org/sepses/resource/proc63165#test> .
+
+<http://w3id.org/sepses/resource/file#/var/log/sendmail>
+        sepses:isExecutedBy  <http://w3id.org/sepses/resource/proc62988#sendmail> , <http://w3id.org/sepses/resource/proc62965#sendmail> .
+
+<< <http://w3id.org/sepses/resource/proc55209#imapd> sepses:writes <http://w3id.org/sepses/resource/file#/tmp/.31.29d10> >>
+        sepses:timestamp      "1523545269856535545"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc62772#imapd> sepses:writes <http://w3id.org/sepses/resource/file#/home/frank/Sent> >>
+        sepses:timestamp      "1523557263116166218"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<http://w3id.org/sepses/resource/proc62535#font>
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/sigma/sigma-a39d7fa7-3fbd-4dc2-97e1-d87f546b1bbc> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/Include/buckets/images/titleSpotlights.gif> >>
+        sepses:timestamp      "1523482079727848781"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<http://w3id.org/sepses/resource/proc65759#route>
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/sigma/sigma-444ade84-c362-4260-b1f3-e45e20e1a905> .
+
+<http://w3id.org/sepses/resource/proc63438#test>
+        sepses:sends  <http://w3id.org/sepses/resource/soc#192.113.144.28:80> .
+
+<http://w3id.org/sepses/resource/file#/tmp/font>
+        sepses:isExecutedBy  <http://w3id.org/sepses/resource/proc62535#font> .
+
+<http://w3id.org/sepses/resource/proc4682#nginx>
+        sepses:sends   <http://w3id.org/sepses/resource/soc#155.162.39.48:80> ;
+        sepses:writes  <http://w3id.org/sepses/resource/file#/tmp/XIM> , <http://w3id.org/sepses/resource/file#/tmp/font> , <http://w3id.org/sepses/resource/file#/tmp/minions> , <http://w3id.org/sepses/resource/file#/dev/null> , <http://w3id.org/sepses/resource/file#/tmp/tmux-1002> .
+
+<< <http://w3id.org/sepses/resource/proc4682#nginx> sepses:writes <http://w3id.org/sepses/resource/file#/tmp/font> >>
+        sepses:timestamp      "1523557036346166139"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/Include/buckets/images/titleProgramsCampaigns.gif> >>
+        sepses:timestamp      "1523482079827853661"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
+
+<http://w3id.org/sepses/resource/proc51877#imapd>
+        sepses:writes  <http://w3id.org/sepses/resource/file#/tmp/tmp.93c8va> .
+
+<< <http://w3id.org/sepses/resource/proc4759#wget> sepses:writes <http://w3id.org/sepses/resource/file#www.samhsa.gov/Spotlights/images/nomsSpotlight.gif> >>
+        sepses:timestamp      "1523482079847853329"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        rule:alertType        "internal" ;
+        rule:alertWeight      0 ;
+        rule:hasDetectedRule  <http://w3id.org/sepses/resource/rule/corrupt-file-rule> .
