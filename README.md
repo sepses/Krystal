@@ -67,7 +67,7 @@ $ java -jar ./target/SimpleLogProvenance-0.0.1-SNAPSHOT-jar-with-dependencies.ja
 The log processing will takes a couple of time depending the size of the input data. After finish processing the input data, several output files will be produced, such as: the dependency (provenance) graph (in RDF/.ttl file), the alert data (in RDF-star/.ttl), and the compressed one (in .hdt). We provided example output of the process (in RDF and .HDT) file under directory [experiment/output](https://github.com/sepses/Krystal/tree/main/experiment/output).
 
 ## Analyzing / Querying the Data
-The resulting output data (the RDF data) can already be queried for analysis e.g. Root cause analysis, attack graph reconstruction (via graph query or forward chaining technique). Directory [experiment/query](https://github.com/sepses/Krystal/tree/main/experiment/query) contains several example queries that can be used for analysis.
+The resulting output data (the RDF data) can already be queried for analysis e.g. Root cause analysis, attack graph reconstruction (via graph query or forward chaining technique), etc. Directory [experiment/query](https://github.com/sepses/Krystal/tree/main/experiment/query) contains several example queries that can be used for analysis.
 
 ## License
 
