@@ -8,10 +8,10 @@ KRYSTAL imports each log event in sequence from potentially heterogeneous hosts 
 ## Pre Installation and Configuration
 
 ### TripleStore Installation
-To be able to analyze data, i.e. for Attack Reconstruction, we used triple store with a built-in SPARQL query interface visualization e.g. GraphDB. Please follow this GraphDB [installation page](https://graphdb.ontotext.com/documentation/standard/installation.html) for further installation instruction. 
+To be able to store the output data and perform data analyze, i.e. for Attack Reconstruction, A triple store with a built-in SPARQL query interface and visualization is need it. For example GraphDB, we can follow this [installation page](https://graphdb.ontotext.com/documentation/standard/installation.html) for further GraphDB installation instruction. 
 
 ### Configuration File
-There are some configuration should be made prior running the application. Please take a look at the configuration file (config.yaml).
+There are some configuration should be made prior running the application. Please take a look at the configuration file ([config.yaml](https://github.com/sepses/Krystal/blob/main/config.yaml)).
 
 
 ```bash
