@@ -5,16 +5,19 @@ KRYSTAL is a modular framework for tactical attack discovery in audit data. The 
 
 KRYSTAL imports each log event in sequence from potentially heterogeneous hosts (e.g., Linux, Windows, FreeBSD), i.e., in an online mode. It then generates an RDF-based provenance graph, taking advantage of the defined ontology and background knowledge in the Provenance Graph Building module. Subsequently, a number of threat detection and alerting approaches can be applied on the provenance graphs, including (i) tag propagation, (ii) attenuation & decay, and (iii) signature-based detection based on Indicators of Compromise (IoCs). These techniques are provided by the Threat Detection & Alerting module. The Attack Graph Reconstruction module then facilitates (offline) attack graph generation via Backward-forward chaining and attack pattern matching via Graph Querying over the provenance graph. 
 
+## Pre Installation and Configuration
 
-## Configuration
+### TripleStore Installation
+To be able to store the output data and perform data analyze, i.e. for Attack Reconstruction, A triple store with a built-in SPARQL query interface and visualization is need it. For example GraphDB, we can follow this [installation page](https://graphdb.ontotext.com/documentation/standard/installation.html) for further GraphDB installation instruction. 
 
-There are some configuration should be made prior running the application. Please take a look at the configuration file (config.yaml).
+### Configuration File
+There are some configuration should be made prior running the application. Please take a look at the configuration file ([config.yaml](https://github.com/sepses/Krystal/blob/main/config.yaml)).
 
 
 ```bash
-input-dir: experiment/input/ #log-sources directory
+input-dir: experiment/input/ #log-sources directory, see the dataset example
 output-dir: experiment/output/ #output directory 
-tdb-dir: experiment/tdb #Jena TDB directiry
+tdb-dir: experiment/tdb #Jena TDB directory
 ontology: experiment/ontology/log-ontology.ttl #Krystal ontology
 rule-dir : experiment/rule/ #Rule directory i.e. Sigma Rule
 rule-dir-win : experiment/rule_win/ #Rule directory for windows i.e. Sigma Rule for windows 
@@ -60,7 +63,17 @@ To run the compiled project:
 $ java -jar ./target/SimpleLogProvenance-0.0.1-SNAPSHOT-jar-with-dependencies.jar
 ```
 
+## Dataset for Evaluation
+we used well-established datasets from red vs. blue team adversarial engagements produced as part of the third Transparent Computing (TC) program organized by [DARPA](https://drive.google.com/drive/folders/1QlbUFWAGq3Hpl8wVdzOdIoZLFxkII4EK). The datasets are organized into five categories, namely Cadets, Trace, Theia, FiveDirections and ClearScope.
+
+### Example Dataset
+We include several example of the dataset under directory [experiment/input](https://github.com/sepses/Krystal/tree/main/experiment/input).
+
+### Example Output
+We provided example output of the process (in RDF and .HDT) file under directory [experiment/output](https://github.com/sepses/Krystal/tree/main/experiment/output).
+
+
 ## License
 
-The Virtual Log Graph Query Processor is written by [Kabul Kurniawan](https://kabulkurniawan.github.io/) released under the [MIT license](http://opensource.org/licenses/MIT).
+Krystal Framework is written by [Kabul Kurniawan](https://kabulkurniawan.github.io/) released under the [MIT license](http://opensource.org/licenses/MIT).
 
