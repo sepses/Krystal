@@ -47,6 +47,8 @@ field-filter: #Event filter for log processing (filter only the uncommented even
  ...
 ```
 
+## Dataset for Evaluation
+we used well-established datasets from red vs. blue team adversarial engagements produced as part of the third Transparent Computing (TC) program organized by [DARPA](https://drive.google.com/drive/folders/1QlbUFWAGq3Hpl8wVdzOdIoZLFxkII4EK). The datasets are organized into five categories, namely Cadets, Trace, Theia, FiveDirections and ClearScope. We include several example of the dataset under directory [experiment/input](https://github.com/sepses/Krystal/tree/main/experiment/input).
 
 ## Run the Code
 
@@ -62,15 +64,7 @@ To run the compiled project:
 ```bash
 $ java -jar ./target/SimpleLogProvenance-0.0.1-SNAPSHOT-jar-with-dependencies.jar
 ```
-
-## Dataset for Evaluation
-we used well-established datasets from red vs. blue team adversarial engagements produced as part of the third Transparent Computing (TC) program organized by [DARPA](https://drive.google.com/drive/folders/1QlbUFWAGq3Hpl8wVdzOdIoZLFxkII4EK). The datasets are organized into five categories, namely Cadets, Trace, Theia, FiveDirections and ClearScope.
-
-### Example Dataset
-We include several example of the dataset under directory [experiment/input](https://github.com/sepses/Krystal/tree/main/experiment/input).
-
-### Example Output
-We provided example output of the process (in RDF and .HDT) file under directory [experiment/output](https://github.com/sepses/Krystal/tree/main/experiment/output).
+The log processing will takes a couple of time depending the size of the input data. After finish processing the input data, several output files will be produced, such as: the dependency (provenance) graph (in RDF/.ttl file), the alert data (in RDF-star/.ttl), and the compressed one (in .hdt). We provided example output of the process (in RDF and .HDT) file under directory [experiment/output](https://github.com/sepses/Krystal/tree/main/experiment/output).
 
 
 ## License
