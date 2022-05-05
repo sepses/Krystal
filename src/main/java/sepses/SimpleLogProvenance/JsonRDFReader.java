@@ -32,8 +32,8 @@ public class JsonRDFReader {
 	public static long timer;
 	public static long duration;
 	
-	public static void readJson(String t, String filefolder, String l, String se, String ng, String sl, String outputdir, 
-									String inputdir, String triplestore, String backupfile,  ArrayList<String> fieldfilter,
+	public static void readJson(String filefolder, String l, String se, String ng, String sl, String outputdir, 
+									String triplestore, String backupfile,  ArrayList<String> fieldfilter,
 										String livestore, ArrayList<String> confidentialdir, String tdbdir, String ontology, 
 										String ruledir, String os, String decayrule) throws Exception {
 		

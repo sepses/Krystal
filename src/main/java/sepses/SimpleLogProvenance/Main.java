@@ -27,25 +27,18 @@ public class Main {
 	       String livestore= s.get("live-store").toString();
 	       String tdbdir= s.get("tdb-dir").toString();
 	       String ontology= s.get("ontology").toString();
+		   String line = s.get("line-number").toString();;
+	       String sparqlEp =s.get("sparql-endpoint").toString();;
+	       String namegraph = s.get("namegraph").toString();;
 	       ArrayList<String> fieldfilter= (ArrayList<String>) s.get("field-filter");
 	       ArrayList<String> confidentialdir= (ArrayList<String>) s.get("confidential-dir");
 	       
-		//=====commandline argument===========
-		  Options options = new Options();
-	      options.addOption("t", true, "Type of parser (elastic, darpa)");
-	      options.addOption("f", true, "folder file location");
-	      options.addOption("l", true, "line number to process for each iteration");
-	      options.addOption("e", true, "sparql endpoint");
-	      options.addOption("n", true, "namegraph");
-	      options.addOption("sl", true, "starting line, default 0");
+		// //=====commandline argument===========
+		   Options options = new Options();
+	       options.addOption("sl", true, "starting line, default 0");
 	      
 	      CommandLineParser parser = new DefaultParser();
 	      CommandLine cmd = parser.parse(options, args); 
-	      String type = cmd.getOptionValue("t");
-	      String filefolder = cmd.getOptionValue("f");
-	      String line = cmd.getOptionValue("l");
-	      String sparqlEp = cmd.getOptionValue("e");
-	      String namegraph = cmd.getOptionValue("n");
 	      String startingLine = cmd.getOptionValue("sl");
 	    //=====end commandline argument===========
 	      
@@ -82,8 +75,8 @@ public class Main {
 	  	  Utility.deleteFileInDirectory(tdbdir);
 	      
 	  	  System.out.println("Start running "+osplatform+" parser...");
-	      JsonRDFReader.readJson(type, filefolder, line, sparqlEp, namegraph, startingLine, 
-	    		  outputdir, inputdir, triplestore, backupfile, fieldfilter,
+	      JsonRDFReader.readJson(inputdir, line, sparqlEp, namegraph, startingLine, 
+	    		  outputdir, triplestore, backupfile, fieldfilter,
 	    		  livestore, confidentialdir, tdbdir, ontology, ruledir, osplatform, decayrule);
 	    		  
 	    
