@@ -1,4 +1,4 @@
-input-dir: experiment/input/
+input-dir: experiment/input/cadets/
 
 output-dir: experiment/output/
 
@@ -13,6 +13,12 @@ rule-dir-win : experiment/rule_win/
 os-platform: ubuntu14
 
 triple-store: graphdb
+
+sparql-endpoint: http://localhost:7200/repositories/cadets
+
+namegraph: http://w3id.org/sepses/graph/cadets
+
+line-number: 100000
 
 decay-rule: yes
 
