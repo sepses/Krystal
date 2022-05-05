@@ -67,7 +67,7 @@ To run the compiled project:
 ```bash
 $ java -jar ./target/SimpleLogProvenance-0.0.1-SNAPSHOT-jar-with-dependencies.jar
 ```
-The log processing will take a couple of time depending the size of the input data. After processing the input data, several output files will be produced, such as: the dependency (provenance) graphs (in RDF/.ttl file), the alert data (in RDF-star/.ttl), and the compressed version of the RDF graph (in .hdt). We provided several example RDF output (in RDF and .HDT) file under the directory [experiment/output](https://github.com/sepses/Krystal/tree/main/experiment/output). See the example below:
+The log processing will take a couple of time depending the size of the input data. After processing the input data, several output files will be produced, such as: the dependency (provenance) graphs (in RDF/.ttl file), the alert data (in RDF-star/.ttl), and the compressed version of the RDF graph (in .hdt). See the example process below:
 
 ```bash
 $ java -jar .\target\SimpleLogProvenance-0.0.1-SNAPSHOT-jar-with-dependencies.jar
@@ -88,6 +88,9 @@ Save model to rdf file...Done!
 Save model to rdf file...Done!
 Save model rdf to hdt....Done!
 ```
+
+We provided several example RDF output (in RDF and .HDT) file under the directory [experiment/output](https://github.com/sepses/Krystal/tree/main/experiment/output). 
+
 
 ## Analyzing / Querying the Data
 The resulting output data (the RDF data) can already be queried for analysis e.g. for root cause analysis, attack graph reconstruction (via graph query or forward chaining technique), etc. The directory [experiment/query](https://github.com/sepses/Krystal/tree/main/experiment/query) contains several example queries that can be used for analysis.
