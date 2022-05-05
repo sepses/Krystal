@@ -2,6 +2,6 @@
 #/experiment/input
 #/experiment/query
 #/experiment/tdb
-experiment/output
+/experiment/output
 /config.yaml
 /target
