@@ -42,8 +42,7 @@ input-dir: experiment/input/cadets/ #log-sources directory, see the dataset exam
 output-dir: experiment/output/ #output directory, any output file (.rdf/hdt) will be stored in this folder  
 tdb-dir: experiment/tdb #Jena TDB directory, this directory is needed for storing TDB temporary file
 ontology: experiment/ontology/log-ontology.ttl #Krystal Ontology location
-rule-dir : experiment/rule/ #rules should be stored in this directory i.e. Sigma Rule (see the example)
-rule-dir-win : experiment/rule_win/ #special rules directory for windows i.e. Sigma Rule for windows  (see the example)
+
 os-platform: ubuntu14 #OS platform, (ubuntu14 for cadets, trace ; freebsd for theia ; windows for fivedirections)
 triple-store: graphdb #Triple Store type (graphdb, virtuoso)
 sparql-endpoint: http://localhost:7200/repositories/cadets #endpoint for storing rdf output to triple Store
@@ -52,6 +51,19 @@ line-number: 100000 #minimum log line number to be processed (minimum 1)
 decay-rule: yes # Option to perform decay (yes/no)
 live-store: no #Option for storing output data to the triplestore continuously (yes/no)
 backup-file: yes #Save the output in RDF and .HDT (yes/no)
+
+#APPLIED THREAT DETECTION TECHNIQUES: list of possible threat detection techniques, set to "true" to apply otherwise set to "false"
+applied-technique:
+ - tag-propagation: true 
+ - tag-attenuation-decay: true #setting this into true requires tag-propagation: true 
+ - policy-based-rule: true #setting this into true requires tag-propagation and tag-attenuation-decay: true 
+ - signature-based-rule: true #sigma rule 
+
+#Rule directory for Sigma
+rule-dir : experiment/rule/ #rules should be stored in this directory i.e. Sigma Rule (see the example)
+rule-dir-win : experiment/rule_win/ #special rules directory for windows i.e. Sigma Rule for windows  (see the example)
+ 
+
 
 #CONFIDENTIAL DIRECTIORIES: list of of any confidential directories. These will be used as  initialization of confidentiality score in tag-propagation technique during provenance graph building)
 confidential-dir: #please add any other confidential directories
@@ -92,8 +104,28 @@ The resulting output data (the RDF data) can already be queried for analysis e.g
 Krystal currently only supports audit data, especially from well-established datasets from red vs. blue team adversarial engagements produced as part of the third Transparent Computing (TC) program organized by [DARPA](https://drive.google.com/drive/folders/1QlbUFWAGq3Hpl8wVdzOdIoZLFxkII4EK). The datasets are organized into five categories, namely Cadets, Trace, Theia, FiveDirections, and ClearScope. We include several examples of the dataset under the directory [experiment/input](https://github.com/sepses/Krystal/tree/main/experiment/input).
 
 
-## Example Demo
-We provided an example demo [here](https://github.com/sepses/Krystal/Demo.md). It includes a tutorial for building a provenance graph from threat detection, applying threat detections using several techniques as well as performing analysis e.g. attack graph construction and visualization. 
+## Running Example
+See the example process below:
+
+```bash
+$ java -jar .\target\SimpleLogProvenance-0.0.1-SNAPSHOT-jar-with-dependencies.jar
+Start running ubuntu14 parser...
+processing file: cadets100000.json
+reading from line : 1
+parsing 1 of 100000 finished in 11293
+the rest is less than 100000 which is 3
+0
+finish processing file:experiment/input/cadets/cadets100000.json
+generate alert from community ruleexperiment/rule/
+number of events :94050
+Statictics:
+http://w3id.org/sepses/resource/rule/corrupt-file-rule : 6
+http://w3id.org/sepses/resource/rule/change-permission-rule : 20
+http://w3id.org/sepses/resource/sigma/sigma-444ade84-c362-4260-b1f3-e45e20e1a905 : 1
+Save model to rdf file...Done!
+Save model to rdf file...Done!
+Save model rdf to hdt....Done!
+```
 
 ## License
 
