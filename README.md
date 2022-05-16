@@ -2,9 +2,10 @@
 ## What is Krystal?
 KRYSTAL is a modular framework for tactical attack discovery in audit data. The proposed framework integrates a variety of attack discovery mechanisms and takes advantage of its semantic model to include internal and external knowledge in the analysis. 
 ## Krystal Components
-Figure 1 gives an overview of the KRYSTAL attack discovery framework which consists of three main components, i.e., *(i) provenance graph building, (ii) threat detection and alerting, and (iii) attack graph and scenario reconstruction*. Each component may laverage background knowledges to contextualize, link and enrich the graph over both internal and external cybersecurity information (e.g. IT Assets, Vulnerabilities, CTI, etc.)
 
 ![ ](https://raw.githubusercontent.com/kabulkurniawan/Krystal/main/architecture-latest3.png)<p align="center"> **Figure 1** Krystal Architecture.
+
+Figure 1 gives an overview of the KRYSTAL attack discovery framework which consists of three main components, i.e., *(i) provenance graph building, (ii) threat detection and alerting, and (iii) attack graph and scenario reconstruction*. Each component may laverage background knowledges to contextualize, link and enrich the graph over both internal and external cybersecurity information (e.g. IT Assets, Vulnerabilities, CTI, etc.)
 
 KRYSTAL imports each log event (currently Audit Data) in sequence from potentially heterogeneous hosts (e.g., Linux, Windows, FreeBSD), i.e., in an online mode. It then generates an RDF-based provenance graph, taking advantage of the defined ontology (i.e. [Krystal Ontology](https://sepses.ifs.tuwien.ac.at/vocab/event/log/index-en.html)) and background knowledge (e.g. [SEPSES CS-KG](http://sepses.ifs.tuwien.ac.at/)) in the *"Provenance Graph Building"* module. Subsequently, a number of threat detection and alerting approaches can be applied on the provenance graphs in the *"Threat Detection and Alerting Module"*, including:
  (i) tag propagation, 
@@ -19,7 +20,7 @@ KRYSTAL imports each log event (currently Audit Data) in sequence from potential
 Krystal Framework is built based on Java Application Platform that can be deployed in most OS with a JVM. Therefore, it requires a JVM to be installed on the system beforehand. Please follow this [documentation](https://www.oracle.com/java/technologies/downloads/) to download and run the JVM.
 Furthermore, An RDF-graph database with a built-in SPARQL Query will also be required  to store the output RDF data, perform data / attack analysis, i.e. *attack graph construction and graph queries* as well as to *visualize* the resulting graph. For example, we used Stardog and Graph DB for example during our experiment. For GraphDB Installation, please follow this [installation page](https://graphdb.ontotext.com/documentation/standard/installation.html). For Stardog, please follow this [documentation](https://docs.stardog.com/). 
 
-## Configuration and Installation
+## Installation and Configuration
 
 ## Installation
 
@@ -74,7 +75,7 @@ field-filter: #Event filter for log processing (filter only the uncommented even
  ...
 ```
 
-## Running the Application:
+### Running the Application:
 
 To run the compiled project: 
 
@@ -84,7 +85,7 @@ $ java -jar ./target/SimpleLogProvenance-0.0.1-SNAPSHOT-jar-with-dependencies.ja
 The log processing will take a couple of time depending the size of the input data. After processing the input data, several output files will be produced, such as: the dependency (provenance) graphs (in RDF/.ttl file), the alert data (in RDF-star/.ttl), and the compressed version of the RDF graph (in .hdt). We provided several example RDF output (in RDF and .HDT) file under the directory [experiment/output](https://github.com/sepses/Krystal/tree/main/experiment/output). 
 
 
-## Analyzing / Querying the Data
+## Analyzing / Querying the Graph
 The resulting output data (the RDF data) can already be queried for analysis e.g. for root cause analysis, attack graph reconstruction (via graph query or forward chaining technique), etc. The directory [experiment/query](https://github.com/sepses/Krystal/tree/main/experiment/query) contains several example queries that can be used for analysis.
 
 ## Dataset for Testing and Evaluation
