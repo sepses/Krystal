@@ -20,6 +20,9 @@ KRYSTAL imports each log event (currently Audit Data) in sequence from potential
 Krystal Framework is built based on the Java Application Platform that can be deployed in most OS with a JVM. Therefore, it requires a JVM to be installed on the system beforehand. Please follow this [documentation](https://www.oracle.com/java/technologies/downloads/) to download and run the JVM.
 Furthermore, An RDF-graph database with a built-in SPARQL Query will also be required to store the output RDF data, perform data/attack analysis, i.e. *attack graph construction and graph queries* as well as to *visualize* the resulting graph. For example, we used Stardog and Graph DB for example during our experiment. For GraphDB Installation, please follow this [installation page](https://graphdb.ontotext.com/documentation/standard/installation.html). For Stardog, please follow this [documentation](https://docs.stardog.com/). 
 
+## Dataset for Testing and Evaluation
+Krystal currently only supports audit data, especially from well-established datasets from red vs. blue team adversarial engagements produced as part of the third Transparent Computing (TC) program organized by [DARPA](https://drive.google.com/drive/folders/1QlbUFWAGq3Hpl8wVdzOdIoZLFxkII4EK). The datasets are organized into five categories, namely Cadets, Trace, Theia, FiveDirections, and ClearScope. We include several examples of the dataset under the directory [experiment/input](https://github.com/sepses/Krystal/tree/main/experiment/input).
+
 ## Installation and Configuration
 
 ## Installation
@@ -138,13 +141,6 @@ $ java -jar java -jar ./target/Krystal-1.1.0-jar-with-dependencies.jar
 The log processing will take a couple of times depending on the size of the input data. After processing the input data, several output files will be produced, such as the dependency (provenance) graphs (in RDF/.ttl file), the alert data (in RDF-star/.ttl), and the compressed version of the RDF graph (in .hdt). We provided several example RDF output (in RDF and .HDT) file under the directory [experiment/output](https://github.com/sepses/Krystal/tree/main/experiment/output). 
 
 
-## Analyzing / Querying the Graph
-The resulting output data (the RDF data) can already be queried for analysis e.g. for root cause analysis, attack graph reconstruction (via graph query or forward chaining technique), etc. The directory [experiment/query](https://github.com/sepses/Krystal/tree/main/experiment/query) contains several example queries that can be used for analysis.
-
-## Dataset for Testing and Evaluation
-Krystal currently only supports audit data, especially from well-established datasets from red vs. blue team adversarial engagements produced as part of the third Transparent Computing (TC) program organized by [DARPA](https://drive.google.com/drive/folders/1QlbUFWAGq3Hpl8wVdzOdIoZLFxkII4EK). The datasets are organized into five categories, namely Cadets, Trace, Theia, FiveDirections, and ClearScope. We include several examples of the dataset under the directory [experiment/input](https://github.com/sepses/Krystal/tree/main/experiment/input).
-
-
 ## Running Example
 See the example process below:
 
@@ -179,6 +175,12 @@ http://w3id.org/sepses/resource/rule/corrupt-file-rule : 6
 http://w3id.org/sepses/resource/rule/change-permission-rule : 20
 http://w3id.org/sepses/resource/sigma/sigma-444ade84-c362-4260-b1f3-e45e20e1a905 : 1
 ```
+## Analyzing / Querying the Graph
+The resulting output data (the RDF data) can already be queried for analysis e.g. for root cause analysis, attack graph reconstruction (via graph query or forward chaining technique), etc. The directory [experiment/query](https://github.com/sepses/Krystal/tree/main/experiment/query) contains several example queries that can be used for analysis. Figure 2 shows an example output of attack graph construction using *backward-forward* chaining technique. 
+
+![ ](https://raw.githubusercontent.com/kabulkurniawan/Krystal/main/cadets_03.png)<p align="center"> **Figure 2** Attack Graph Construction Output Example.
+
+Nginx backdoor w/ Drakon in-memory. The attack begins with a vulnerable Nginx installed on a FreeBSD host that gets exploited by an attacker. The attacker sends a malformed HTTP request that results in downloading several malicious files on the local system. One of the files i.e. /tmp/pEja72mA then gets executed, which spawns a process pEja72mA. This process reads sensitive information/etc/passwd) and connects remotely via C&C to the attacker console.
 
 ## License
 
