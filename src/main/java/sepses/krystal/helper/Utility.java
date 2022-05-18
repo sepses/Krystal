@@ -176,7 +176,7 @@ public class Utility {
 			  storage = GraphDBStorage.getInstance();
 		 }
 		 
-		   System.out.print("Store data to [" +triplestore+"] via "+sparqlEndpoint + " using namegraph " + namegraph+" ...");
+		   System.out.print("Store "+fileLocation+" to [" +triplestore+"] via "+sparqlEndpoint + " using namegraph " + namegraph+" ...");
 		  // System.out.print("Store data to "+triplestore+" ...");
 	       storage.storeData(fileLocation, sparqlEndpoint, namegraph, true, user, pass);
 	       System.out.println(" Done!");
@@ -185,7 +185,7 @@ public class Utility {
 			System.out.print("Save model to rdf file...");
 			String filename = Utility.getOriginalFileName(namegraph)+"_output.ttl";
 			String rdfFile = Utility.saveToFile(model,outputdir,filename);
-			System.out.println("Done!");
+			System.out.println(outputdir+filename+" Done!");
 			return rdfFile;
 		}
 
@@ -195,7 +195,7 @@ public class Utility {
 				System.out.print("Save model rdf to hdt....");
 				String outputModelHDT = outputdir+Utility.getOriginalFileName(namegraph)+"_output.hdt";
 				Utility.generateHDTFile(namegraph, rdffile, "TURTLE", outputModelHDT);
-				System.out.println("Done!");
+				System.out.println(outputdir+outputModelHDT+" Done!");
 			    return outputModelHDT;
 	   }
 
