@@ -55,14 +55,17 @@ backup-file: true
 output-dir: experiment/output/
 
 #----------------------------- TARGETED TRIPLE STORE AND NAMEGRAPH ------------------------
-#Option for storing output data to the triplestore continuously (true/false)
-live-store: false
+#This option requires a triplestore (currently Krystal support GraphDB) installed.
+#for GraphDB, Krystal requires a repository to be created beforehand
+#Option for storing output data to the triplestore (true/false)
+live-store: true
 
 #Triple Store type (e.g., graphdb, virtuoso)
 triple-store: graphdb
 
 #Endpoint for storing rdf output to triple Store
-sparql-endpoint: http://localhost:7200/repositories/cadets
+#For GraphDB, sparql-endpoint can be access via http://localhost:7200/repositories/<repository-name>
+sparql-endpoint: http://localhost:7200/repositories/Krystal
 
 #Namegraph of the RDF graph on the triplestore (the output filename will be generated based on this namegraph
 namegraph: http://w3id.org/sepses/graph/cadets
