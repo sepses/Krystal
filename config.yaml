@@ -24,7 +24,6 @@ sparql-endpoint: http://localhost:7200/repositories/cadets
 #namegraph of the RDF graph on the triplestore (the output filename will be generated based on this namegraph
 namegraph: http://w3id.org/sepses/graph/cadets
 
-
 #----------------------------- SYSTEM SETTING -------------------------------------------
 #Jena TDB directory, this directory is required for storing jena TDB temporary file
 tdb-dir: experiment/tdb
@@ -34,7 +33,6 @@ ontology: experiment/ontology/log-ontology.ttl
 
 #OS platform of the log sources, (e.g. ubuntu14 for cadets, trace ; freebsd for theia ; windows for fivedirections)
 os-platform: ubuntu14
-
 
 #----------------------------- THREAT DETECTION TECHNIQUES -------------------------------
 #list of possible threat detection techniques, set to "true" to apply otherwise set to "false"
@@ -55,7 +53,6 @@ rule-dir : experiment/rule/
 
 #Sigma rule directory for windows
 rule-dir-win : experiment/rule_win/ 
- 
 
 #----------------------------- CONFIDENTIAL DIRECTORY -------------------------------
 #list of any confidential directory on the targetted hosts / logsources 
@@ -65,7 +62,6 @@ confidential-dir:
  - /var/log
  - /etc/shadow
  - /documents/
-
 
  #----------------------------- AUDIT EVENTS-----------------------------------------
 #list of any events from audit data that need to be included in the provenance graph building. 
