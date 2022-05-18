@@ -2,7 +2,7 @@
 #log-sources input directory, see the dataset example (cadets,trace,theia,fivedirections) 
 input-dir: experiment/input/cadets/
 
-##minimum log line number to be processed (minimum 1)
+#minimum log line number to be processed (minimum 1)
 line-number: 100000
 
 #Save the output in RDF and .HDT (yes/no)
