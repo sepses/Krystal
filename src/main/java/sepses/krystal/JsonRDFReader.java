@@ -141,15 +141,6 @@ public class JsonRDFReader {
 								long endTime   = System.nanoTime();
 								long totalTime = endTime - startTime;
 								System.out.println("Total Time: "+ totalTime);
-														
-								if(livestore!="false") {
-									//add rdfs reasoner first
-									//InfModel infModel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), jsonModel);
-									 //detect alert from rule dir (i.e. sigma rule)
-									//AlertRule.generateAlertFromRuleDir(infModel, alertModel, ruledir);
-									//String rdfFile = Utility.saveToRDF(infModel, outputdir, namegraph);
-									//Utility.storeFileInRepo(triplestore, rdfFile, sparqlEp, namegraph, "dba", "dba");
-								}	
 								templ=0;
 							}
 							
@@ -166,16 +157,6 @@ public class JsonRDFReader {
 			long endTime   = System.nanoTime();
 			long totalTime = endTime - startTime;
 			System.out.println("Total Time: "+ totalTime);
-			
-			if(livestore!="false") {
-				
-				    //InfModel infModel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), jsonModel);
-				    //detect alert from rule dir (i.e. sigma rule)
-					//AlertRule.generateAlertFromRuleDir(infModel, alertModel, ruledir);
-					//String rdfFile = Utility.saveToRDF(infModel, outputdir, namegraph);
-					//Utility.storeFileInRepo(triplestore, rdfFile, sparqlEp, namegraph, "dba", "dba");
-					}	
-			
 			templ=0;
 		}
 			//end of a file	
@@ -186,13 +167,11 @@ public class JsonRDFReader {
 	     Reasoner reasoner = ReasonerRegistry.getOWLMicroReasoner();
 	     reasoner = reasoner.bindSchema(RDFDataMgr.loadModel(ontology));
 	     InfModel infModel = ModelFactory.createInfModel(reasoner, jsonModel);
-	     //InfModel infModel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), jsonModel);
-		    
-	     
-	     
-	     //detect alert from rule dir (i.e. sigma rule)
+	    // InfModel infModel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), jsonModel);
+		        
 	     
 	 	if(signaturerule!="false") {
+	 		//detect alert from rule dir (i.e. sigma rule)
 	 	   AlertRule.generateAlertFromRuleDir(infModel,alertModel, ruledir); 
 		}
 	  
@@ -204,15 +183,13 @@ public class JsonRDFReader {
 	    	 	String rdfFile = Utility.saveToRDF(infModel, outputdir, namegraph);
 			    String alertFile = Utility.saveToRDF(alertModel, outputdir, namegraph+"_alert");
 			    Utility.exportHDT(rdfFile, outputdir, namegraph);
-				if(livestore=="false") {
-					//Utility.storeFileInRepo(triplestore, rdfFile, sparqlEp, namegraph, "dba", "dba");
-					//Utility.storeFileInRepo(triplestore, alertFile, sparqlEp, namegraph, "dba", "dba");
+			    //alert is not included in HDT, as it doesn't support RDF-star yet
+				if(livestore!="false") {
+					Utility.storeFileInRepo(triplestore, ontology, sparqlEp, namegraph , "dba", "dba");
+					Utility.storeFileInRepo(triplestore, rdfFile, sparqlEp, namegraph, "dba", "dba");
+					Utility.storeFileInRepo(triplestore, alertFile, sparqlEp, namegraph, "dba", "dba");
 				}	
-			} 
-	     
-	   //System.out.println("Finish!, get the primary alarm.. ");
-	  // AttackConstruction.getMostWeightedAlert(infModel,alertModel);
-	
+			} 	
 	   
 	}
 
