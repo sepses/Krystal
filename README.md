@@ -86,7 +86,7 @@ ab: 0.2 #attenuation value for benign
 ae: 0.1 #attenuation value for suspect  
 
 #Setting tag-decay into true requires tag-propagation to be true 
-decay-rule: true
+tag-decay: true
 period: 0.25 #decay half live (second)
 tb: 0.75 #quiescent tag values for benign
 te: 0.45 #aquiescent tag values for suspect
@@ -95,7 +95,7 @@ te: 0.45 #aquiescent tag values for suspect
 policy-based-rule: true
 
 #Signature base detection, currently it only supports rule detection from Sigma Rule 
-signature-based-rule: true
+signature-based-rule: true 
 
 #Sigma rule directory for linux 
 rule-dir : experiment/rule/
