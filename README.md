@@ -18,7 +18,8 @@ KRYSTAL imports each log event (currently Audit Data) in sequence from potential
 
 ## Requirements
 Krystal Framework is built based on the Java Application Platform that can be deployed in most OS with a JVM. Therefore, it requires a JVM to be installed on the system beforehand. Please follow this [documentation](https://www.oracle.com/java/technologies/downloads/) to download and run the JVM.
-Furthermore, An RDF-graph database with a built-in SPARQL Query will also be required to store the output RDF data, perform data/attack analysis, i.e. *attack graph construction and graph queries* as well as to *visualize* the resulting graph. For example, we used Stardog and Graph DB for example during our experiment. For GraphDB Installation, please follow this [installation page](https://graphdb.ontotext.com/documentation/standard/installation.html). For Stardog, please follow this [documentation](https://docs.stardog.com/). 
+Furthermore, An RDF-graph database with a built-in SPARQL Query will also be required to store the output RDF data, perform data/attack analysis, i.e. *attack graph construction and graph queries* as well as to *visualize* the resulting graph. For GraphDB Installation, please follow this [installation page](https://graphdb.ontotext.com/documentation/standard/installation.html). After the installation has been completed, graphDB can be accessed via this url [http://localhost:7200](http://localhost:7200/). Krystal requires one repository to be created beforehand, please take a look at this [documentation](https://graphdb.ontotext.com/documentation/free/creating-a-repository.html#:~:text=the%20RDF4J%20console.-,Using%20the%20Workbench,Select%20GraphDB%20Free%20repository.).
+
 
 ## Dataset for Testing and Evaluation
 Krystal currently only supports audit data, especially from well-established datasets from red vs. blue team adversarial engagements produced as part of the third Transparent Computing (TC) program organized by [DARPA](https://drive.google.com/drive/folders/1QlbUFWAGq3Hpl8wVdzOdIoZLFxkII4EK). The datasets are organized into five categories, namely Cadets, Trace, Theia, FiveDirections, and ClearScope. We include several examples of the dataset under the directory [experiment/input](https://github.com/sepses/Krystal/tree/main/experiment/input).
@@ -47,21 +48,24 @@ input-dir: experiment/input/cadets/
 #Minimum log line number to be processed (minimum 1)
 line-number: 100000
 
-#Save the output in RDF and .HDT (yes/no)
-backup-file: no
+#Save the output in RDF and .HDT (true/false)
+backup-file: true
 
 #Output directory, any output file (.rdf/hdt) will be stored in this folder 
 output-dir: experiment/output/
 
 #----------------------------- TARGETED TRIPLE STORE AND NAMEGRAPH ------------------------
-#Option for storing output data to the triplestore continuously (yes/no)
-live-store: no
+#This option requires a triplestore (currently Krystal support GraphDB) installed.
+#for GraphDB, Krystal requires a repository to be created beforehand
+#Option for storing output data to the triplestore (true/false)
+live-store: true
 
 #Triple Store type (e.g., graphdb, virtuoso)
 triple-store: graphdb
 
 #Endpoint for storing rdf output to triple Store
-sparql-endpoint: http://localhost:7200/repositories/cadets
+#For GraphDB, sparql-endpoint can be access via http://localhost:7200/repositories/<repository-name>
+sparql-endpoint: http://localhost:7200/repositories/Krystal
 
 #Namegraph of the RDF graph on the triplestore (the output filename will be generated based on this namegraph
 namegraph: http://w3id.org/sepses/graph/cadets
@@ -78,7 +82,7 @@ os-platform: ubuntu14
 
 #----------------------------- THREAT DETECTION TECHNIQUES -------------------------------
 #List of possible threat detection techniques, set to "true" to apply otherwise set to "false"
-tag-propagation: true 
+tag-propagation: true
 
 #Setting tag-attenuation into true requires tag-propagation to be true 
 tag-attenuation: true
@@ -123,11 +127,6 @@ field-filter:
  #- EVENT_CLONE
  #- EVENT_LOADLIBRARY
  #- EVENT_EXECUTE
- - EVENT_ACCEPT
- - EVENT_RECVMSG
- - EVENT_SENDMSG
- #- EVENT_SENDTO
- #- EVENT_MODIFY_FILE_ATTRIBUTES
 ....
 ```
 
@@ -155,7 +154,7 @@ $ java -jar java -jar ./target/Krystal-1.1.0-jar-with-dependencies.jar
 
 
 Start running ubuntu14 parser...
-Appled Techniques:
+Threat detection techniques:
 - Tag-Propagation: true
 - Tag-Attenuation: true
 - Tag-Decay: true
@@ -163,17 +162,23 @@ Appled Techniques:
 - Signature-Rule: true
 processing file: cadets100000.json
 reading from line : 1
-parsing 1 of 100000 finished in 9679
-Total Time: 10194338400
+parsing 1 of 100000 finished in 10322
+Total Time: 10705805600
 the rest is less than 100000 which is 3
-Total Time: 10195279400
-finish processing file:experiment/input/cadets/cadets100000.json
-generate alert from community ruleexperiment/rule/
+Total Time: 10706591400
+finish processing file: experiment/input/cadets/cadets100000.json
+generate alert from sigma rule experiment/rule/
 number of events :94050
 Statictics:
 http://w3id.org/sepses/resource/rule/corrupt-file-rule : 6
 http://w3id.org/sepses/resource/rule/change-permission-rule : 20
 http://w3id.org/sepses/resource/sigma/sigma-444ade84-c362-4260-b1f3-e45e20e1a905 : 1
+Save model to rdf file...experiment/output/cadets_output.ttl Done!
+Save model to rdf file...experiment/output/cadets_alert_output.ttl Done!
+Save model rdf to hdt....experiment/output/experiment/output/cadets_output.hdt Done!
+Store experiment/ontology/log-ontology.ttl to [graphdb] via http://localhost:7200/repositories/Krystal using namegraph http://w3id.org/sepses/graph/cadets ... Done!
+Store experiment/output/cadets_output.ttl to [graphdb] via http://localhost:7200/repositories/Krystal using namegraph http://w3id.org/sepses/graph/cadets ... Done!
+Store experiment/output/cadets_alert_output.ttl to [graphdb] via http://localhost:7200/repositories/Krystal using namegraph http://w3id.org/sepses/graph/cadets ... Done!
 ```
 ## Analyzing / Querying the Graph
 The resulting output data (the RDF data) can already be queried for analysis e.g. for root cause analysis, attack graph reconstruction (via graph query or forward chaining technique), etc. The directory [experiment/query](https://github.com/sepses/Krystal/tree/main/experiment/query) contains several example queries that can be used for analysis. Figure 2 shows an example output of attack graph construction using *backward-forward* chaining technique. 

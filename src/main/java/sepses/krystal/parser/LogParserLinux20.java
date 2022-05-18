@@ -101,9 +101,9 @@ public class LogParserLinux20 {
 							
 
 								if (attenuation!="false") {
-									   prop.writeTagWithAttenuation(jsonModel, attenuation, decayrule, sts, Tb, Te);
+									   prop.writeTagWithAttenuation(jsonModel, attenuation, decayrule, sts, Tb, Te, propagation);
 									}else {
-									   prop.writeTag(jsonModel, fileName, curWrite, sts);
+									   prop.writeTag(jsonModel, fileName, curWrite, sts, propagation);
 									}
 								
 								
@@ -126,7 +126,7 @@ public class LogParserLinux20 {
 										alert.reconnaissanceReadAlert(jsonModel,alertModel, subject+"#"+exec, fileName, sts);
 									}
 									
-									prop.readTag(jsonModel, subject, exec, fileName);										
+									prop.readTag(jsonModel, subject, exec, fileName, propagation);										
 									lastAccess = curRead;
 								}
 							}	
@@ -166,7 +166,7 @@ public class LogParserLinux20 {
 							}
 						
 							
-							prop.execTag(jsonModel, subject, newExec, fileName);	
+							prop.execTag(jsonModel, subject, newExec, fileName, propagation);	
 							
 						}
 					
@@ -208,7 +208,7 @@ public class LogParserLinux20 {
 									alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
 								}
 								
-								prop.sendTag(jsonModel, subject, exec, IPAddress);
+								prop.sendTag(jsonModel, subject, exec, IPAddress, propagation);
 								lastAccess=curSend;
 								
 							}
@@ -228,7 +228,7 @@ public class LogParserLinux20 {
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 								
-								prop.receiveTag(jsonModel, subject, exec, IPAddress);
+								prop.receiveTag(jsonModel, subject, exec, IPAddress, propagation);
 					
 						}
 					}

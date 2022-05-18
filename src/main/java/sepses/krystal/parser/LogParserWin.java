@@ -122,7 +122,7 @@ public class LogParserWin {
 									alert.corruptFileAlert(jsonModel, alertModel, subject+"#"+exec, objectString, sts);
 								}
 								
-								prop.writeTag(jsonModel, subject, exec, objectString);
+								prop.writeTag(jsonModel, subject, exec, objectString, propagation);
 								
 								lastAccess = curWrite;
 								
@@ -142,7 +142,7 @@ public class LogParserWin {
 									Reader targetReader = new StringReader(mapper);
 									jsonModel.read(targetReader, null, "N-TRIPLE");
 									
-									prop.readTag(jsonModel, subject, exec, objectString);		
+									prop.readTag(jsonModel, subject, exec, objectString, propagation);		
 									
 
 									if(policyrule!="false") {
@@ -174,7 +174,7 @@ public class LogParserWin {
 									}
 									 
 									 
-									 prop.execTag(jsonModel, subject, exec, objectString);									
+									 prop.execTag(jsonModel, subject, exec, objectString, propagation);									
 									 lastAccess = curExe;
 									
 								}
@@ -202,7 +202,7 @@ public class LogParserWin {
 									}
 									 
 									 
-									 prop.loadTag(jsonModel, subject, exec, objectString);	
+									 prop.loadTag(jsonModel, subject, exec, objectString, propagation);	
 									 
 									 lastAccess = curLoad;
 									
@@ -279,7 +279,7 @@ public class LogParserWin {
 									 alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
 								 }
 								
-								prop.sendTag(jsonModel, subject, exec, IPAddress);
+								prop.sendTag(jsonModel, subject, exec, IPAddress, propagation);
 								
 								lastAccess=curSend;
 								
@@ -312,7 +312,7 @@ public class LogParserWin {
 								 }
 								
 								
-								prop.receiveTag(jsonModel, subject, exec, IPAddress);
+								prop.receiveTag(jsonModel, subject, exec, IPAddress, propagation);
 								
 								if(ts>stime) {
 									putNewSubjectTime(subject, ts, SubjectTime);

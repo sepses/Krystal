@@ -45,46 +45,57 @@ public class PropagationRule {
 		
 	}
 	
-	public void loadTag(Model jsonModel, String subject, String exec, String objectString) {
-		subjLoad(jsonModel, subject, exec, objectString);
-		intRead(jsonModel, subject, exec, objectString);
-		confRead(jsonModel, subject, exec, objectString);
+	public void loadTag(Model jsonModel, String subject, String exec, String objectString, String propagation) {
+		if(propagation!="false") {
+			subjLoad(jsonModel, subject, exec, objectString);
+			intRead(jsonModel, subject, exec, objectString);
+			confRead(jsonModel, subject, exec, objectString);
+		}
 	}
 	
 	
 	
-	public void readTag(Model jsonModel, String subject, String exec, String objectString) {
-		intRead(jsonModel, subject, exec, objectString);
-		confRead(jsonModel, subject, exec, objectString);
-		
+	public void readTag(Model jsonModel, String subject, String exec, String objectString, String propagation) {
+		if(propagation!="false") {
+			intRead(jsonModel, subject, exec, objectString);
+			confRead(jsonModel, subject, exec, objectString);
+		}
 	}
 	
-	public void writeTag(Model jsonModel, String subject, String exec, String objectString) {
-		confWrite(jsonModel, subject, exec, objectString);
-		intWrite(jsonModel, subject, exec, objectString);
+	public void writeTag(Model jsonModel, String subject, String exec, String objectString, String propagation) {
+		if(propagation!="false") {
+			confWrite(jsonModel, subject, exec, objectString);
+			intWrite(jsonModel, subject, exec, objectString);
+		}
 	}
 	
-	public void writeTagWithAttenuation(Model jsonModel, String subject, String exec, String objectString, double ab, double ae) {
-		confWriteAtten(jsonModel, subject, exec, objectString, ab, ae);
-		intWriteAtten(jsonModel, subject, exec, objectString, ab, ae);
+	public void writeTagWithAttenuation(Model jsonModel, String subject, String exec, String objectString, double ab, double ae,String propagation) {
+		if(propagation!="false") {
+			confWriteAtten(jsonModel, subject, exec, objectString, ab, ae);
+			intWriteAtten(jsonModel, subject, exec, objectString, ab, ae);
+		}
 	}
 	
-	public void receiveTag(Model jsonModel, String subject, String exec, String objectString) {
-		intReceive(jsonModel, subject, exec, objectString);
-		confReceive(jsonModel, subject, exec, objectString);
-		
+	public void receiveTag(Model jsonModel, String subject, String exec, String objectString,String propagation) {
+		if(propagation!="false") {
+			intReceive(jsonModel, subject, exec, objectString);
+			confReceive(jsonModel, subject, exec, objectString);
+		}
 	}
 	
-	public void sendTag(Model jsonModel, String subject, String exec, String objectString) {
-		confSend(jsonModel, subject, exec, objectString);
-		intSend(jsonModel, subject, exec, objectString);
+	public void sendTag(Model jsonModel, String subject, String exec, String objectString, String propagation) {
+		if(propagation!="false") {
+			confSend(jsonModel, subject, exec, objectString);
+			intSend(jsonModel, subject, exec, objectString);
+		}
 	}
 	
-	public void execTag(Model jsonModel, String subject, String exec, String objectString) {
-		intExec(jsonModel, subject, exec, objectString);
-		confExec(jsonModel, subject, exec, objectString);
-		subjExec(jsonModel, subject, exec, objectString);
-
+	public void execTag(Model jsonModel, String subject, String exec, String objectString, String propagation) {
+		if(propagation!="false") {
+			intExec(jsonModel, subject, exec, objectString);
+			confExec(jsonModel, subject, exec, objectString);
+			subjExec(jsonModel, subject, exec, objectString);
+		}
 	}
 	
 		//===================READ / LOAD ==============================

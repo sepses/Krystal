@@ -263,7 +263,7 @@ public class AlertRule {
 	
 	
 	public static void generateAlertFromRuleDir(Model jsonModel, Model alertModel, String ruledir) {
-		System.out.println("generate alert from community rule"+ruledir);
+		System.out.println("generate alert from sigma rule "+ruledir);
 		
 		//get rule-query from ruledir
 		File rulefolder = new File(ruledir);

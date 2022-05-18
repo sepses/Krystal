@@ -140,9 +140,9 @@ public class LogParserUbuntu14 {
 								
 								
 								if(attenuation!="false") {
-									prop.writeTagWithAttenuation(jsonModel, subject, exec, objectString,ab,ae);
+									prop.writeTagWithAttenuation(jsonModel, subject, exec, objectString,ab,ae,propagation);
 								}else {
-									prop.writeTag(jsonModel, subject, exec, objectString);
+									prop.writeTag(jsonModel, subject, exec, objectString,propagation);
 								}
 								
 								
@@ -167,7 +167,7 @@ public class LogParserUbuntu14 {
 									jsonModel.read(targetReader, null, "N-TRIPLE");
 									
 					
-									prop.readTag(jsonModel, subject, exec, objectString);
+									prop.readTag(jsonModel, subject, exec, objectString, propagation);
 									lastAccess = curRead;
 									
 								}
@@ -230,7 +230,7 @@ public class LogParserUbuntu14 {
 										alert.execAlert(jsonModel,alertModel, subject+"#"+process2, objectString, sts);	 
 									}
 									
-								 prop.execTag(jsonModel, subject, process2, objectString);
+								 prop.execTag(jsonModel, subject, process2, objectString, propagation);
 						}	 
 						 
 					
@@ -304,7 +304,7 @@ public class LogParserUbuntu14 {
 									alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);				 
 								}
 								
-								prop.sendTag(jsonModel, subject, exec, IPAddress);
+								prop.sendTag(jsonModel, subject, exec, IPAddress, propagation);
 								
 								lastAccess=curSend;
 								
@@ -343,7 +343,7 @@ public class LogParserUbuntu14 {
 								
 											
 								
-								prop.receiveTag(jsonModel, subject, exec, IPAddress);
+								prop.receiveTag(jsonModel, subject, exec, IPAddress, propagation);
 								
 																						 
 						}
