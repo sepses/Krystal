@@ -94,8 +94,11 @@ public class LogParserLinux20 {
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 		
-								AlertRule alert = new AlertRule();
-								alert.corruptFileAlert(jsonModel, alertModel, subject+"#"+exec, fileName, sts);
+								if(policyrule!="false") {
+									AlertRule alert = new AlertRule();
+									alert.corruptFileAlert(jsonModel, alertModel, subject+"#"+exec, fileName, sts);
+								}
+							
 
 								if (attenuation!="false") {
 									   prop.writeTagWithAttenuation(jsonModel, attenuation, decayrule, sts, Tb, Te);
@@ -118,8 +121,10 @@ public class LogParserLinux20 {
 									Reader targetReader = new StringReader(mapper);
 									jsonModel.read(targetReader, null, "N-TRIPLE");
 																
-									AlertRule alert = new AlertRule();
-									alert.reconnaissanceReadAlert(jsonModel,alertModel, subject+"#"+exec, fileName, sts);
+									if(policyrule!="false") {
+										AlertRule alert = new AlertRule();
+										alert.reconnaissanceReadAlert(jsonModel,alertModel, subject+"#"+exec, fileName, sts);
+									}
 									
 									prop.readTag(jsonModel, subject, exec, fileName);										
 									lastAccess = curRead;
@@ -154,9 +159,12 @@ public class LogParserLinux20 {
 							  prop.decayIndividualProcess(jsonModel,  subject+"#"+newExec, ts, period, Tb, Te);
 							}
 							
-							AlertRule alert = new AlertRule();
-							alert.changePermAlert(jsonModel, alertModel, subject+"#"+exec, fileName, sts);
-							alert.execAlert(jsonModel,alertModel, subject+"#"+newExec, fileName, sts);
+							if(policyrule!="false") {
+								AlertRule alert = new AlertRule();
+								alert.changePermAlert(jsonModel, alertModel, subject+"#"+exec, fileName, sts);
+								alert.execAlert(jsonModel,alertModel, subject+"#"+newExec, fileName, sts);
+							}
+						
 							
 							prop.execTag(jsonModel, subject, newExec, fileName);	
 							
@@ -195,8 +203,10 @@ public class LogParserLinux20 {
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 								
-								AlertRule alert = new AlertRule();
-								alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
+								if(policyrule!="false") {
+									AlertRule alert = new AlertRule();
+									alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
+								}
 								
 								prop.sendTag(jsonModel, subject, exec, IPAddress);
 								lastAccess=curSend;

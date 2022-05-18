@@ -128,8 +128,10 @@ public class LogParserFreeBSD {
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 								
 								
-								AlertRule alert = new AlertRule();
-								alert.corruptFileAlert(jsonModel, alertModel, subject+"#"+exec, objectString, sts);
+								if(policyrule!="false") {
+									AlertRule alert = new AlertRule();
+									alert.corruptFileAlert(jsonModel, alertModel, subject+"#"+exec, objectString, sts);
+								}
 								
 								if(attenuation!="false") {
 									prop.writeTagWithAttenuation(jsonModel, subject, exec, objectString,ab,ae);
@@ -215,9 +217,10 @@ public class LogParserFreeBSD {
 									}
 									
 								 
-								 AlertRule alert = new AlertRule();
-								 
-								 alert.execAlert(jsonModel,alertModel, subject+"#"+process2, objectString, sts);
+									if(policyrule!="false") {
+										AlertRule alert = new AlertRule();
+										alert.execAlert(jsonModel,alertModel, subject+"#"+process2, objectString, sts);
+								}
 								 
 								 prop.execTag(jsonModel, subject, process2, objectString);
 						}	 
@@ -243,8 +246,10 @@ public class LogParserFreeBSD {
 							Reader targetReader = new StringReader(mapper);
 							jsonModel.read(targetReader, null, "N-TRIPLE");
 							
-							 AlertRule alert = new AlertRule();
-							 alert.changePermAlert(jsonModel, alertModel, subject+"#"+exec, objectString, sts);
+							if(policyrule!="false") {
+								 AlertRule alert = new AlertRule();
+								 alert.changePermAlert(jsonModel, alertModel, subject+"#"+exec, objectString, sts);
+							}
 							lastAccess = curCh;
 								
 						}
@@ -259,8 +264,10 @@ public class LogParserFreeBSD {
 //							Reader targetReader = new StringReader(mapper);
 //							jsonModel.read(targetReader, null, "N-TRIPLE");
 //							
-//							AlertRule alert = new AlertRule();
-//							alert.memExec(jsonModel, alertModel, subject+"#"+exec, objectString, sts); 
+//							if(policyrule!="false") {
+//								AlertRule alert = new AlertRule();
+//								alert.memExec(jsonModel, alertModel, subject+"#"+exec, objectString, sts);
+//						} 
 //							lastAccess = curPro;
 //						}
 //						
@@ -285,8 +292,10 @@ public class LogParserFreeBSD {
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 													
 								
-								AlertRule alert = new AlertRule();
-								alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
+								if(policyrule!="false") {
+									AlertRule alert = new AlertRule();
+									alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
+								}
 								
 								prop.sendTag(jsonModel, subject, exec, IPAddress);
 								
@@ -319,8 +328,10 @@ public class LogParserFreeBSD {
 								//every connection is evil, hence update the new time to avoid decay
 								putNewSubjectTime(subject, ts, SubjectTime);
 								
-								AlertRule alert = new AlertRule();
-								alert.reconnaissanceAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
+								if(policyrule!="false") {
+									AlertRule alert = new AlertRule();
+									alert.reconnaissanceAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
+								}
 											
 								
 								prop.receiveTag(jsonModel, subject, exec, IPAddress);

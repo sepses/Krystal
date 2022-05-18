@@ -90,9 +90,11 @@ public class LogParserUbuntu12 {
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 		
-								AlertRule alert = new AlertRule();
-								alert.corruptFileAlert(jsonModel, alertModel, subject+"#"+exec, fileName, sts);
-
+								if(policyrule!="false") {
+									AlertRule alert = new AlertRule();
+									alert.corruptFileAlert(jsonModel, alertModel, subject+"#"+exec, fileName, sts);
+								}
+							
 								if(attenuation!="false") {
 									prop.writeTagWithAttenuation(jsonModel, subject, exec, objectString,ab,ae);
 								}else {
@@ -147,8 +149,10 @@ public class LogParserUbuntu12 {
 							  prop.decayIndividualProcess(jsonModel,  subject+"#"+newExec, ts, period, tb, te);
 							}
 							
-							AlertRule alert = new AlertRule();
-							alert.execAlert(jsonModel,alertModel, subject+"#"+newExec, fileName, sts);
+							if(policyrule!="false") {
+								AlertRule alert = new AlertRule();
+								alert.execAlert(jsonModel,alertModel, subject+"#"+newExec, fileName, sts);
+							}
 							
 							prop.execTag(jsonModel, subject, newExec, fileName);	
 							
@@ -170,8 +174,10 @@ public class LogParserUbuntu12 {
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 								
-								AlertRule alert = new AlertRule();
-								alert.changePermAlert(jsonModel, alertModel, subject+"#"+exec, fileName, sts);
+								if(policyrule!="false") {
+									AlertRule alert = new AlertRule();
+									alert.changePermAlert(jsonModel, alertModel, subject+"#"+exec, fileName, sts);
+								}
 								lastAccess=curCh;
 						  }
 						}
@@ -184,8 +190,10 @@ public class LogParserUbuntu12 {
 //								mapper = lm.mprotect(subject,exec,fileName,hostId,userId, timestamp);
 //								Reader targetReader = new StringReader(mapper);
 //								jsonModel.read(targetReader, null, "N-TRIPLE");
-//								AlertRule alert = new AlertRule();
-//								alert.memExec(jsonModel, alertModel, subject+"#"+exec, fileName, sts);
+//								if(policyrule!="false") {
+//										AlertRule alert = new AlertRule();
+//										alert.memExec(jsonModel, alertModel, subject+"#"+exec, fileName, sts);
+//								}
 //								
 //						}
 					}else if(eventType.contains("EVENT_SENDTO")) {
@@ -203,8 +211,10 @@ public class LogParserUbuntu12 {
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 								
-								AlertRule alert = new AlertRule();
-								alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
+								if(policyrule!="false") {
+									AlertRule alert = new AlertRule();
+									alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
+								}
 								
 								prop.sendTag(jsonModel, subject, exec, IPAddress);
 								lastAccess=curSend;
@@ -226,8 +236,10 @@ public class LogParserUbuntu12 {
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 					
-								AlertRule alert = new AlertRule();
-								alert.reconnaissanceAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
+								if(policyrule!="false") {
+									AlertRule alert = new AlertRule();
+									alert.reconnaissanceAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
+								}
 								
 								prop.receiveTag(jsonModel, subject, exec, IPAddress);
 					

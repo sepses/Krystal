@@ -149,13 +149,28 @@ Krystal currently only supports audit data, especially from well-established dat
 See the example process below:
 
 ```bash
-$ java -jar .\target\SimpleLogProvenance-0.0.1-SNAPSHOT-jar-with-dependencies.jar
+$ java -jar java -jar .\target\Krystal-1.1.0-jar-with-dependencies.jar
+    __ __                 __        __   ______                                             __
+   / //_/_______  _______/ /_____ _/ /  / ____/________ _____ ___  ___ _      ______  _____/ /__
+  / ,<  / ___/ / / / ___/ __/ __ `/ /  / /_  / ___/ __ `/ __ `__ \/ _ \ | /| / / __ \/ ___/ //_/
+ / /| |/ /  / /_/ (__  ) /_/ /_/ / /  / __/ / /  / /_/ / / / / / /  __/ |/ |/ / /_/ / /  / ,<
+/_/ |_/_/   \__, /____/\__/\__,_/_/  /_/   /_/   \__,_/_/ /_/ /_/\___/|__/|__/\____/_/  /_/|_|
+           /____/
+
+
 Start running ubuntu14 parser...
+Appled Techniques:
+- Tag-Propagation: true
+- Tag-Attenuation: true
+- Tag-Decay: true
+- Policy-Rule: true
+- Signature-Rule: true
 processing file: cadets100000.json
 reading from line : 1
-parsing 1 of 100000 finished in 11293
+parsing 1 of 100000 finished in 9679
+Total Time: 10194338400
 the rest is less than 100000 which is 3
-0
+Total Time: 10195279400
 finish processing file:experiment/input/cadets/cadets100000.json
 generate alert from community ruleexperiment/rule/
 number of events :94050
@@ -163,9 +178,6 @@ Statictics:
 http://w3id.org/sepses/resource/rule/corrupt-file-rule : 6
 http://w3id.org/sepses/resource/rule/change-permission-rule : 20
 http://w3id.org/sepses/resource/sigma/sigma-444ade84-c362-4260-b1f3-e45e20e1a905 : 1
-Save model to rdf file...Done!
-Save model to rdf file...Done!
-Save model rdf to hdt....Done!
 ```
 
 ## License

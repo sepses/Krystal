@@ -117,8 +117,10 @@ public class LogParserWin {
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 								
-								AlertRule alert = new AlertRule();
-								alert.corruptFileAlert(jsonModel, alertModel, subject+"#"+exec, objectString, sts);
+								if(policyrule!="false") {
+									AlertRule alert = new AlertRule();
+									alert.corruptFileAlert(jsonModel, alertModel, subject+"#"+exec, objectString, sts);
+								}
 								
 								prop.writeTag(jsonModel, subject, exec, objectString);
 								
@@ -143,9 +145,10 @@ public class LogParserWin {
 									prop.readTag(jsonModel, subject, exec, objectString);		
 									
 
-									AlertRule alert = new AlertRule();
-									alert.reconnaissanceAlert(jsonModel,alertModel, subject+"#"+exec, objectString, sts);
-									
+									if(policyrule!="false") {
+										AlertRule alert = new AlertRule();
+										alert.reconnaissanceAlert(jsonModel,alertModel, subject+"#"+exec, objectString, sts);
+										}
 									lastAccess = curRead;
 					
 								}
@@ -165,9 +168,10 @@ public class LogParserWin {
 									 Reader targetReader2 = new StringReader(mapper);
 									 jsonModel.read(targetReader2, null, "N-TRIPLE");
 									 
-									 AlertRule alert = new AlertRule();
-									 
-									 alert.execAlert(jsonModel,alertModel, subject+"#"+exec, objectString, sts);
+									 if(policyrule!="false") {
+										 AlertRule alert = new AlertRule();
+										 alert.execAlert(jsonModel,alertModel, subject+"#"+exec, objectString, sts);
+									}
 									 
 									 
 									 prop.execTag(jsonModel, subject, exec, objectString);									
@@ -192,8 +196,10 @@ public class LogParserWin {
 									 Reader targetReader2 = new StringReader(mapper);
 									 jsonModel.read(targetReader2, null, "N-TRIPLE");
 									 
-									AlertRule alert = new AlertRule();
-									alert.execAlert(jsonModel,alertModel, subject+"#"+exec, objectString, sts);
+									 if(policyrule!="false") {
+										 AlertRule alert = new AlertRule();
+											alert.execAlert(jsonModel,alertModel, subject+"#"+exec, objectString, sts);
+									}
 									 
 									 
 									 prop.loadTag(jsonModel, subject, exec, objectString);	
@@ -225,8 +231,10 @@ public class LogParserWin {
 							Reader targetReader = new StringReader(mapper);
 							jsonModel.read(targetReader, null, "N-TRIPLE");
 							
-							AlertRule alert = new AlertRule();
-							alert.changePermAlert(jsonModel, alertModel, subject+"#"+exec, objectString, sts);
+							 if(policyrule!="false") {
+								 AlertRule alert = new AlertRule();
+								 alert.changePermAlert(jsonModel, alertModel, subject+"#"+exec, objectString, sts);
+							}
 							lastAccess = curCh;
 					
 						 }
@@ -239,8 +247,10 @@ public class LogParserWin {
 //							Reader targetReader = new StringReader(mapper);
 //							jsonModel.read(targetReader, null, "N-TRIPLE");
 //							
-//							AlertRule alert = new AlertRule();
-//							alert.memExec(jsonModel, alertModel, subject+"#"+exec, objectString, sts);
+//		   					 if(policyrule!="false") {
+//								AlertRule alert = new AlertRule();
+//				   				alert.memExec(jsonModel, alertModel, subject+"#"+exec, objectString, sts);
+//							}
 //							lastAccess = curPro;
 //					
 //						 }
@@ -264,8 +274,10 @@ public class LogParserWin {
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 								
-								AlertRule alert = new AlertRule();
-								alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
+								 if(policyrule!="false") {
+									 AlertRule alert = new AlertRule();
+									 alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
+								 }
 								
 								prop.sendTag(jsonModel, subject, exec, IPAddress);
 								
@@ -294,8 +306,10 @@ public class LogParserWin {
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");			
 								
-								AlertRule alert = new AlertRule();
-								alert.reconnaissanceAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
+								 if(policyrule!="false") {
+									 AlertRule alert = new AlertRule();
+									alert.reconnaissanceAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
+								 }
 								
 								
 								prop.receiveTag(jsonModel, subject, exec, IPAddress);
