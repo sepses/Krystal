@@ -50,10 +50,10 @@ tb: 0.75 #quiescent tag values for benign
 te: 0.45 #aquiescent tag values for suspect
 
 #Setting policy-based-rule into true requires tag-propagation and tag-attenuation-decay to be true 
-policy-based-rule: false 
+policy-based-rule: true
 
 #Signature base detection, currently it only supports rule detection from Sigma Rule 
-signature-based-rule: false 
+signature-based-rule: true 
 
 #Sigma rule directory for linux 
 rule-dir : experiment/rule/
