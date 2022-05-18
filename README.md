@@ -37,43 +37,77 @@ Some configurations should be made prior to running the application. We include 
 
 
 ```bash
-#basic configuration
-input-dir: experiment/input/cadets/ #log-sources directory, see the dataset example (cadets,trace,theia,fivedirections)
-output-dir: experiment/output/ #output directory, any output file (.rdf/hdt) will be stored in this folder  
-tdb-dir: experiment/tdb #Jena TDB directory, this directory is needed for storing TDB temporary file
-ontology: experiment/ontology/log-ontology.ttl #Krystal Ontology location
+#----------------------------- BASIC CONFIGURATION --------------------------------------
+#log-sources input directory, see the dataset example (cadets,trace,theia,fivedirections) 
+input-dir: experiment/input/cadets/
 
-os-platform: ubuntu14 #OS platform, (ubuntu14 for cadets, trace ; freebsd for theia ; windows for fivedirections)
-triple-store: graphdb #Triple Store type (graphdb, virtuoso)
-sparql-endpoint: http://localhost:7200/repositories/cadets #endpoint for storing rdf output to triple Store
-namegraph: http://w3id.org/sepses/graph/cadets #namegraph of the RDF output / filename of the output
-line-number: 100000 #minimum log line number to be processed (minimum 1)
-decay-rule: yes # Option to perform decay (yes/no)
-live-store: no #Option for storing output data to the triplestore continuously (yes/no)
-backup-file: yes #Save the output in RDF and .HDT (yes/no)
+##minimum log line number to be processed (minimum 1)
+line-number: 100000
 
-#APPLIED THREAT DETECTION TECHNIQUES: list of possible threat detection techniques, set to "true" to apply otherwise set to "false"
-applied-technique:
- - tag-propagation: true 
- - tag-attenuation-decay: true #setting this into true requires tag-propagation: true 
- - policy-based-rule: true #setting this into true requires tag-propagation and tag-attenuation-decay: true 
- - signature-based-rule: true #sigma rule 
+#Save the output in RDF and .HDT (yes/no)
+backup-file: no
 
-#Rule directory for Sigma
-rule-dir : experiment/rule/ #rules should be stored in this directory i.e. Sigma Rule (see the example)
-rule-dir-win : experiment/rule_win/ #special rules directory for windows i.e. Sigma Rule for windows  (see the example)
+#output directory, any output file (.rdf/hdt) will be stored in this folder 
+output-dir: experiment/output/
+
+#----------------------------- TARGETTED TRIPLE STORE AND NAMEGRAPH ------------------------
+ #Option for storing output data to the triplestore continuously (yes/no)
+live-store: no
+
+#Triple Store type (e.g., graphdb, virtuoso)
+triple-store: graphdb
+
+#endpoint for storing rdf output to triple Store
+sparql-endpoint: http://localhost:7200/repositories/cadets
+
+#namegraph of the RDF graph on the triplestore (the output filename will be generated based on this namegraph
+namegraph: http://w3id.org/sepses/graph/cadets
+
+#----------------------------- SYSTEM SETTING -------------------------------------------
+#Jena TDB directory, this directory is required for storing jena TDB temporary file
+tdb-dir: experiment/tdb
+
+#Directory for Krystal Ontology 
+ontology: experiment/ontology/log-ontology.ttl
+
+#OS platform of the log sources, (e.g. ubuntu14 for cadets, trace ; freebsd for theia ; windows for fivedirections)
+os-platform: ubuntu14
+
+#----------------------------- THREAT DETECTION TECHNIQUES -------------------------------
+
+#list of possible threat detection techniques, set to "true" to apply otherwise set to "false"
+tag-propagation: true 
+
+#setting tag-attenuation-decay into true requires tag-propagation to be true 
+tag-attenuation: true 
+decay-rule: yes
+
+#setting policy-based-rule into true requires tag-propagation and tag-attenuation-decay to be true 
+policy-based-rule: true 
+
+#signature base detection, currently it only supports rule detection from Sigma Rule 
+signature-based-rule: true 
+
+#Sigma rule directory for linux
+rule-dir : experiment/rule/
+
+#Sigma rule directory for windows
+rule-dir-win : experiment/rule_win/ 
  
 
-
-#CONFIDENTIAL DIRECTIORIES: list of of any confidential directories. These will be used as  initialization of confidentiality score in tag-propagation technique during provenance graph building)
-confidential-dir: #please add any other confidential directories
- - /etc/passwd 
+#----------------------------- CONFIDENTIAL DIRECTORY -------------------------------
+#list of any confidential directory on the targetted hosts / logsources 
+#These will be used as  initialization of confidentiality score in tag-propagation technique during provenance graph building)
+confidential-dir:
+ - /etc/passwd
  - /var/log
  - /etc/shadow
  - /documents/
 
-#AUDIT EVENTS: list of any events from audit data that need to be included in the provenance graph building. 
-field-filter: #Event filter for log processing (filter only the uncommented events (event with #))
+ #----------------------------- AUDIT EVENTS-----------------------------------------
+#list of any events from audit data that need to be included in the provenance graph building. 
+#Event filter for log processing (filter only the uncommented events (event with #))
+field-filter:
  #- EVENT_FORK
  - EVENT_EXIT
  - EVENT_MPROTECT
@@ -81,10 +115,14 @@ field-filter: #Event filter for log processing (filter only the uncommented even
  #- EVENT_CLONE
  #- EVENT_LOADLIBRARY
  #- EVENT_EXECUTE
- - EVENT_ACCEPT
- - EVENT_RECVMSG
- - EVENT_SENDMSG
- ...
+ #- EVENT_SENDTO
+ #- EVENT_MODIFY_FILE_ATTRIBUTES
+ - EVENT_CHECK_FILE_ATTRIBUTES
+ - EVENT_RENAME
+ #- EVENT_RECVFROM
+ #- EVENT_READ
+ #- EVENT_WRITE
+....
 ```
 
 ### Running the Application:
