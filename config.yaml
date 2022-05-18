@@ -25,8 +25,6 @@ sparql-endpoint: http://localhost:7200/repositories/cadets
 namegraph: http://w3id.org/sepses/graph/cadets
 
 
-
-
 #----------------------------- SYSTEM SETTING -------------------------------------------
 #Jena TDB directory, this directory is required for storing jena TDB temporary file
 tdb-dir: experiment/tdb
@@ -39,7 +37,6 @@ os-platform: ubuntu14
 
 
 #----------------------------- THREAT DETECTION TECHNIQUES -------------------------------
-
 #list of possible threat detection techniques, set to "true" to apply otherwise set to "false"
 tag-propagation: true 
 
@@ -68,6 +65,7 @@ confidential-dir:
  - /var/log
  - /etc/shadow
  - /documents/
+
 
  #----------------------------- AUDIT EVENTS-----------------------------------------
 #list of any events from audit data that need to be included in the provenance graph building. 
