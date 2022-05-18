@@ -179,7 +179,7 @@ public class JsonRDFReader {
 			templ=0;
 		}
 			//end of a file	
-		   System.out.println("finish processing file:"+filename);
+		   System.out.println("finish processing file: "+filename);
 	   }
 	       //end of folder
 	    // System.out.println("Perform reasoning...");

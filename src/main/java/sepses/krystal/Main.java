@@ -112,7 +112,7 @@ public class Main {
 	  	  		+ "");
 	      
 	  	System.out.println("Start running "+osplatform+" parser...");
-	  	System.out.println("Appled Techniques:");
+	  	System.out.println("Threat detection techniques:");
 	  	System.out.println("- Tag-Propagation: "+propagation);
 	  	System.out.println("- Tag-Attenuation: "+attenuation);
 	  	System.out.println("- Tag-Decay: "+decayrule);
