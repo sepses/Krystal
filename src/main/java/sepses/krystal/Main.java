@@ -63,7 +63,7 @@ public class Main {
 	       //attenuation setting
 		   double ab= Double.parseDouble(s.get("ab").toString());
 		   double ae= Double.parseDouble(s.get("ae").toString());	       
-		   String decayrule =s.get("decay-rule").toString();
+		   String decayrule =s.get("tag-decay").toString();
 		   //decay setting
 		   double period= Double.parseDouble(s.get("period").toString());
 		   double tb= Double.parseDouble(s.get("tb").toString());
