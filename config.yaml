@@ -36,7 +36,7 @@ os-platform: ubuntu14
 
 #----------------------------- THREAT DETECTION TECHNIQUES -------------------------------
 #List of possible threat detection techniques, set to "true" to apply otherwise set to "false"
-tag-propagation: true 
+tag-propagation: true
 
 #Setting tag-attenuation into true requires tag-propagation to be true 
 tag-attenuation: true

@@ -134,9 +134,9 @@ public class LogParserFreeBSD {
 								}
 								
 								if(attenuation!="false") {
-									prop.writeTagWithAttenuation(jsonModel, subject, exec, objectString,ab,ae);
+									prop.writeTagWithAttenuation(jsonModel, subject, exec, objectString,ab,ae, propagation);
 								}else {
-									prop.writeTag(jsonModel, subject, exec, objectString);
+									prop.writeTag(jsonModel, subject, exec, objectString, propagation);
 								}
 								
 								lastAccess = curWrite;
@@ -159,7 +159,7 @@ public class LogParserFreeBSD {
 									jsonModel.read(targetReader, null, "N-TRIPLE");
 									
 					
-									prop.readTag(jsonModel, subject, exec, objectString);
+									prop.readTag(jsonModel, subject, exec, objectString, propagation);
 									lastAccess = curRead;
 									
 								}
@@ -222,7 +222,7 @@ public class LogParserFreeBSD {
 										alert.execAlert(jsonModel,alertModel, subject+"#"+process2, objectString, sts);
 								}
 								 
-								 prop.execTag(jsonModel, subject, process2, objectString);
+								 prop.execTag(jsonModel, subject, process2, objectString, propagation);
 						}	 
 						 
 					
@@ -297,7 +297,7 @@ public class LogParserFreeBSD {
 									alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
 								}
 								
-								prop.sendTag(jsonModel, subject, exec, IPAddress);
+								prop.sendTag(jsonModel, subject, exec, IPAddress, propagation);
 								
 								lastAccess=curSend;
 								
@@ -334,7 +334,7 @@ public class LogParserFreeBSD {
 								}
 											
 								
-								prop.receiveTag(jsonModel, subject, exec, IPAddress);
+								prop.receiveTag(jsonModel, subject, exec, IPAddress, propagation);
 								
 																						 
 						}

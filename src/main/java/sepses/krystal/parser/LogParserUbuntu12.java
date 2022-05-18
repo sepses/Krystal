@@ -96,9 +96,9 @@ public class LogParserUbuntu12 {
 								}
 							
 								if(attenuation!="false") {
-									prop.writeTagWithAttenuation(jsonModel, subject, exec, objectString,ab,ae);
+									prop.writeTagWithAttenuation(jsonModel, subject, exec, objectString,ab,ae, propagation);
 								}else {
-									prop.writeTag(jsonModel, subject, exec, objectString);
+									prop.writeTag(jsonModel, subject, exec, objectString, propagation);
 								}
 								
 								lastAccess = curWrite;									
@@ -116,7 +116,7 @@ public class LogParserUbuntu12 {
 									Reader targetReader = new StringReader(mapper);
 									jsonModel.read(targetReader, null, "N-TRIPLE");
 																
-									prop.readTag(jsonModel, subject, exec, fileName);										
+									prop.readTag(jsonModel, subject, exec, fileName, propagation);										
 									lastAccess = curRead;
 								}
 							}	
@@ -154,7 +154,7 @@ public class LogParserUbuntu12 {
 								alert.execAlert(jsonModel,alertModel, subject+"#"+newExec, fileName, sts);
 							}
 							
-							prop.execTag(jsonModel, subject, newExec, fileName);	
+							prop.execTag(jsonModel, subject, newExec, fileName, propagation);	
 							
 						}
 					
@@ -216,7 +216,7 @@ public class LogParserUbuntu12 {
 									alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
 								}
 								
-								prop.sendTag(jsonModel, subject, exec, IPAddress);
+								prop.sendTag(jsonModel, subject, exec, IPAddress, propagation);
 								lastAccess=curSend;
 								
 							}
@@ -241,7 +241,7 @@ public class LogParserUbuntu12 {
 									alert.reconnaissanceAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
 								}
 								
-								prop.receiveTag(jsonModel, subject, exec, IPAddress);
+								prop.receiveTag(jsonModel, subject, exec, IPAddress, propagation);
 					
 						}
 					}
