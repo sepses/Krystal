@@ -180,7 +180,7 @@ The resulting output data (the RDF data) can already be queried for analysis e.g
 
 ![ ](https://raw.githubusercontent.com/kabulkurniawan/Krystal/main/cadets_03.png)<p align="center"> **Figure 2** Attack Graph Construction Output Example.
 
-Nginx backdoor w/ Drakon in-memory. The attack begins with a vulnerable Nginx installed on a FreeBSD host that gets exploited by an attacker. The attacker sends a malformed HTTP request that results in downloading several malicious files on the local system. One of the files i.e. /tmp/pEja72mA then gets executed, which spawns a process pEja72mA. This process reads sensitive information/etc/passwd) and connects remotely via C&C to the attacker console.
+**Nginx backdoor w/ Drakon in-memory**. *The attack begins with a vulnerable Nginx installed on a FreeBSD host that gets exploited by an attacker. The attacker sends a malformed HTTP request that results in downloading several malicious files on the local system. One of the files i.e. /tmp/pEja72mA then gets executed, which spawns a process pEja72mA. This process reads sensitive information/etc/passwd) and connects remotely via C&C to the attacker console*.
 
 ## License
 
