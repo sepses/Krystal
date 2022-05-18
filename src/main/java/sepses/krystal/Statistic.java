@@ -1,4 +1,4 @@
-package sepses.SimpleLogProvenance;
+package sepses.krystal;
 
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;

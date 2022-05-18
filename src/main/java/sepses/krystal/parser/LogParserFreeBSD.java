@@ -1,4 +1,4 @@
-package sepses.parsing;
+package sepses.krystal.parser;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -9,10 +9,10 @@ import org.apache.jena.rdf.model.Model;
 import com.jsoniter.JsonIterator;
 import com.jsoniter.any.Any;
 
-import sepses.SimpleLogProvenance.AlertRule;
-import sepses.SimpleLogProvenance.PropagationRule;
+import sepses.krystal.AlertRule;
+import sepses.krystal.PropagationRule;
 
-public class LogParserUbuntu14 {
+public class LogParserFreeBSD {
 	public String eventType;
 	public Any eventNode;
 	public Any networkNode;
@@ -34,12 +34,12 @@ public class LogParserUbuntu14 {
 	public ArrayList<String> fieldfilter;
 	public ArrayList<String> confidentialdir;
 	
-	public LogParserUbuntu14(String line) {
+	public LogParserFreeBSD(String line) {
 			Any jsonNode=JsonIterator.deserialize(line);
 			datumNode = jsonNode.get("datum");
 	}
 	
-	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject, HashMap<String, Long> SubjectTime,  String decayrule, ArrayList<Integer> counter,HashMap<String, String> SubjectCmd ) throws IOException{	
+	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject, HashMap<String, Long> SubjectTime, String propagation, String attenuation,double ab, double ae, String decayrule, double period, double tb, double te,String policyrule, String signaturerule, ArrayList<Integer> counter) throws IOException{	
 		//filter is the line is an event or not
 		eventNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.Event");
 		if(eventNode.toBoolean()) {
@@ -49,9 +49,7 @@ public class LogParserUbuntu14 {
 				String mapper = "";
 				LogMapper lm = new LogMapper();	
 				subject = shortenUUID(eventNode.get("subject").get("com.bbn.tc.schema.avro.cdm18.UUID").toString(),uuIndex);
-				//exec = eventNode.get("properties").get("map").get("exec").toString();
-				exec =  getSubjectCmd(subject, SubjectCmd);
-						
+				exec = eventNode.get("properties").get("map").get("exec").toString();
 				hostId = eventNode.get("hostId").toString();
 				long ts = eventNode.get("timestampNanos").toLong();
 				String sts = eventNode.get("timestampNanos").toString();
@@ -79,14 +77,10 @@ public class LogParserUbuntu14 {
 				String prevProcess="";
 				String networkMap="";
 				
-				//initial value for tag decay
-				double period = 0.25;
-				double Tb = 0.75;
-				double Te = 0.45;
 				
 				if(decayrule!="false") {
 					if(ts!=0 && !eventType.contains("EVENT_FORK")){
-						prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
+						prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, tb, te);
 					}
 				}
 				
@@ -134,10 +128,16 @@ public class LogParserUbuntu14 {
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 								
 								
-								AlertRule alert = new AlertRule();
-								alert.corruptFileAlert(jsonModel, alertModel, subject+"#"+exec, objectString, sts);
+								if(policyrule!="false") {
+									AlertRule alert = new AlertRule();
+									alert.corruptFileAlert(jsonModel, alertModel, subject+"#"+exec, objectString, sts);
+								}
 								
-								prop.writeTag(jsonModel, subject, exec, objectString);
+								if(attenuation!="false") {
+									prop.writeTagWithAttenuation(jsonModel, subject, exec, objectString,ab,ae);
+								}else {
+									prop.writeTag(jsonModel, subject, exec, objectString);
+								}
 								
 								lastAccess = curWrite;
 								
@@ -213,13 +213,14 @@ public class LogParserUbuntu14 {
 										prop.putProcessTime(jsonModel, subject, process2, stime);
 								}
 									if(decayrule!="false") {
-									  prop.decayIndividualProcess(jsonModel,  subject+"#"+process2, ts, period, Tb, Te);
+									  prop.decayIndividualProcess(jsonModel,  subject+"#"+process2, ts, period, tb, te);
 									}
 									
 								 
-								 AlertRule alert = new AlertRule();
-								 
-								 alert.execAlert(jsonModel,alertModel, subject+"#"+process2, objectString, sts);
+									if(policyrule!="false") {
+										AlertRule alert = new AlertRule();
+										alert.execAlert(jsonModel,alertModel, subject+"#"+process2, objectString, sts);
+								}
 								 
 								 prop.execTag(jsonModel, subject, process2, objectString);
 						}	 
@@ -245,8 +246,10 @@ public class LogParserUbuntu14 {
 							Reader targetReader = new StringReader(mapper);
 							jsonModel.read(targetReader, null, "N-TRIPLE");
 							
-							 AlertRule alert = new AlertRule();
-							 alert.changePermAlert(jsonModel, alertModel, subject+"#"+exec, objectString, sts);
+							if(policyrule!="false") {
+								 AlertRule alert = new AlertRule();
+								 alert.changePermAlert(jsonModel, alertModel, subject+"#"+exec, objectString, sts);
+							}
 							lastAccess = curCh;
 								
 						}
@@ -261,12 +264,14 @@ public class LogParserUbuntu14 {
 //							Reader targetReader = new StringReader(mapper);
 //							jsonModel.read(targetReader, null, "N-TRIPLE");
 //							
-//							AlertRule alert = new AlertRule();
-//							alert.memExec(jsonModel, alertModel, subject+"#"+exec, objectString, sts); 
+//							if(policyrule!="false") {
+//								AlertRule alert = new AlertRule();
+//								alert.memExec(jsonModel, alertModel, subject+"#"+exec, objectString, sts);
+//						} 
 //							lastAccess = curPro;
 //						}
 //						
-					}else if(eventType.contains("EVENT_SENDTO")||eventType.contains("EVENT_SENDMSG")) {
+					}else if(eventType.contains("EVENT_SENDTO")) {
 					
 						String IPAddress = getIpAddress(object, NetworkObject);
 						
@@ -287,8 +292,10 @@ public class LogParserUbuntu14 {
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 													
 								
-								AlertRule alert = new AlertRule();
-								alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
+								if(policyrule!="false") {
+									AlertRule alert = new AlertRule();
+									alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
+								}
 								
 								prop.sendTag(jsonModel, subject, exec, IPAddress);
 								
@@ -298,7 +305,7 @@ public class LogParserUbuntu14 {
 							
 						}
 						
-				}else if(eventType.contains("EVENT_RECVFROM")||eventType.contains("EVENT_RECVMSG")) {
+				}else if(eventType.contains("EVENT_RECVFROM")) {
 					
 									
 						String IPAddress = getIpAddress(object, NetworkObject);
@@ -321,8 +328,10 @@ public class LogParserUbuntu14 {
 								//every connection is evil, hence update the new time to avoid decay
 								putNewSubjectTime(subject, ts, SubjectTime);
 								
-								AlertRule alert = new AlertRule();
-								alert.reconnaissanceAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
+								if(policyrule!="false") {
+									AlertRule alert = new AlertRule();
+									alert.reconnaissanceAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
+								}
 											
 								
 								prop.receiveTag(jsonModel, subject, exec, IPAddress);
@@ -357,11 +366,6 @@ public class LogParserUbuntu14 {
 				//System.out.println(subject+" : "+time);
 				putNewSubjectTime(subject, time, SubjectTime);
 			}
-			
-			exec = subjectNode.get("properties").get("map").get("name").toString();
-			putNewSubjectCmd(subject, exec, SubjectCmd);
-			
-			
 			
 			
 		}else if(datumNode.get("com.bbn.tc.schema.avro.cdm18.Principal").toBoolean()) {
@@ -610,27 +614,5 @@ public class LogParserUbuntu14 {
 		counter.remove(0);
 		counter.add(lastCounter+1);
 		 
-	}
-
-  private  static void putNewSubjectCmd(String subject, String cmdLine, HashMap<String, String> SubjectCmd) {
-		//process
-		if(!subject.isEmpty() && !cmdLine.isEmpty()) {
-			if(!SubjectCmd.containsKey(subject)) {
-				SubjectCmd.put(subject, cmdLine);
-				
-			}
-		}
-		 
-	}
-	private  static String getSubjectCmd(String subject, HashMap<String, String> SubjectCmd) {
-		//process
-		String exec="";
-		if(!subject.isEmpty()) {
-			if(SubjectCmd.containsKey(subject)) {
-				exec = SubjectCmd.get(subject);
-			}
-		}
-	
-		 return exec;	
 	}
 }

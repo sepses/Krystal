@@ -1,4 +1,4 @@
-package helper;
+package sepses.krystal.helper;
 
 public interface Storage {
 

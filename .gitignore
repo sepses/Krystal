@@ -1,7 +1,9 @@
 /experiment/backup
 #/experiment/input
 #/experiment/query
-#/experiment/tdb
+/experiment/tdb
 /experiment/output
 /config.yaml
 /target
+/.apt_generated/
+/.apt_generated_tests/

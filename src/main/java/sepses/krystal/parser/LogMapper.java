@@ -1,4 +1,4 @@
-package sepses.parsing;
+package sepses.krystal.parser;
 
 public class LogMapper {
 	public  String process;

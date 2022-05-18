@@ -1,4 +1,4 @@
-package sepses.SimpleLogProvenance;
+package sepses.krystal;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.riot.RDFDataMgr;
 
-import helper.Utility;
+import sepses.krystal.helper.Utility;
 
 public class AlertRule {
 	public String prefix; 

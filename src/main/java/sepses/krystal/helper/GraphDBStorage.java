@@ -1,4 +1,4 @@
-package helper;
+package sepses.krystal.helper;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;

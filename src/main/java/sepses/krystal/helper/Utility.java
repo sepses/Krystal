@@ -1,4 +1,4 @@
-package helper;
+package sepses.krystal.helper;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.jena.rdf.model.*;

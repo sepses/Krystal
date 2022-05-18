@@ -1,37 +1,78 @@
+#----------------------------- BASIC CONFIGURATION --------------------------------------
+#Log-sources input directory, see the dataset example (cadets,trace,theia,fivedirections) 
 input-dir: experiment/input/cadets/
 
-output-dir: experiment/output/
-
-tdb-dir: experiment/tdb
-
-ontology: experiment/ontology/log-ontology.ttl
-
-rule-dir : experiment/rule/
-
-rule-dir-win : experiment/rule_win/
-
-os-platform: ubuntu14
-
-triple-store: graphdb
-
-sparql-endpoint: http://localhost:7200/repositories/cadets
-
-namegraph: http://w3id.org/sepses/graph/cadets
-
+#Minimum log line number to be processed (minimum 1)
 line-number: 100000
 
-decay-rule: yes
+#Save the output in RDF and .HDT (yes/no)
+backup-file: no
 
+#Output directory, any output file (.rdf/hdt) will be stored in this folder 
+output-dir: experiment/output/
+
+#----------------------------- TARGETED TRIPLE STORE AND NAMEGRAPH ------------------------
+#Option for storing output data to the triplestore continuously (yes/no)
 live-store: no
 
-backup-file: yes
+#Triple Store type (e.g., graphdb, virtuoso)
+triple-store: graphdb
 
+#Endpoint for storing rdf output to triple Store
+sparql-endpoint: http://localhost:7200/repositories/cadets
+
+#Namegraph of the RDF graph on the triplestore (the output filename will be generated based on this namegraph
+namegraph: http://w3id.org/sepses/graph/cadets
+
+#----------------------------- SYSTEM SETTING -------------------------------------------
+#Jena TDB directory, this directory is required for storing jena TDB temporary file
+tdb-dir: experiment/tdb
+
+#Directory for Krystal Ontology 
+ontology: experiment/ontology/log-ontology.ttl
+
+#OS platform of the log sources, (e.g. ubuntu14 for cadets, trace ; freebsd for theia ; windows for fivedirections)
+os-platform: ubuntu14
+
+#----------------------------- THREAT DETECTION TECHNIQUES -------------------------------
+#List of possible threat detection techniques, set to "true" to apply otherwise set to "false"
+tag-propagation: true 
+
+#Setting tag-attenuation into true requires tag-propagation to be true 
+tag-attenuation: true
+ab: 0.2 #attenuation value for benign
+ae: 0.1 #attenuation value for suspect  
+
+#Setting tag-decay into true requires tag-propagation to be true 
+decay-rule: true
+period: 0.25 #decay half live (second)
+tb: 0.75 #quiescent tag values for benign
+te: 0.45 #aquiescent tag values for suspect
+
+#Setting policy-based-rule into true requires tag-propagation and tag-attenuation-decay to be true 
+policy-based-rule: true
+
+#Signature base detection, currently it only supports rule detection from Sigma Rule 
+signature-based-rule: true 
+
+#Sigma rule directory for linux 
+rule-dir : experiment/rule/
+
+#Sigma rule directory for windows
+rule-dir-win : experiment/rule_win/ 
+
+#----------------------------- CONFIDENTIAL DIRECTORY -------------------------------
+#List of any confidential directory on the targetted hosts / logsources 
+#These will be used as  initialization of confidentiality score in tag-propagation technique during provenance graph building)
 confidential-dir:
  - /etc/passwd
  - /var/log
  - /etc/shadow
  - /documents/
 
+ #----------------------------- AUDIT EVENTS-----------------------------------------
+#List of any events from audit data that need to be included in the provenance graph building. 
+#Event filter for log processing (filter only the uncommented events (event with #))
 field-filter:
  #- EVENT_FORK
  - EVENT_EXIT

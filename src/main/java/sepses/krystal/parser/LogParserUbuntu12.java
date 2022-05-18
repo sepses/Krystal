@@ -1,4 +1,4 @@
-package sepses.parsing;
+package sepses.krystal.parser;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -10,8 +10,8 @@ import org.apache.jena.rdf.model.Model;
 import com.jsoniter.JsonIterator;
 import com.jsoniter.any.Any;
 
-import sepses.SimpleLogProvenance.AlertRule;
-import sepses.SimpleLogProvenance.PropagationRule;
+import sepses.krystal.AlertRule;
+import sepses.krystal.PropagationRule;
 
 public class LogParserUbuntu12 {
 	public String eventType;
@@ -46,7 +46,7 @@ public class LogParserUbuntu12 {
 			}
 	}
 	
-	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject, HashMap<String, String> FileObject, HashMap<String, String> SubjectCmd, String file, HashMap<String, String> CloneObject, String decayrule, ArrayList<Integer> counter) throws IOException{	
+	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject, HashMap<String, String> FileObject, HashMap<String, String> SubjectCmd, String file, HashMap<String, String> CloneObject, String propagation, String attenuation, double ab, double ae, String decayrule, double period, double tb, double te,String policyrule, String signaturerule, ArrayList<Integer> counter) throws IOException{	
 		//filter is the line is an event or not
 		eventNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.Event");
 		if(eventNode.toBoolean()) {
@@ -68,14 +68,10 @@ public class LogParserUbuntu12 {
 				
 				PropagationRule prop = new PropagationRule();
 				
-				//initial value for tag decay
-				double period = 0.25;
-				double Tb = 0.75;
-				double Te = 0.45;
 				
 				if (decayrule!="false") {
 				  if(ts!=0 && !eventType.contains("EVENT_CLONE")) {
-					prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
+					prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, tb, te);
 				   }
 				}
 				
@@ -94,10 +90,16 @@ public class LogParserUbuntu12 {
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 		
-								AlertRule alert = new AlertRule();
-								alert.corruptFileAlert(jsonModel, alertModel, subject+"#"+exec, fileName, sts);
-
-								prop.writeTag(jsonModel, subject, exec, fileName);
+								if(policyrule!="false") {
+									AlertRule alert = new AlertRule();
+									alert.corruptFileAlert(jsonModel, alertModel, subject+"#"+exec, fileName, sts);
+								}
+							
+								if(attenuation!="false") {
+									prop.writeTagWithAttenuation(jsonModel, subject, exec, objectString,ab,ae);
+								}else {
+									prop.writeTag(jsonModel, subject, exec, objectString);
+								}
 								
 								lastAccess = curWrite;									
 							}
@@ -144,11 +146,13 @@ public class LogParserUbuntu12 {
 							storeEntity(subject+"#"+newExec, Process);
 							
 							if(decayrule!="false") {
-							  prop.decayIndividualProcess(jsonModel,  subject+"#"+newExec, ts, period, Tb, Te);
+							  prop.decayIndividualProcess(jsonModel,  subject+"#"+newExec, ts, period, tb, te);
 							}
 							
-							AlertRule alert = new AlertRule();
-							alert.execAlert(jsonModel,alertModel, subject+"#"+newExec, fileName, sts);
+							if(policyrule!="false") {
+								AlertRule alert = new AlertRule();
+								alert.execAlert(jsonModel,alertModel, subject+"#"+newExec, fileName, sts);
+							}
 							
 							prop.execTag(jsonModel, subject, newExec, fileName);	
 							
@@ -170,8 +174,10 @@ public class LogParserUbuntu12 {
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 								
-								AlertRule alert = new AlertRule();
-								alert.changePermAlert(jsonModel, alertModel, subject+"#"+exec, fileName, sts);
+								if(policyrule!="false") {
+									AlertRule alert = new AlertRule();
+									alert.changePermAlert(jsonModel, alertModel, subject+"#"+exec, fileName, sts);
+								}
 								lastAccess=curCh;
 						  }
 						}
@@ -184,8 +190,10 @@ public class LogParserUbuntu12 {
 //								mapper = lm.mprotect(subject,exec,fileName,hostId,userId, timestamp);
 //								Reader targetReader = new StringReader(mapper);
 //								jsonModel.read(targetReader, null, "N-TRIPLE");
-//								AlertRule alert = new AlertRule();
-//								alert.memExec(jsonModel, alertModel, subject+"#"+exec, fileName, sts);
+//								if(policyrule!="false") {
+//										AlertRule alert = new AlertRule();
+//										alert.memExec(jsonModel, alertModel, subject+"#"+exec, fileName, sts);
+//								}
 //								
 //						}
 					}else if(eventType.contains("EVENT_SENDTO")) {
@@ -203,8 +211,10 @@ public class LogParserUbuntu12 {
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 								
-								AlertRule alert = new AlertRule();
-								alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
+								if(policyrule!="false") {
+									AlertRule alert = new AlertRule();
+									alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
+								}
 								
 								prop.sendTag(jsonModel, subject, exec, IPAddress);
 								lastAccess=curSend;
@@ -226,8 +236,10 @@ public class LogParserUbuntu12 {
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 					
-								AlertRule alert = new AlertRule();
-								alert.reconnaissanceAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
+								if(policyrule!="false") {
+									AlertRule alert = new AlertRule();
+									alert.reconnaissanceAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
+								}
 								
 								prop.receiveTag(jsonModel, subject, exec, IPAddress);
 					
