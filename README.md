@@ -47,15 +47,15 @@ input-dir: experiment/input/cadets/
 #Minimum log line number to be processed (minimum 1)
 line-number: 100000
 
-#Save the output in RDF and .HDT (yes/no)
-backup-file: no
+#Save the output in RDF and .HDT (true/false)
+backup-file: true
 
 #Output directory, any output file (.rdf/hdt) will be stored in this folder 
 output-dir: experiment/output/
 
 #----------------------------- TARGETED TRIPLE STORE AND NAMEGRAPH ------------------------
-#Option for storing output data to the triplestore continuously (yes/no)
-live-store: no
+#Option for storing output data to the triplestore continuously (true/false)
+live-store: false
 
 #Triple Store type (e.g., graphdb, virtuoso)
 triple-store: graphdb
@@ -78,7 +78,7 @@ os-platform: ubuntu14
 
 #----------------------------- THREAT DETECTION TECHNIQUES -------------------------------
 #List of possible threat detection techniques, set to "true" to apply otherwise set to "false"
-tag-propagation: true 
+tag-propagation: true
 
 #Setting tag-attenuation into true requires tag-propagation to be true 
 tag-attenuation: true
@@ -123,11 +123,6 @@ field-filter:
  #- EVENT_CLONE
  #- EVENT_LOADLIBRARY
  #- EVENT_EXECUTE
- - EVENT_ACCEPT
- - EVENT_RECVMSG
- - EVENT_SENDMSG
- #- EVENT_SENDTO
- #- EVENT_MODIFY_FILE_ATTRIBUTES
 ....
 ```
 
