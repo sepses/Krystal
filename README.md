@@ -133,7 +133,7 @@ field-filter:
 To run the compiled project: 
 
 ```bash
-$ java -jar ./target/SimpleLogProvenance-0.0.1-SNAPSHOT-jar-with-dependencies.jar
+$ java -jar java -jar ./target/Krystal-1.1.0-jar-with-dependencies.jar
 ```
 The log processing will take a couple of times depending on the size of the input data. After processing the input data, several output files will be produced, such as the dependency (provenance) graphs (in RDF/.ttl file), the alert data (in RDF-star/.ttl), and the compressed version of the RDF graph (in .hdt). We provided several example RDF output (in RDF and .HDT) file under the directory [experiment/output](https://github.com/sepses/Krystal/tree/main/experiment/output). 
 
@@ -149,7 +149,7 @@ Krystal currently only supports audit data, especially from well-established dat
 See the example process below:
 
 ```bash
-$ java -jar java -jar .\target\Krystal-1.1.0-jar-with-dependencies.jar
+$ java -jar java -jar ./target/Krystal-1.1.0-jar-with-dependencies.jar
     __ __                 __        __   ______                                             __
    / //_/_______  _______/ /_____ _/ /  / ____/________ _____ ___  ___ _      ______  _____/ /__
   / ,<  / ___/ / / / ___/ __/ __ `/ /  / /_  / ___/ __ `/ __ `__ \/ _ \ | /| / / __ \/ ___/ //_/
