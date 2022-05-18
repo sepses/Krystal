@@ -1,4 +1,4 @@
-package sepses.parsing;
+package sepses.krystal.parser;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -9,8 +9,8 @@ import org.apache.jena.rdf.model.Model;
 import com.jsoniter.JsonIterator;
 import com.jsoniter.any.Any;
 
-import sepses.SimpleLogProvenance.AlertRule;
-import sepses.SimpleLogProvenance.PropagationRule;
+import sepses.krystal.AlertRule;
+import sepses.krystal.PropagationRule;
 
 public class LogParserFreeBSD {
 	public String eventType;
@@ -39,7 +39,7 @@ public class LogParserFreeBSD {
 			datumNode = jsonNode.get("datum");
 	}
 	
-	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject, HashMap<String, Long> SubjectTime,  String decayrule, ArrayList<Integer> counter) throws IOException{	
+	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject, HashMap<String, Long> SubjectTime, String propagation, String attenuation,double ab, double ae, String decayrule, double period, double tb, double te,String policyrule, String signaturerule, ArrayList<Integer> counter) throws IOException{	
 		//filter is the line is an event or not
 		eventNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.Event");
 		if(eventNode.toBoolean()) {
@@ -77,14 +77,10 @@ public class LogParserFreeBSD {
 				String prevProcess="";
 				String networkMap="";
 				
-				//initial value for tag decay
-				double period = 0.25;
-				double Tb = 0.75;
-				double Te = 0.45;
 				
 				if(decayrule!="false") {
 					if(ts!=0 && !eventType.contains("EVENT_FORK")){
-						prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, Tb, Te);
+						prop.decayIndividualProcess(jsonModel,  subject+"#"+exec, ts, period, tb, te);
 					}
 				}
 				
@@ -135,7 +131,11 @@ public class LogParserFreeBSD {
 								AlertRule alert = new AlertRule();
 								alert.corruptFileAlert(jsonModel, alertModel, subject+"#"+exec, objectString, sts);
 								
-								prop.writeTag(jsonModel, subject, exec, objectString);
+								if(attenuation!="false") {
+									prop.writeTagWithAttenuation(jsonModel, subject, exec, objectString,ab,ae);
+								}else {
+									prop.writeTag(jsonModel, subject, exec, objectString);
+								}
 								
 								lastAccess = curWrite;
 								
@@ -211,7 +211,7 @@ public class LogParserFreeBSD {
 										prop.putProcessTime(jsonModel, subject, process2, stime);
 								}
 									if(decayrule!="false") {
-									  prop.decayIndividualProcess(jsonModel,  subject+"#"+process2, ts, period, Tb, Te);
+									  prop.decayIndividualProcess(jsonModel,  subject+"#"+process2, ts, period, tb, te);
 									}
 									
 								 

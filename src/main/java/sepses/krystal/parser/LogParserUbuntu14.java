@@ -1,4 +1,4 @@
-package sepses.parsing;
+package sepses.krystal.parser;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -9,8 +9,8 @@ import org.apache.jena.rdf.model.Model;
 import com.jsoniter.JsonIterator;
 import com.jsoniter.any.Any;
 
-import sepses.SimpleLogProvenance.AlertRule;
-import sepses.SimpleLogProvenance.PropagationRule;
+import sepses.krystal.AlertRule;
+import sepses.krystal.PropagationRule;
 
 public class LogParserUbuntu14 {
 	public String eventType;
@@ -37,9 +37,10 @@ public class LogParserUbuntu14 {
 	public LogParserUbuntu14(String line) {
 			Any jsonNode=JsonIterator.deserialize(line);
 			datumNode = jsonNode.get("datum");
+			
 	}
 	
-	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject, HashMap<String, Long> SubjectTime,  String decayrule, ArrayList<Integer> counter,HashMap<String, String> SubjectCmd ) throws IOException{	
+	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject, HashMap<String, Long> SubjectTime,  String propagation, String attenuation, double ab, double ae, String decayrule, double period, double Tb, double Te, String policyrule, String signaturerule, ArrayList<Integer> counter,HashMap<String, String> SubjectCmd ) throws IOException{	
 		//filter is the line is an event or not
 		eventNode = datumNode.get("com.bbn.tc.schema.avro.cdm18.Event");
 		if(eventNode.toBoolean()) {
@@ -60,6 +61,7 @@ public class LogParserUbuntu14 {
 				long stime = getSubjectTime(subject, SubjectTime);
 				
 				PropagationRule prop = new PropagationRule();
+				
 				//time initialization for each process
 				if(stime!=0) {
 					prop.putProcessTime(jsonModel, subject, exec, stime);
@@ -79,10 +81,7 @@ public class LogParserUbuntu14 {
 				String prevProcess="";
 				String networkMap="";
 				
-				//initial value for tag decay
-				double period = 0.25;
-				double Tb = 0.75;
-				double Te = 0.45;
+			
 				
 				if(decayrule!="false") {
 					if(ts!=0 && !eventType.contains("EVENT_FORK")){
@@ -134,10 +133,19 @@ public class LogParserUbuntu14 {
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 								
 								
-								AlertRule alert = new AlertRule();
-								alert.corruptFileAlert(jsonModel, alertModel, subject+"#"+exec, objectString, sts);
+								if(policyrule!="false") {
+									AlertRule alert = new AlertRule();
+									alert.corruptFileAlert(jsonModel, alertModel, subject+"#"+exec, objectString, sts);
+								}
 								
-								prop.writeTag(jsonModel, subject, exec, objectString);
+								
+								if(attenuation!="false") {
+									prop.writeTagWithAttenuation(jsonModel, subject, exec, objectString,ab,ae);
+								}else {
+									prop.writeTag(jsonModel, subject, exec, objectString);
+								}
+								
+								
 								
 								lastAccess = curWrite;
 								
@@ -217,10 +225,11 @@ public class LogParserUbuntu14 {
 									}
 									
 								 
-								 AlertRule alert = new AlertRule();
-								 
-								 alert.execAlert(jsonModel,alertModel, subject+"#"+process2, objectString, sts);
-								 
+									if(policyrule!="false") {
+										AlertRule alert = new AlertRule();
+										alert.execAlert(jsonModel,alertModel, subject+"#"+process2, objectString, sts);	 
+									}
+									
 								 prop.execTag(jsonModel, subject, process2, objectString);
 						}	 
 						 
@@ -245,8 +254,12 @@ public class LogParserUbuntu14 {
 							Reader targetReader = new StringReader(mapper);
 							jsonModel.read(targetReader, null, "N-TRIPLE");
 							
-							 AlertRule alert = new AlertRule();
-							 alert.changePermAlert(jsonModel, alertModel, subject+"#"+exec, objectString, sts);
+							if(policyrule!="false") {
+								AlertRule alert = new AlertRule();
+								alert.changePermAlert(jsonModel, alertModel, subject+"#"+exec, objectString, sts);
+								 
+							}
+							 
 							lastAccess = curCh;
 								
 						}
@@ -286,9 +299,10 @@ public class LogParserUbuntu14 {
 								Reader targetReader = new StringReader(mapper);
 								jsonModel.read(targetReader, null, "N-TRIPLE");
 													
-								
-								AlertRule alert = new AlertRule();
-								alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
+								if(policyrule!="false") {
+									AlertRule alert = new AlertRule();
+									alert.dataLeakAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);				 
+								}
 								
 								prop.sendTag(jsonModel, subject, exec, IPAddress);
 								
@@ -321,8 +335,12 @@ public class LogParserUbuntu14 {
 								//every connection is evil, hence update the new time to avoid decay
 								putNewSubjectTime(subject, ts, SubjectTime);
 								
-								AlertRule alert = new AlertRule();
-								alert.reconnaissanceAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
+								if(policyrule!="false") {
+									AlertRule alert = new AlertRule();
+									alert.reconnaissanceAlert(jsonModel,alertModel, subject+"#"+exec, IPAddress, sts);
+								}
+								
+								
 											
 								
 								prop.receiveTag(jsonModel, subject, exec, IPAddress);

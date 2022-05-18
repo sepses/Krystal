@@ -1,4 +1,4 @@
-package sepses.SimpleLogProvenance;
+package sepses.krystal;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,24 +20,24 @@ import org.apache.jena.reasoner.ReasonerRegistry;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.tdb.TDBFactory;
 
-import helper.Utility;
-import sepses.parsing.LogParserFreeBSD;
-import sepses.parsing.LogParserWin;
-import sepses.parsing.LogParserUbuntu12;
-import sepses.parsing.LogParserUbuntu14;
-import sepses.parsing.LogParserLinux20;
+import sepses.krystal.helper.Utility;
+import sepses.krystal.parser.LogParserFreeBSD;
+import sepses.krystal.parser.LogParserLinux20;
+import sepses.krystal.parser.LogParserUbuntu12;
+import sepses.krystal.parser.LogParserUbuntu14;
+import sepses.krystal.parser.LogParserWin;
 
 public class JsonRDFReader {
 	
-	public static long timer;
-	public static long duration;
+	static long startTime;
+
 	
 	public static void readJson(String filefolder, String l, String se, String ng, String sl, String outputdir, 
 									String triplestore, String backupfile,  ArrayList<String> fieldfilter,
 										String livestore, ArrayList<String> confidentialdir, String tdbdir, String ontology, 
-										String ruledir, String os, String decayrule) throws Exception {
+										String ruledir, String os,String propagation, String attenuation, double ab, double ae, String decayrule, double period,double tb, double te, String policyrule, String signaturerule ) throws Exception {
 		
-		  
+		startTime = System.nanoTime(); 
 		Integer lineNumber = 1; // 1 here means the minimum line to be extracted
 		if(l!=null) {lineNumber=Integer.parseInt(l);}
 		String sparqlEp = se;
@@ -111,19 +111,19 @@ public class JsonRDFReader {
 										}	
 										LogParserWin lp = new LogParserWin(line); //fivedirection
 										lastAccess = lp.parseJSONtoRDF(jsonModel,alertModel,fieldfilter, confidentialdir, uuIndex, Process, File, 
-								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, Registry, RegistryObject, SubjectCmd, file, SubjectTime, decayrule, counter);
+								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, Registry, RegistryObject, SubjectCmd, file, SubjectTime, propagation,  attenuation, ab,ae , decayrule, period, tb,te,policyrule, signaturerule, counter);
 									}else if (os.equals("ubuntu12")){
 										LogParserUbuntu12 lp = new LogParserUbuntu12(line); //ubuntu
 										lastAccess = lp.parseJSONtoRDF(jsonModel,alertModel,fieldfilter, confidentialdir, uuIndex, Process, File, 
-								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, FileObject, SubjectCmd, file, CloneObject, decayrule, counter);
+								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, FileObject, SubjectCmd, file, CloneObject, propagation,  attenuation, ab,ae , decayrule, period, tb,te,policyrule, signaturerule, counter);
 									}else  if (os.equals("ubuntu14")){
 										LogParserUbuntu14 lp = new LogParserUbuntu14(line); //freebsd
 										lastAccess = lp.parseJSONtoRDF(jsonModel,alertModel,fieldfilter, confidentialdir, uuIndex, Process, File, 
-								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, SubjectTime, decayrule, counter, SubjectCmd);
+								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, SubjectTime, propagation, attenuation, ab,ae , decayrule, period, tb,te, policyrule, signaturerule, counter, SubjectCmd);
 									}else {
 										LogParserFreeBSD lp = new LogParserFreeBSD(line); //freebsd
 										lastAccess = lp.parseJSONtoRDF(jsonModel,alertModel,fieldfilter, confidentialdir, uuIndex, Process, File, 
-								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, SubjectTime, decayrule, counter);
+								                  Network, NetworkObject, ForkObject, lastEvent, lastAccess, UserObject, SubjectTime, propagation,  attenuation, ab,ae , decayrule, period, tb,te,policyrule, signaturerule, counter);
 									}
 									
 							} catch (Exception e) {
@@ -138,6 +138,9 @@ public class JsonRDFReader {
 								group++;
 								System.out.println("parsing "+group+" of "+lineNumber+" finished in "+(System.currentTimeMillis() - time1));
 								
+								long endTime   = System.nanoTime();
+								long totalTime = endTime - startTime;
+								System.out.println("Total Time: "+ totalTime);
 														
 								if(livestore!="false") {
 									//add rdfs reasoner first
@@ -159,7 +162,11 @@ public class JsonRDFReader {
 		if(templ!=0) {
 			
 			System.out.println("the rest is less than "+lineNumber+" which is "+templ);
-			System.out.println(duration);
+
+			long endTime   = System.nanoTime();
+			long totalTime = endTime - startTime;
+			System.out.println("Total Time: "+ totalTime);
+			
 			if(livestore!="false") {
 				
 				    //InfModel infModel = ModelFactory.createRDFSModel(RDFDataMgr.loadModel(ontology), jsonModel);
@@ -184,7 +191,11 @@ public class JsonRDFReader {
 	     
 	     
 	     //detect alert from rule dir (i.e. sigma rule)
-	     AlertRule.generateAlertFromRuleDir(infModel,alertModel, ruledir);
+	     
+	 	if(signaturerule!="false") {
+	 	   AlertRule.generateAlertFromRuleDir(infModel,alertModel, ruledir); 
+		}
+	  
 		  
 	     System.out.println("number of events :"+counter.get(0));
 	     Statistic.countAlarm(alertModel);

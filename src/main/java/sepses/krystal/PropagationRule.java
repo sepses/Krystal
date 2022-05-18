@@ -1,4 +1,4 @@
-package sepses.SimpleLogProvenance;
+package sepses.krystal;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,6 +42,7 @@ public class PropagationRule {
 		timestamp = model.createProperty(prefix+"timestamp");
 		counter = model.createProperty(prefRule+"counter");
 		
+		
 	}
 	
 	public void loadTag(Model jsonModel, String subject, String exec, String objectString) {
@@ -61,6 +62,11 @@ public class PropagationRule {
 	public void writeTag(Model jsonModel, String subject, String exec, String objectString) {
 		confWrite(jsonModel, subject, exec, objectString);
 		intWrite(jsonModel, subject, exec, objectString);
+	}
+	
+	public void writeTagWithAttenuation(Model jsonModel, String subject, String exec, String objectString, double ab, double ae) {
+		confWriteAtten(jsonModel, subject, exec, objectString, ab, ae);
+		intWriteAtten(jsonModel, subject, exec, objectString, ab, ae);
 	}
 	
 	public void receiveTag(Model jsonModel, String subject, String exec, String objectString) {
@@ -284,7 +290,7 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 		    if(rsst >= 0.5) {
 		    	//benign
 		       if(roct!=rsct) {
-		         double noct = min(rsct+0.2,roct);
+		         double noct = min(rsct,roct);
 		          if(noct!=roct) {
 		             jsonModel.removeAll(resfile, confTag, null);
 			         jsonModel.addLiteral(resfile, confTag, noct);
@@ -301,7 +307,7 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 		    	} else {
 		    	//suspect env
 		    		if(roct!=rsct) {
-				         double noct = min(rsct+0.1,roct);
+				         double noct = min(rsct,roct);
 				          if(noct!=roct) {
 				             jsonModel.removeAll(resfile, confTag, null);
 					         jsonModel.addLiteral(resfile, confTag, noct);
@@ -311,8 +317,7 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 		    	}
 		   }
 		
-       
-		
+      
 		public  void intWrite(Model jsonModel, String subject, String exec, String objectString) {
 			process = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
 			file = "http://w3id.org/sepses/resource/file#"+objectString;
@@ -328,7 +333,7 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 		    if(rsst >= 0.5) {
 		      //benign
 		    	if(roit!=rsit) {
-		         double noit = min(rsit+0.2,roit);
+		         double noit = min(rsit,roit);
 		         if(noit!=roit) {
 		        	 jsonModel.removeAll(resfile, intTag, null);
 			         jsonModel.addLiteral(resfile, intTag, noit);
@@ -344,7 +349,7 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 		    	}
 		    }else {
 		    	if(roit!=rsit) {
-			         double noit = min(rsit+0.1,roit);
+			         double noit = min(rsit,roit);
 			         if(noit!=roit) {
 			        	 jsonModel.removeAll(resfile, intTag, null);
 				         jsonModel.addLiteral(resfile, intTag, noit);
@@ -355,7 +360,94 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 		    	
 		  }
 
-	
+		 //----------------------WRITE WITH ATTENUATION----------------------------------------
+
+		
+		public  void confWriteAtten(Model jsonModel, String subject, String exec, String objectString, double ab, double ae) {
+		    process = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
+			file = "http://w3id.org/sepses/resource/file#"+objectString;
+			
+			Resource respro = jsonModel.createResource(process);
+			Resource resfile = jsonModel.createResource(file);
+			
+			double rsst = getEntityTag(jsonModel, subjTag, respro);
+			double rsct = getEntityTag(jsonModel, confTag, respro);
+			double roct = getEntityTag(jsonModel, confTag, resfile);
+			boolean rsenv = getSuspEnvTag(jsonModel, suspEnv, respro);
+			
+		    if(rsst >= 0.5) {
+		    	//benign
+		       if(roct!=rsct) {
+		         double noct = min(rsct+ab,roct);
+		          if(noct!=roct) {
+		             jsonModel.removeAll(resfile, confTag, null);
+			         jsonModel.addLiteral(resfile, confTag, noct);
+			     }  
+		      }	      
+		    }else {
+		    	if(!rsenv) {
+		    	//suspect
+		    	 if(roct!=rsct) {
+		           double noct = min(rsct,roct);
+		           	 jsonModel.removeAll(resfile, confTag, null);
+		           	 jsonModel.addLiteral(resfile, confTag, noct);
+		    	 }
+		    	} else {
+		    	//suspect env
+		    		if(roct!=rsct) {
+				         double noct = min(rsct+ae,roct);
+				          if(noct!=roct) {
+				             jsonModel.removeAll(resfile, confTag, null);
+					         jsonModel.addLiteral(resfile, confTag, noct);
+					     }  
+				      }
+		    		}
+		    	}
+		   }
+		
+		public  void intWriteAtten(Model jsonModel, String subject, String exec, String objectString, double ab, double ae) {
+			process = "http://w3id.org/sepses/resource/proc"+subject+"#"+exec;
+			file = "http://w3id.org/sepses/resource/file#"+objectString;
+			
+			Resource respro = jsonModel.createResource(process);
+			Resource resfile = jsonModel.createResource(file);
+			
+			double rsst = getEntityTag(jsonModel, subjTag, respro);
+			double rsit = getEntityTag(jsonModel, intTag, respro);
+			double roit = getEntityTag(jsonModel, intTag, resfile);
+			boolean rsenv = getSuspEnvTag(jsonModel, suspEnv, respro);
+				    
+		    if(rsst >= 0.5) {
+		      //benign
+		    	if(roit!=rsit) {
+		         double noit = min(rsit+ab,roit);
+		         if(noit!=roit) {
+		        	 jsonModel.removeAll(resfile, intTag, null);
+			         jsonModel.addLiteral(resfile, intTag, noit);
+			     }  
+		     }   
+		    }else {
+		     if(!rsenv) {
+		     //suspect
+		    	if(roit!=rsit) {
+		         double noit = min(rsit,roit);
+		         jsonModel.removeAll(resfile, intTag, null);
+		         jsonModel.addLiteral(resfile, intTag, noit);
+		    	}
+		    }else {
+		    	if(roit!=rsit) {
+			         double noit = min(rsit+ae,roit);
+			         if(noit!=roit) {
+			        	 jsonModel.removeAll(resfile, intTag, null);
+				         jsonModel.addLiteral(resfile, intTag, noit);
+				     }  
+			     }  
+		    }
+		    }
+		    	
+		  }
+
+		
 	//================EXEC===========================
 			
 	public  void subjExec(Model jsonModel, String subject, String exec, String objectString) {
@@ -549,6 +641,7 @@ public  void subjLoad(Model jsonModel, String subject, String exec, String objec
 	    jsonModel.addLiteral(respro, counter, prevCounter+1);
 		
 	}
+	
 	//=================decay=========================
 	
 	public void decayProcess(Model jsonModel, long timer, double period, double T) {

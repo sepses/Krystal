@@ -1,4 +1,4 @@
-package sepses.parsing;
+package sepses.krystal.parser;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -10,8 +10,8 @@ import org.apache.jena.rdf.model.Model;
 import com.jsoniter.JsonIterator;
 import com.jsoniter.any.Any;
 
-import sepses.SimpleLogProvenance.AlertRule;
-import sepses.SimpleLogProvenance.PropagationRule;
+import sepses.krystal.AlertRule;
+import sepses.krystal.PropagationRule;
 
 public class LogParserLinux20 {
 	public String eventType;
@@ -46,7 +46,7 @@ public class LogParserLinux20 {
 			}
 	}
 	
-	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject, HashMap<String, String> FileObject, HashMap<String, String> SubjectCmd, String file, HashMap<String, String> CloneObject, String decayrule, ArrayList<Integer> counter) throws IOException{	
+	public String parseJSONtoRDF(Model jsonModel, Model alertModel, ArrayList<String> fieldfilter, ArrayList<String> confidentialdir, HashMap<String, String> uuIndex, Set<String> Process, Set<String> File, Set<String> Network, HashMap<String, String> NetworkObject, HashMap<String, String> ForkObject , Set<String> lastEvent, String lastAccess, HashMap<String, String> UserObject, HashMap<String, String> FileObject, HashMap<String, String> SubjectCmd, String file, HashMap<String, String> CloneObject, String propagation, String attenuation, String decayrule,String policyrule, String signaturerule, ArrayList<Integer> counter) throws IOException{	
 		//filter is the line is an event or not
 		eventNode = datumNode.get("com.bbn.tc.schema.avro.cdm20.Event");
 		if(eventNode.toBoolean()) {
@@ -97,7 +97,12 @@ public class LogParserLinux20 {
 								AlertRule alert = new AlertRule();
 								alert.corruptFileAlert(jsonModel, alertModel, subject+"#"+exec, fileName, sts);
 
-								prop.writeTag(jsonModel, subject, exec, fileName);
+								if (attenuation!="false") {
+									   prop.writeTagWithAttenuation(jsonModel, attenuation, decayrule, sts, Tb, Te);
+									}else {
+									   prop.writeTag(jsonModel, fileName, curWrite, sts);
+									}
+								
 								
 								lastAccess = curWrite;									
 							}
