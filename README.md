@@ -38,29 +38,29 @@ Some configurations should be made prior to running the application. We include 
 
 ```bash
 #----------------------------- BASIC CONFIGURATION --------------------------------------
-#log-sources input directory, see the dataset example (cadets,trace,theia,fivedirections) 
+#Log-sources input directory, see the dataset example (cadets,trace,theia,fivedirections) 
 input-dir: experiment/input/cadets/
 
-##minimum log line number to be processed (minimum 1)
+#Minimum log line number to be processed (minimum 1)
 line-number: 100000
 
 #Save the output in RDF and .HDT (yes/no)
 backup-file: no
 
-#output directory, any output file (.rdf/hdt) will be stored in this folder 
+#Output directory, any output file (.rdf/hdt) will be stored in this folder 
 output-dir: experiment/output/
 
-#----------------------------- TARGETTED TRIPLE STORE AND NAMEGRAPH ------------------------
- #Option for storing output data to the triplestore continuously (yes/no)
+#----------------------------- TARGETED TRIPLE STORE AND NAMEGRAPH ------------------------
+#Option for storing output data to the triplestore continuously (yes/no)
 live-store: no
 
 #Triple Store type (e.g., graphdb, virtuoso)
 triple-store: graphdb
 
-#endpoint for storing rdf output to triple Store
+#Endpoint for storing rdf output to triple Store
 sparql-endpoint: http://localhost:7200/repositories/cadets
 
-#namegraph of the RDF graph on the triplestore (the output filename will be generated based on this namegraph
+#Namegraph of the RDF graph on the triplestore (the output filename will be generated based on this namegraph
 namegraph: http://w3id.org/sepses/graph/cadets
 
 #----------------------------- SYSTEM SETTING -------------------------------------------
@@ -74,29 +74,34 @@ ontology: experiment/ontology/log-ontology.ttl
 os-platform: ubuntu14
 
 #----------------------------- THREAT DETECTION TECHNIQUES -------------------------------
-
-#list of possible threat detection techniques, set to "true" to apply otherwise set to "false"
+#List of possible threat detection techniques, set to "true" to apply otherwise set to "false"
 tag-propagation: true 
 
-#setting tag-attenuation-decay into true requires tag-propagation to be true 
-tag-attenuation: true 
-decay-rule: yes
+#Setting tag-attenuation into true requires tag-propagation to be true 
+tag-attenuation: true
+ab: 0.2 #attenuation value for benign
+ae: 0.1 #attenuation value for suspect  
 
-#setting policy-based-rule into true requires tag-propagation and tag-attenuation-decay to be true 
-policy-based-rule: true 
+#Setting tag-decay into true requires tag-propagation to be true 
+decay-rule: true
+period: 0.25 #decay half live (second)
+tb: 0.75 #quiescent tag values for benign
+te: 0.45 #aquiescent tag values for suspect
 
-#signature base detection, currently it only supports rule detection from Sigma Rule 
-signature-based-rule: true 
+#Setting policy-based-rule into true requires tag-propagation and tag-attenuation-decay to be true 
+policy-based-rule: false 
 
-#Sigma rule directory for linux
+#Signature base detection, currently it only supports rule detection from Sigma Rule 
+signature-based-rule: false 
+
+#Sigma rule directory for linux 
 rule-dir : experiment/rule/
 
 #Sigma rule directory for windows
 rule-dir-win : experiment/rule_win/ 
- 
 
 #----------------------------- CONFIDENTIAL DIRECTORY -------------------------------
-#list of any confidential directory on the targetted hosts / logsources 
+#List of any confidential directory on the targetted hosts / logsources 
 #These will be used as  initialization of confidentiality score in tag-propagation technique during provenance graph building)
 confidential-dir:
  - /etc/passwd
@@ -105,7 +110,7 @@ confidential-dir:
  - /documents/
 
  #----------------------------- AUDIT EVENTS-----------------------------------------
-#list of any events from audit data that need to be included in the provenance graph building. 
+#List of any events from audit data that need to be included in the provenance graph building. 
 #Event filter for log processing (filter only the uncommented events (event with #))
 field-filter:
  #- EVENT_FORK
@@ -115,13 +120,11 @@ field-filter:
  #- EVENT_CLONE
  #- EVENT_LOADLIBRARY
  #- EVENT_EXECUTE
+ - EVENT_ACCEPT
+ - EVENT_RECVMSG
+ - EVENT_SENDMSG
  #- EVENT_SENDTO
  #- EVENT_MODIFY_FILE_ATTRIBUTES
- - EVENT_CHECK_FILE_ATTRIBUTES
- - EVENT_RENAME
- #- EVENT_RECVFROM
- #- EVENT_READ
- #- EVENT_WRITE
 ....
 ```
 
