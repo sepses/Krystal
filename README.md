@@ -155,7 +155,7 @@ $ java -jar java -jar ./target/Krystal-1.1.0-jar-with-dependencies.jar
 
 
 Start running ubuntu14 parser...
-Appled Techniques:
+Threat detection techniques:
 - Tag-Propagation: true
 - Tag-Attenuation: true
 - Tag-Decay: true
