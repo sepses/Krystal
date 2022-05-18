@@ -162,17 +162,23 @@ Threat detection techniques:
 - Signature-Rule: true
 processing file: cadets100000.json
 reading from line : 1
-parsing 1 of 100000 finished in 9679
-Total Time: 10194338400
+parsing 1 of 100000 finished in 10514
+Total Time: 11031769700
 the rest is less than 100000 which is 3
-Total Time: 10195279400
-finish processing file:experiment/input/cadets/cadets100000.json
-generate alert from community ruleexperiment/rule/
+Total Time: 11032694300
+finish processing file: experiment/input/cadets/cadets100000.json
+generate alert from sigma rule experiment/rule/
 number of events :94050
 Statictics:
 http://w3id.org/sepses/resource/rule/corrupt-file-rule : 6
 http://w3id.org/sepses/resource/rule/change-permission-rule : 20
 http://w3id.org/sepses/resource/sigma/sigma-444ade84-c362-4260-b1f3-e45e20e1a905 : 1
+Save model to rdf file...Done!
+Save model to rdf file...Done!
+Save model rdf to hdt....Done!
+Store data to [graphdb] via http://localhost:7200/repositories/Krystal using namegraph http://w3id.org/sepses/graph/cadets ... Done!
+Store data to [graphdb] via http://localhost:7200/repositories/Krystal using namegraph http://w3id.org/sepses/graph/cadets ... Done!
+Store data to [graphdb] via http://localhost:7200/repositories/Krystal using namegraph http://w3id.org/sepses/graph/cadets ... Done!
 ```
 ## Analyzing / Querying the Graph
 The resulting output data (the RDF data) can already be queried for analysis e.g. for root cause analysis, attack graph reconstruction (via graph query or forward chaining technique), etc. The directory [experiment/query](https://github.com/sepses/Krystal/tree/main/experiment/query) contains several example queries that can be used for analysis. Figure 2 shows an example output of attack graph construction using *backward-forward* chaining technique. 

@@ -176,8 +176,8 @@ public class Utility {
 			  storage = GraphDBStorage.getInstance();
 		 }
 		 
-		//  System.out.println("Store data: "+fileLocation+" to " + sparqlEndpoint + " using graph " + namegraph);
-		  System.out.print("Store data...");
+		   System.out.print("Store data to [" +triplestore+"] via "+sparqlEndpoint + " using namegraph " + namegraph+" ...");
+		  // System.out.print("Store data to "+triplestore+" ...");
 	       storage.storeData(fileLocation, sparqlEndpoint, namegraph, true, user, pass);
 	       System.out.println(" Done!");
 	  }

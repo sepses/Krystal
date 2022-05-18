@@ -118,7 +118,7 @@ public class Main {
 	  	System.out.println("- Tag-Decay: "+decayrule);
 	  	System.out.println("- Policy-Rule: "+policyrule);
 	  	System.out.println("- Signature-Rule: "+signaturerule);
-	  	
+	  	  	
 	  	
 	      JsonRDFReader.readJson(inputdir, line, sparqlEp, namegraph, startingLine, 
 	    		  outputdir, triplestore, backupfile, fieldfilter,
