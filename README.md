@@ -186,6 +186,21 @@ The resulting output data (the RDF data) can already be queried for analysis e.g
 
 **Nginx backdoor w/ Drakon in-memory** (FreeBSD/Cadets). *The attack begins with a vulnerable Nginx installed on a FreeBSD host that gets exploited by an attacker. The attacker sends a malformed HTTP request that results in downloading several malicious files on the local system. One of the files i.e. /tmp/pEja72mA then gets executed, which spawns a process pEja72mA. This process reads sensitive information/etc/passwd) and connects remotely via C&C to the attacker console*.
 
+## Cite
+```bash
+@article{kurniawan_krystal_2022,
+author = {Kabul Kurniawan and Andreas Ekelhart and Elmar Kiesling and Gerald Quirchmayr and A Min Tjoa},
+title = {KRYSTAL: Knowledge graph-based framework for tactical attack discovery in audit data},
+journal = {Computers & Security},
+volume = {121},
+pages = {102828},
+year = {2022},
+issn = {0167-4048},
+doi = {https://doi.org/10.1016/j.cose.2022.102828},
+url = {https://www.sciencedirect.com/science/article/pii/S016740482200222X}
+}
+```
+
 ## License
 
 The Krystal Framework is written by [Kabul Kurniawan](https://kabulkurniawan.github.io/) and released under the [MIT license](http://opensource.org/licenses/MIT).
